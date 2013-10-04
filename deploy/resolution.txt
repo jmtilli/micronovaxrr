@@ -1,0 +1,119 @@
+A lower bound for instrument resolution is determined by monochromator. If the
+spectral line width is dlambda, the corresponding angular spread will be:
+
+	kz = 2*pi*sin(theta)/lambda
+	lambda*kz = 2*pi*sin(theta)
+	kz dlambda/dtheta = 2*pi*cos(theta)
+	dtheta = kz/(2*pi*cos(theta)) dlambda
+
+where kz is the component of wave vector perpendicular to the monochromator.
+
+	kz = 2*pi*sin(theta)/lambda
+
+	dtheta = 2*pi*sin(theta) / (2*pi*cos(theta)) dlambda/lambda
+		   = tan(theta) dlambda/lambda
+
+However, the dtheta here is not the actual resolution, since x-ray
+reflectivity is determined not by angle, but by z-component of wave vector
+that is perpendicular to the sample (kz'). This program assumes that
+wavelength is constant, which is strictly not true, so we define the
+_apparent_ resolution as dalpha.
+
+The perpendicular wave vector kz' is:
+
+	kz' = 2*pi*sin(alpha + dtheta) / (lambda + dlambda)
+
+and when assuming lambda is constant and dalpha the apparent resolution:
+
+	kz' = 2*pi*sin(alpha + dalpha) / (lambda)
+
+combining these two equations gives:
+
+	sin(alpha + dtheta) / (lambda + dlambda) = sin(alpha + dalpha) / lambda
+
+	sin(alpha + dtheta) / (1 + dlambda/lambda) = sin(alpha + dalpha)
+
+	(sin(alpha)cos(dtheta) + cos(alpha)sin(dtheta)) / (1 + dlambda/lambda) = sin(alpha)cos(dalpha) + cos(alpha)sin(dalpha)
+
+assuming dalpha and dtheta are small:
+
+	(sin(alpha) + cos(alpha)dtheta) / (1 + dlambda/lambda) = sin(alpha) + cos(alpha)dalpha
+
+	dalpha = (sin(alpha) + cos(alpha)dtheta - sin(alpha) - sin(alpha)*dlambda/lambda) / (1 + dlambda/lambda)
+		   = (cos(alpha)dtheta - sin(alpha)*dlambda/lambda) / (1 + dlambda/lambda)
+
+substituting dtheta = tan(theta) dlambda/lambda gives:
+
+	dalpha = (cos(alpha) tan(theta) dlambda/lambda - sin(alpha)*dlambda/lambda) / (1 + dlambda/lambda)
+		   = dlambda/lambda (cos(alpha) tan(theta) - sin(alpha)) / (1 + dlambda/lambda)
+
+assuming dlambda/lambda is small compared to 1:
+
+	dalpha = dlambda/lambda (cos(alpha)tan(theta) - sin(alpha))
+
+In order to calculate apparent angular resolution, we need to know tan(theta).
+Theta is determined by the monochromator.
+
+
+
+
+For example, for Ge(111) monochromator with lattice constant[1] d = 0.564613 nm,
+theta can be calculated from Bragg's law:
+
+	2*d*sin(theta)/sqrt(1^2 + 1^2 + 1^2) = lambda
+
+	sin(theta) = lambda/d * sqrt(3)/2
+			   = 0.154056 nm / 0.564613 nm * sqrt(3)/2
+			   = 0.23630
+		 theta = 0.23855 = 13.7°
+
+for alpha = 0°, the apparent angular resolution is:
+
+	dalpha = dlambda/lambda * tan(theta)
+           = dlambda/lambda * 0.24318
+           = dlambda/lambda * 13.9°
+
+for alpha = 3°, the apparent resolution is:
+
+	dalpha = dlambda/lambda * (cos(alpha) tan(theta) - sin(alpha))
+           = dlambda/lambda * 0.19051
+           = dlambda/lambda * 10.9°
+
+The apparent angular resolution is nearly constant for small angles.
+
+The average angular resolution between alpha = 0° and alpha = 3° is:
+	dalpha = dlambda/lambda * 12.4°
+
+
+
+
+
+
+For Cu K_alpha1 radiation, dlambda = 0.44e-4 nm [2]
+and lambda = 0.154056 nm.
+
+dalpha = 0.44e-4 nm / 0.154056 nm * 12.4°
+dalpha = 0.00354° =~ 0.004°
+
+This is the FWHM value of a Lorentzian distribution. This program uses a
+Gaussian instead, which is a good approximation.
+
+
+If K_alpha2 is not filtered out, the difference of wavelengths of K_alpha2 and
+K_alpha1 is
+
+	dlambda = 0.1544410 nm - 0.1540596 nm = 0.3814e-3 nm
+
+and the corresponding apparent angular difference:
+
+	dalpha = 0.3814e-3 nm / 0.154056 nm * 12.4° = 0.0307° =~ 0.031°
+
+In this case, a Gaussian is not a good approximation, since there are two
+spectral lines.
+
+
+
+
+
+[1] http://www.siliconfareast.com/lattice_constants.htm
+[2] http://journals.iucr.org/j/issues/1992/02/00/hw0001/hw0001.pdf
