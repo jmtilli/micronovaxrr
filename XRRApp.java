@@ -13,17 +13,6 @@ import org.jfree.chart.plot.*;
 
 
 /*
- * TODO:
- *
- * check email addresses in web site, about dialog and documentation
- * add list of new features to web site
- *
- */
-
-
-
-
-/*
  * Changelog:
  * 20140308
  * - add Indium and Germanium support
