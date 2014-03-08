@@ -36,7 +36,7 @@ import java.util.*;
  *
  */
 
-public class LayerStack implements LayerListener, ListModel, ValueListener {
+public class LayerStack implements LayerListener, ListModel<Layer>, ValueListener {
     private ArrayList<Layer> layers;
     private Set<ListDataListener> listeners;
     private final Set<LayerModelListener> modelListeners = new HashSet<LayerModelListener>();

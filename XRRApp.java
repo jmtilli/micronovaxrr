@@ -236,7 +236,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
     private static final double Cu_K_alpha = 1.5405600e-10; /* This is the default wavelength */
     private Image green, yellow;
     private LayerStack layers;
-    private JList layeredList;
+    private JList<Layer> layeredList;
     private double dbMin = -70, dbMax = 0;
 
     private enum PlotStyle {LIN, LOG, ALPHA4, SQRT};
@@ -715,7 +715,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         //JTabbedPane sliderPane = new JTabbedPane();
         JPanel sliderPanel = new JPanel();
         layers = new LayerStack(Cu_K_alpha, table);
-        layeredList = new JList(layers);
+        layeredList = new JList<Layer>(layers);
         final XRRApp thisFrame = this;
 
         //layers.addListDataListener(new ScrollbarUpdater(layers, sliderPane));
@@ -1072,7 +1072,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
         GridBagConstraints c = new GridBagConstraints();
         JPanel fitSouth = new JPanel();
-        JList fitList = new JList(fitLayers);
+        JList<Layer> fitList = new JList<Layer>(fitLayers);
         JScrollPane fitListPane = new JScrollPane(fitList);
         fitListPane.setPreferredSize(new Dimension(400,150));
 
@@ -1104,8 +1104,8 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         final SpinnerNumberModel firstAngleModel = new SpinnerNumberModel(0.2,0,10,0.01);
         final SpinnerNumberModel lastAngleModel = new SpinnerNumberModel(2.25,0,10,0.01);
         final SpinnerNumberModel thresholdModel = new SpinnerNumberModel(-30,-500,500,0.1);
-        final JComboBox algoBox = new JComboBox(Algorithm.values());
-        final JComboBox funcBox = new JComboBox(FitnessFunction.values());
+        final JComboBox<Algorithm> algoBox = new JComboBox<Algorithm>(Algorithm.values());
+        final JComboBox<FitnessFunction> funcBox = new JComboBox<FitnessFunction>(FitnessFunction.values());
         /*
         final JCheckBox nonlinBox = new JCheckBox("Nonlinear fitness space estimation");
         nonlinBox.setSelected(true);
