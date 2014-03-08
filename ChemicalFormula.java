@@ -27,6 +27,42 @@ public class ChemicalFormula {
         return s;
     }
 
+    private static boolean utilEquals(Object o1, Object o2)
+    {
+      if (o1 == null)
+      {
+        return o2 == null;
+      }
+      if (o2 == null)
+      {
+        return false;
+      }
+      return o1.equals(o2);
+    }
+
+    public boolean equals(Object o)
+    {
+      ChemicalFormula that;
+      if (o == this)
+      {
+        return true;
+      }
+      if (o == null)
+      {
+        return false;
+      }
+      if (!(o instanceof ChemicalFormula))
+      {
+        return false;
+      }
+      that = (ChemicalFormula)o;
+      if (!utilEquals(this.s, that.s))
+      {
+        return false;
+      }
+      return true;
+    }
+
 
     /** Chemical formula parsing.
      *

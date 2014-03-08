@@ -52,6 +52,42 @@ public class Layer implements ValueListener {
 
     private final Set<LayerListener> listeners = new HashSet<LayerListener>();
 
+    private static boolean utilEquals(Object o1, Object o2)
+    {
+      if (o1 == null)
+      {
+        return o2 == null;
+      }
+      if (o2 == null)
+      {
+        return false;
+      }
+      return o1.equals(o2);
+    }
+    /**
+       Deep equality comparison for layers.
+
+       This method here does deep equality comparison, ie. it compares the
+       contents of the objects.
+     */
+    public static boolean layerDeepEquals(Layer l1, Layer l2)
+    {
+      if (   !utilEquals(l1.name, l2.name)
+          || !utilEquals(l1.d, l2.d)
+          || !utilEquals(l1.rho, l2.rho)
+          || !utilEquals(l1.r, l2.r)
+          || (l1.f != l2.f)
+          || (l1.lambda != l2.lambda)
+          || (l1.table != l2.table)
+          || !utilEquals(l1.compound1, l2.compound1)
+          || !utilEquals(l1.compound2, l2.compound2))
+      {
+        return false;
+      }
+      return true;
+
+    }
+
     /** Returns the layer name */
     public String getName() { return this.name; };
     /** Returns thickness */

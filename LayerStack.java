@@ -50,6 +50,50 @@ public class LayerStack implements LayerListener, ListModel, ValueListener {
 
     private LookupTable table;
 
+    public boolean equals(Object o)
+    {
+      LayerStack that;
+      if (this == o)
+      {
+        return true;
+      }
+      if (o == null || !(o instanceof LayerStack))
+      {
+        return false;
+      }
+      that = (LayerStack)o;
+      // compare wavelengths and table references
+      if (   this.lambda != that.lambda
+          || this.table != that.table)
+      {
+        return false;
+      }
+
+      // compare fit values
+      if (   !this.stddev.equals(that.stddev)
+          || !this.prod.equals(that.prod)
+          || !this.sum.equals(that.sum))
+      {
+        return false;
+      }
+
+      // compare layers: size, numbering, contents
+      if (this.layers.size() != that.layers.size())
+      {
+        return false;
+      }
+      for (int i = 0; i < this.layers.size(); i++)
+      {
+        Layer this_layer = this.layers.get(i);
+        Layer that_layer = that.layers.get(i);
+        if (!Layer.layerDeepEquals(this_layer, that_layer))
+        {
+          return false;
+        }
+      }
+      return true;
+    }
+
     /** Constructor.
      *
      * <p>
