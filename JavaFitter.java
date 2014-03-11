@@ -70,17 +70,11 @@ public class JavaFitter implements FitterInterface {
      * @param lastAngle Option for the fitting code: the maximum angle to include in fitting
      * @param algo Option for the fitting code: the algorithm to use
      *
-     * @throws OctException If an Octave error has occurred during the preparation for the fitting
-     *
      */
 
     public JavaFitter(JPlotArea light, GraphData data, LayerTask endTask, LayerTask plotTask, Runnable errTask, LayerStack stack, int popsize, int iterations, double firstAngle, double lastAngle, Image green, Image yellow,
-            Algorithm algo, FitnessFunction func, double dBthreshold, int       pNorm) throws OctException {
+            Algorithm algo, FitnessFunction func, double dBthreshold, int pNorm) {
         FittingErrorFunc func2;
-        if (!algo.isJava)
-        {
-            throw new IllegalArgumentException();
-        }
         stack = stack.deepCopy();
         data = data.normalize(stack).convertToLinear();
         data = data.crop(firstAngle, lastAngle);

@@ -14,4 +14,3 @@ cp deploy/LICENSE.txt deploy/README* deploy/resolution.txt deploy/*.jar deploy/a
 cp deploy/run.sh deploy/run.bat xrr-bin
 cp deploy/default.layers xrr-bin
 cp deploy/JMatLink.dll xrr-bin
-cp deploy/*.m xrr-bin

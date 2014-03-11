@@ -19,4 +19,3 @@ copy deploy\run.sh xrr-bin
 copy deploy\run.bat xrr-bin
 copy deploy\default.layers xrr-bin
 copy deploy\JMatLink.dll xrr-bin
-copy deploy\*.m xrr-bin

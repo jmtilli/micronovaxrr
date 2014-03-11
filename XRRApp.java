@@ -243,32 +243,6 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
 
 
-
-    /* There are two ways to load mfiles to Octave. The first is to embed them in
-     * the .jar file and list them here. The second is to have the files in the
-     * working directory (that is, the directory with the jar file and octave_path.txt).
-     * We use the second method.
-     */
-    private static final String[] mfiles = {};
-/*
-    private static final String[] mfiles = { "GS.m", "calculate_electron_density.m",
-        "hsdistr.m", "randommatrix.m", "LocalSearch.m",
-        "calculate_mass_density.m", "hsdistr_ordered.m",
-        "randomsearch.m", "RotateVectors.m", "computeHessian.m",
-        "index.m", "removeRepeatedPoints.m", "RouletteWheel.m",
-        "computeNabla.m", "limit2bound.m", "twoPXover.m", "SAmutate.m",
-        "crop.m", "lookuptable2.m", "uonerand.m",
-        "StochasticOrthogonalSelection.m", "cyclingTwoPXover.m",
-        "mdwXover.m", "urandomsearch.m", "XRRimport.m", "fir.m",
-        "mix.m", "weightedXover.m", "apply_odd_filter.m",
-        "fitnessfunction.m", "myrandperm.m", "wmix.m",
-        "gaussian_filter.m", "octave-cell2mat.m", "xrrCurve.m",
-        "calculate_beta_coeff.m", "halfXover.m", "onerand.m",
-        "xrrGA.m"};
-        */
-
-
-
     /* these must point always to the same object */
     private LayerPlotter pfit;
     private LayerPlotter p;
@@ -596,94 +570,6 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
 
 
-    /** Start an Octave instance.
-     *
-     * <p>
-     *
-     * We try to read a file named 'octave_path.txt'. If it is found, we try to
-     * start Octave using the command in that file.
-     */
-    public static Oct startOctave() throws OctException {
-        Oct oct;
-
-        String path = null;
-        try {
-            FileInputStream rawopf = new FileInputStream("octave_path.txt");
-            InputStreamReader rawopr = new InputStreamReader(rawopf);
-            BufferedReader octpathf = new BufferedReader(rawopr);
-            path = octpathf.readLine();
-            if(path == null)
-                throw new NullPointerException();
-        }
-        catch (IOException ex) {
-            //throw new OctException("Can't read octave_path.txt");
-            //return null;
-        }
-        catch (NullPointerException ex) {
-            //JOptionPane.showMessageDialog(null, "Can't read octave_path.txt", "Error", JOptionPane.ERROR_MESSAGE);
-            //throw new OctException("Can't read octave_path.txt");
-            //return null;
-        }
-
-        if(path == null) {
-            throw new OctException(
-                    "\n\nCan't start Octave.\n\n"+
-                    "Since a file named octave_path.txt didn't exist or was empty,\n"+
-                    "Octave cannot be strated. Please create the file\n"+
-                    "octave_path.txt with the command to start Octave\n");
-        } else {
-            try {
-                oct = new OctOctave(path);
-                for(String mfile: mfiles) {
-                    oct.source(oct.getClass().getClassLoader().getResourceAsStream(mfile));
-                    /*
-                    oct.sync();
-                    System.out.println(mfile);
-                    */
-                }
-                oct.sync();
-                /* Octave */
-            }
-            catch(OctException ex) {
-                throw new OctException(
-                        "\n\nCan't start Octave.\n\n"+
-                        "Since a file named octave_path.txt wasn't empty Octave is used.\n"+
-                        "Octave is started with the command in\n"+
-                        "octave_path.txt, which is currently:\n\n"+
-                        path+"\n\n"+
-                        "On Unix systems, the command should be generally 'octave -q'.\n"+
-                        "On Windows systems, Octave installation is more difficult.\n"+
-                        "Precise instructions to install Octave are in the file\n"+
-                        "README-1st.txt.\n"+
-                        "The error message was:\n\n"+
-                        ex.getMessage());
-            }
-        }
-
-
-        try {
-            if(oct == null) {
-                    oct = new OctOctave(path);
-
-                    for(String mfile: mfiles) {
-                        oct.source(oct.getClass().getClassLoader().getResourceAsStream(mfile));
-                        /*
-                        oct.sync();
-                        System.out.println(mfile);
-                        */
-                    }
-            }
-
-            oct.sync();
-        }
-        catch (OctException ex) {
-            throw new OctException("Can't start Octave: "+ex.getMessage());
-        }
-
-        return oct;
-    }
-
-
 
     private boolean construct() {
         /* Load atomic masses and scattering factors */
@@ -737,25 +623,12 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     return;
                 alreadyRun = true;
                 JOptionPane.showMessageDialog(null,
-                    "There was an error with Octave.\nPlease save your layer model and restart the program.\n\n"+
-                    "The log of executed commands is saved to octcmds.txt.",
-                    "Octave error", JOptionPane.ERROR_MESSAGE);
+                    "There was an error with fitting.\nPlease save your layer model and restart the program.",
+                    "Fitting error", JOptionPane.ERROR_MESSAGE);
             }
         };
 
 
-
-        /* ------- octave ----------- */
-
-        Oct octtemp;
-        try {
-                octtemp = startOctave();
-        }
-        catch(OctException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage(), "Octave error", JOptionPane.ERROR_MESSAGE);
-                return false;
-        }
-        final Oct oct = octtemp;
 
 
         /* Empty measurement */
@@ -1142,20 +1015,10 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         }
                     };
                     Algorithm algo = (Algorithm)algoBox.getSelectedItem();
-                    if (algo.isJava)
-                    {
-                        f = new JavaFitter(fitLight, data, endTask, plotTask, errTask2, fitLayers,
-                                           (Integer)popSizeModel.getNumber(), (Integer)iterationsModel.getNumber(),
-                                           (Double)firstAngleModel.getNumber(), (Double)lastAngleModel.getNumber(),
-                                           green, yellow, (Algorithm)algoBox.getSelectedItem(), (FitnessFunction)funcBox.getSelectedItem(), (Double)thresholdModel.getNumber(), (Integer)pModel.getNumber());//, nonlinBox.isSelected());
-                    }
-                    else
-                    {
-                        f = new Fitter(fitLight, oct, data, endTask, plotTask, errTask2, fitLayers,
+                    f = new JavaFitter(fitLight, data, endTask, plotTask, errTask2, fitLayers,
                                        (Integer)popSizeModel.getNumber(), (Integer)iterationsModel.getNumber(),
                                        (Double)firstAngleModel.getNumber(), (Double)lastAngleModel.getNumber(),
                                        green, yellow, (Algorithm)algoBox.getSelectedItem(), (FitnessFunction)funcBox.getSelectedItem(), (Double)thresholdModel.getNumber(), (Integer)pModel.getNumber());//, nonlinBox.isSelected());
-                    }
                     startFitButton.setEnabled(false);
                     stopFitButton.setEnabled(true);
                     stopFitButton.addActionListener(new ActionListener() {
@@ -1171,7 +1034,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     fileLoadEmpty.setEnabled(false); /* */
                     fileSwap.setEnabled(false);
                 }
-                catch(OctException ex) {
+                catch(Exception ex) {
                     errTask.run();
                 }
             }
@@ -1275,14 +1138,8 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             public void actionPerformed(ActionEvent e) {
                 p.close();
                 pfit.close();
-                try {
-                    if(f != null)
-                        f.close();
-                    synchronized(oct) {
-                        oct.exit();
-                    }
-                }
-                catch(InterruptedException ex) {}
+                if(f != null)
+                    f.close();
                 thisFrame.dispose();
             }
         };

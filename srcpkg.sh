@@ -11,5 +11,5 @@ cp deploy/examples/* xrr-src/deploy/examples
 cp deploy/LICENSE.txt deploy/README* deploy/resolution.txt deploy/jfreechart-1.0.1.jar deploy/uncommons-maths-1.2.3.jar deploy/Jama-1.0.3.jar deploy/javafastcomplex.jar deploy/atomic_masses.txt xrr-src/deploy
 cp deploy/run.sh deploy/run.bat xrr-src/deploy
 cp deploy/default.layers xrr-src/deploy
-cp *.java *.m *.png *.sh *.bat manifest.txt UPDATING_OCTAVE_CODE.txt xrr-src
+cp *.java *.png *.sh *.bat manifest.txt xrr-src
 cp librarysrc/* xrr-src/librarysrc

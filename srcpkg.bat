@@ -21,9 +21,7 @@ copy deploy\run.sh xrr-src\deploy
 copy deploy\run.bat xrr-src\deploy
 copy deploy\default.layers xrr-src\deploy
 copy *.java xrr-src
-copy *.m xrr-src
 copy *.png xrr-src
 copy *.sh xrr-src
 copy *.bat xrr-src
 copy manifest.txt xrr-src
-copy UPDATING_OCTAVE_CODE.txt xrr-src
