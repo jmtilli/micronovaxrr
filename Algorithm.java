@@ -3,19 +3,22 @@
  * All the supported algorithms and their Octave and human-readable names.
  */
 public enum Algorithm {
-    DE("DE","DE"),
-    CovDE("CovDE","CovDE"),
-    LinDE("LinDE","LinDE");
+    JavaDE("JavaDE","JavaDE",true),
+    JavaCovDE("JavaCovDE","JavaCovDE",true),
+    DE("DE","DE",false),
+    CovDE("CovDE","CovDE",false),
+    LinDE("LinDE","LinDE",false);
 
     /** Octave name */
     public final String octName;
+    public final boolean isJava;
     private final String name;
-    Algorithm(String octName, String name) {
+    Algorithm(String octName, String name, boolean isJava) {
         this.octName = octName;
         this.name = name;
+        this.isJava = isJava;
     }
     public String toString() {
         return name;
     }
 };
-

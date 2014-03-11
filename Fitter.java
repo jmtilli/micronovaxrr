@@ -19,7 +19,7 @@ import org.jfree.chart.plot.*;
  * that are invoked in the event thread.
  */
 
-public class Fitter {
+public class Fitter implements FitterInterface {
     private Thread t;
     private Oct oct;
     private JPlotArea light;
