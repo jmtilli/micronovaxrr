@@ -19,7 +19,7 @@ public class XRRFittingCtx {
       {
         LayerStack s2 = s.deepCopy();
         s2.setFitValues(p);
-        GraphData gd2 = gd.simulate(s2);
+        GraphData gd2 = gd.simulate(s2).normalize(s2);
         return func.getError(gd2.meas, gd2.simul);
       }
     };
