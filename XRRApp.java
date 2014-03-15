@@ -514,9 +514,10 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         // Hann window
         if (opts.useWindow)
         {
-            for(int i=0; i<ndata; i++)
+            int nactivedata = t_high - t_low;
+            for(int i=t_low; i<t_high; i++)
             {
-                R[i] *= (0.5*(1-Math.cos(2*Math.PI*i/(ndata-1))));
+                R[i] *= (0.5*(1-Math.cos(2*Math.PI*(i-t_low)/(nactivedata-1))));
             }
         }
 

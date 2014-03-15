@@ -113,8 +113,10 @@ public class JavaFitter implements FitterInterface {
           default:
             throw new IllegalArgumentException();
         }
-        this.ctx = new XRRFittingCtx(stack, data, algo == Algorithm.JavaCovDE, popsize,
-                                     func2, exec);
+        this.ctx = new XRRFittingCtx(stack, data,
+                                     algo == Algorithm.JavaCovDE,
+                                     algo != Algorithm.JavaEitherOrDE,
+                                     popsize, func2, exec);
         t.start();
     }
 

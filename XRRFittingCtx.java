@@ -7,7 +7,8 @@ public class XRRFittingCtx {
   private ExecutorService exec;
   private DECtx.CostFunc cost_func;
   private DECtx de_ctx;
-  public XRRFittingCtx(LayerStack new_s, GraphData new_gd, boolean cov_on,
+  public XRRFittingCtx(LayerStack new_s, GraphData new_gd,
+                       boolean cov_on, boolean traditional_recombination_on,
                        int npop, FittingErrorFunc new_func,
                        ExecutorService exec)
   {
@@ -28,7 +29,7 @@ public class XRRFittingCtx {
         this.s.getFitValuesForFitting(FitValue.FitValueType.MIN),
         this.s.getFitValuesForFitting(FitValue.FitValueType.MAX),
         this.s.getFitValuesForFitting(FitValue.FitValueType.EXPECTED),
-        cov_on, npop, exec);
+        cov_on, traditional_recombination_on, npop, exec);
   }
   public void iteration()
   {
@@ -98,7 +99,7 @@ public class XRRFittingCtx {
             new ThreadPoolExecutor(cpus, cpus,
                                    1, TimeUnit.SECONDS,
                                    new LinkedBlockingDeque<Runnable>());
-    XRRFittingCtx init = new XRRFittingCtx(layers, gd, true, 40,
+    XRRFittingCtx init = new XRRFittingCtx(layers, gd, true, true, 40,
                                            new LogFittingErrorFunc(2),
                                            exec);
     for (int i = 0; i < 100; i++)

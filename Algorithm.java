@@ -4,7 +4,8 @@
  */
 public enum Algorithm {
     JavaDE("JavaDE"),
-    JavaCovDE("JavaCovDE");
+    JavaCovDE("JavaCovDE"),
+    JavaEitherOrDE("JavaEitherOrDE");
 
     private final String name;
     Algorithm(String name) {
