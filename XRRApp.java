@@ -740,6 +740,25 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         });
         layerButtonPanel.add(btn);
 
+        b = new JButton("Copy");
+        b.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                int[] i2 = layeredList.getSelectedIndices();
+                for(int i: i2) {
+                    Layer l = layers.getElementAt(i).deepCopy();
+                    try {
+                        layers.add(l,layers.getSize());
+                    }
+                    catch (Exception ex)
+                    {
+                        // XXX does this happen at all?
+                        JOptionPane.showMessageDialog(null, "Element not found", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+        layerButtonPanel.add(b);
+
         btn = new JButton("Optics...");
         btn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
