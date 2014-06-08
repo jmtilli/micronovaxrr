@@ -36,9 +36,9 @@ import java.util.*;
  *
  */
 
-public class LayerStack implements LayerListener, ListModel<Layer>, ValueListener {
+public class LayerStack implements LayerListener, ValueListener {
     private ArrayList<Layer> layers;
-    private Set<ListDataListener> listeners;
+    private final Set<ListDataListener> listListeners = new HashSet<ListDataListener>();
     private final Set<LayerModelListener> modelListeners = new HashSet<LayerModelListener>();
     private double lambda;
 
@@ -120,17 +120,85 @@ public class LayerStack implements LayerListener, ListModel<Layer>, ValueListene
       {
         return false;
       }
+      Map<FitValue,Integer> this_numbering = this.getFitValueNumbering();
+      Map<FitValue,Integer> that_numbering = that.getFitValueNumbering();
       for (int i = 0; i < this.layers.size(); i++)
       {
         Layer this_layer = this.layers.get(i);
         Layer that_layer = that.layers.get(i);
-        if (!Layer.layerDeepEquals(this_layer, that_layer))
+        if (!Layer.layerDeepEquals(this_layer, this_numbering,
+                                   that_layer, that_numbering))
         {
           return false;
         }
       }
       return true;
     }
+
+    /**
+       Return link numbers for FitValues that are linked.
+
+       @return Link numbers for FitValues that are linked.
+     */
+    private Map<FitValue,Integer> getFitValueNumbering() {
+        Map<FitValue,Integer> counts = new HashMap<FitValue,Integer>();
+        Map<FitValue,Integer> links = new HashMap<FitValue,Integer>();
+        int id = 0;
+        for (Layer l: layers)
+        {
+            FitValue[] vals = {l.getThickness(), l.getDensity(),
+                               l.getRoughness()};
+            for (FitValue val: vals)
+            {
+                if (counts.containsKey(val))
+                {
+                    counts.put(val, counts.get(val)+1);
+                }
+                else
+                {
+                    counts.put(val, 1);
+                }
+            }
+        }
+        for (Layer l: layers)
+        {
+            FitValue[] vals = {l.getThickness(), l.getDensity(),
+                               l.getRoughness()};
+            for (FitValue val: vals)
+            {
+                if (counts.get(val) > 1 && !links.containsKey(val))
+                {
+                    links.put(val, ++id);
+                }
+            }
+        }
+        return links;
+    }
+
+    public final ListModel<String> listModel = new ListModel<String>() {
+        public void addListDataListener(ListDataListener l) {
+            listListeners.add(l);
+        }
+        public void removeListDataListener(ListDataListener l) {
+            listListeners.remove(l);
+        }
+        public int getSize() {
+            return layers.size();
+        }
+
+
+        /* XXX: this is slow! Replace with a better (caching) algorithm if necessary */
+        /* map from layers to integers in order to make references to
+         * same layer distinguishable from identical different layers.
+         *
+         * The caching could be implemented in getFitValueNumbering.
+         * */
+        public String getElementAt(int i) {
+            Map<FitValue,Integer> fitValueNumbering = getFitValueNumbering();
+            Layer l = layers.get(i);
+            return l.toString(fitValueNumbering);
+        }
+    };
 
     /** Constructor.
      *
@@ -144,7 +212,6 @@ public class LayerStack implements LayerListener, ListModel<Layer>, ValueListene
      */
     public LayerStack(double lambda, LookupTable table) {
         this.layers = new ArrayList<Layer>();
-        this.listeners = new HashSet<ListDataListener>();
         this.lambda = lambda;
         this.table = table;
         this.stddev = new FitValue(0,0,0.01*Math.PI/180,false,false);
@@ -181,7 +248,7 @@ public class LayerStack implements LayerListener, ListModel<Layer>, ValueListene
             }
             listener.simulationChanged(ev);
         }
-        for(ListDataListener listener: listeners) {
+        for(ListDataListener listener: listListeners) {
             switch(ev.getType()) {
                 case ListDataEvent.CONTENTS_CHANGED:
                     listener.contentsChanged(ev);
@@ -201,7 +268,7 @@ public class LayerStack implements LayerListener, ListModel<Layer>, ValueListene
         for(int i=0; i<layers.size(); i++) {
             if(layers.get(i) == ev.layer) {
                 ListDataEvent lev = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, i, i);
-                for(ListDataListener listener: listeners)
+                for(ListDataListener listener: listListeners)
                     listener.contentsChanged(lev);
             }
         }
@@ -280,9 +347,12 @@ public class LayerStack implements LayerListener, ListModel<Layer>, ValueListene
      */
     public LayerStack deepCopy() {
         LayerStack result = new LayerStack(this.lambda, this.table);
+        Map<FitValue, Integer> fitValueNumbering = getFitValueNumbering();
+        Map<Integer, FitValue> newFitValues = new HashMap<Integer, FitValue>();
         int size = layers.size();
         for(int i=0; i<size; i++)
-            result.layers.add(layers.get(i).deepCopy());
+            result.layers.add(layers.get(i).deepCopy(fitValueNumbering,
+                                                     newFitValues));
         result.stddev.deepCopyFrom(this.stddev.deepCopy());
         result.prod.deepCopyFrom(this.prod.deepCopy());
         result.sum.deepCopyFrom(this.sum.deepCopy());
@@ -303,9 +373,11 @@ public class LayerStack implements LayerListener, ListModel<Layer>, ValueListene
      * @return the structure representation of this layer without lookup table or wavelength information
      */
     public Object structExport(Object additional_data) {
+        Map<FitValue, Integer> fitValueNumbering = getFitValueNumbering();
+        Set<FitValue> alreadyAdded = new HashSet<FitValue>();
         ArrayList<Object> layerStructs = new ArrayList<Object>();
         for(Layer l: layers)
-            layerStructs.add(l.structExport());
+            layerStructs.add(l.structExport(fitValueNumbering, alreadyAdded));
         Map<String,Object> m = new HashMap<String,Object>();
         m.put("layers",layerStructs);
         m.put("lambda",lambda);
@@ -342,6 +414,7 @@ public class LayerStack implements LayerListener, ListModel<Layer>, ValueListene
         ArrayList<?> layersL;
         final double Cu_K_alpha = 1.5405600e-10;
         double lambda = Cu_K_alpha;
+        Map<Integer, FitValue> fitValueById = new HashMap<Integer, FitValue>();
 
         if(!(o instanceof Map))
             throw new InvalidStructException();
@@ -408,7 +481,7 @@ public class LayerStack implements LayerListener, ListModel<Layer>, ValueListene
             throw new InvalidStructException();
         layersL = (ArrayList<?>)layersO;
         for(Object o2: layersL) {
-            temp.layers.add(Layer.structImport(o2, table, lambda));
+            temp.layers.add(Layer.structImport(o2, fitValueById, table, lambda));
         }
         return temp;
     }
@@ -433,14 +506,6 @@ public class LayerStack implements LayerListener, ListModel<Layer>, ValueListene
         this.table = temp.table;
         if(getSize() > 0)
             signalStackChange(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, 0, getSize()-1));
-    }
-    /** Adds a listener. */
-    public void addListDataListener(ListDataListener l) {
-        this.listeners.add(l);
-    }
-    /** Removes a listener. */
-    public void removeListDataListener(ListDataListener l) {
-        this.listeners.remove(l);
     }
 
     /** Adds a layer.

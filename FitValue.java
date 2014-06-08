@@ -145,7 +145,7 @@ public class FitValue {
 
     /** Make a fencodeable data structure of this object
      */
-    public Object structExport() {
+    public Map<String,Object> structExport() {
         Map<String,Object> m = new HashMap<String,Object>();
         m.put("min",min);
         m.put("expected",expected);

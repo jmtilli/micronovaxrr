@@ -236,7 +236,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
     private static final double Cu_K_alpha = 1.5405600e-10; /* This is the default wavelength */
     private Image green, yellow;
     private LayerStack layers;
-    private JList<Layer> layeredList;
+    private JList<String> layeredList;
     private double dbMin = -70, dbMax = 0;
 
     private enum PlotStyle {LIN, LOG, ALPHA4, SQRT};
@@ -602,11 +602,11 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         //JTabbedPane sliderPane = new JTabbedPane();
         JPanel sliderPanel = new JPanel();
         layers = new LayerStack(Cu_K_alpha, table);
-        layeredList = new JList<Layer>(layers);
+        layeredList = new JList<String>(layers.listModel);
         final XRRApp thisFrame = this;
 
-        //layers.addListDataListener(new ScrollbarUpdater(layers, sliderPane));
-        layers.addListDataListener(new ScrollbarUpdater(layers, sliderPanel));
+        //layers.listModel.addListDataListener(new ScrollbarUpdater(layers, sliderPane));
+        layers.listModel.addListDataListener(new ScrollbarUpdater(layers, sliderPanel));
 
         layered = new JPanel();
         graph = new JPanel();
@@ -745,7 +745,9 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             public void actionPerformed(ActionEvent e) {
                 int[] i2 = layeredList.getSelectedIndices();
                 for(int i: i2) {
-                    Layer l = layers.getElementAt(i).deepCopy();
+                    Layer l = layers.getElementAt(i).deepCopy(
+                        new HashMap<FitValue, Integer>(),
+                        new HashMap<Integer, FitValue>());
                     try {
                         layers.add(l,layers.getSize());
                     }
@@ -753,6 +755,110 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     {
                         // XXX does this happen at all?
                         JOptionPane.showMessageDialog(null, "Element not found", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+        layerButtonPanel.add(b);
+
+
+        b = new JButton("Link params...");
+        b.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                int[] i2 = layeredList.getSelectedIndices();
+                if (i2.length < 2)
+                {
+                    JOptionPane.showMessageDialog(
+                      null,
+                      "Select more than two layers by holding the CTRL\n" +
+                      "button down while clicking the layers on the list\n" +
+                      "to use the parameter linking feature",
+                      "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                LinkDialog d = new LinkDialog(thisFrame, "Unlink parameters");
+                d.call();
+                if (!d.ok())
+                {
+                    return;
+                }
+                layeredList.clearSelection();
+                Layer firstLayer = layers.getElementAt(i2[0]);
+                for(int i: i2) {
+                    Layer oldLayer = layers.getElementAt(i);
+                    Layer newLayer = oldLayer.deepCopy(
+                        new HashMap<FitValue, Integer>(),
+                        new HashMap<Integer, FitValue>());
+                    layers.remove(i);
+                    if (d.d())
+                    {
+                        newLayer.setThicknessObject(firstLayer.getThickness());
+                    }
+                    else
+                    {
+                        newLayer.setThicknessObject(oldLayer.getThickness());
+                    }
+                    if (d.rho())
+                    {
+                        newLayer.setDensityObject(firstLayer.getDensity());
+                    }
+                    else
+                    {
+                        newLayer.setDensityObject(oldLayer.getDensity());
+                    }
+                    if (d.r())
+                    {
+                        newLayer.setRoughnessObject(firstLayer.getRoughness());
+                    }
+                    else
+                    {
+                        newLayer.setRoughnessObject(oldLayer.getRoughness());
+                    }
+                    try {
+                        layers.add(newLayer,i);
+                    }
+                    catch(ElementNotFound ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+        layerButtonPanel.add(b);
+
+        b = new JButton("Unlink params...");
+        b.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                int[] i2 = layeredList.getSelectedIndices();
+                LinkDialog d = new LinkDialog(thisFrame, "Unlink parameters");
+                d.call();
+                if (!d.ok())
+                {
+                    return;
+                }
+                layeredList.clearSelection();
+                for(int i: i2) {
+                    Layer oldLayer = layers.getElementAt(i);
+                    Layer newLayer = oldLayer.deepCopy(
+                        new HashMap<FitValue, Integer>(),
+                        new HashMap<Integer, FitValue>());
+                    if (!d.d())
+                    {
+                        newLayer.setThicknessObject(oldLayer.getThickness());
+                    }
+                    if (!d.rho())
+                    {
+                        newLayer.setDensityObject(oldLayer.getDensity());
+                    }
+                    if (!d.r())
+                    {
+                        newLayer.setRoughnessObject(oldLayer.getRoughness());
+                    }
+                    layers.remove(i);
+                    try {
+                        layers.add(newLayer,i);
+                    }
+                    catch(ElementNotFound ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -868,7 +974,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 }
             }
         });
-        layers.addListDataListener(new ListDataListener() {
+        layers.listModel.addListDataListener(new ListDataListener() {
             private void updateWl() {
                 editWlLabel.setText(String.format(Locale.US,"%.6f",layers.getLambda()*1e9)+" nm");
             }
@@ -965,7 +1071,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
         GridBagConstraints c = new GridBagConstraints();
         JPanel fitSouth = new JPanel();
-        JList<Layer> fitList = new JList<Layer>(fitLayers);
+        JList<String> fitList = new JList<String>(fitLayers.listModel);
         JScrollPane fitListPane = new JScrollPane(fitList);
         fitListPane.setPreferredSize(new Dimension(400,150));
 

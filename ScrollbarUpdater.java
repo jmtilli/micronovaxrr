@@ -93,7 +93,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
             /* thickness */
             final JSlider dSlider = new JSlider(0,1000);
-            FitValue d = l.getThickness();
+            final FitValue d = l.getThickness();
 
             final JLabel dValLabel = new JLabel("d (nm) = 0.00000000e-1",SwingConstants.LEFT);
             dValLabel.setPreferredSize(new Dimension(dValLabel.getPreferredSize().width,dValLabel.getPreferredSize().height));
@@ -117,6 +117,14 @@ public class ScrollbarUpdater implements ListDataListener {
                 }
             };
             dSlider.addChangeListener(dChangeListener);
+            d.addValueListener(new ValueListener() {
+              public void valueChanged(ValueEvent ev) {
+                lock = true;
+                dSlider.setValue((int)(1000*(d.getExpected()-d.getMin())/(d.getMax()-d.getMin()) + 0.5));
+                dValLabel.setText("d (nm) = " + String.format(Locale.US,"%.6g",d.getExpected()*1e9));
+                lock = false;
+              }
+            });
 
             final JLabel dMinLabel = new JLabel(/*"min = " + */String.format(Locale.US,"%.6g",d.getMin()*1e9));
             final JLabel dMaxLabel = new JLabel(/*"max = " + */String.format(Locale.US,"%.6g",d.getMax()*1e9));
@@ -208,7 +216,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
             /* roughness */
             final JSlider rSlider = new JSlider(0,1000);
-            FitValue r = l.getRoughness();
+            final FitValue r = l.getRoughness();
 
             final JLabel rValLabel = new JLabel("r (nm) = 0.00000000e-1",SwingConstants.LEFT);
             rValLabel.setPreferredSize(new Dimension(rValLabel.getPreferredSize().width,rValLabel.getPreferredSize().height));
@@ -232,6 +240,14 @@ public class ScrollbarUpdater implements ListDataListener {
                 }
             };
             rSlider.addChangeListener(rChangeListener);
+            r.addValueListener(new ValueListener() {
+              public void valueChanged(ValueEvent ev) {
+                lock = true;
+                rSlider.setValue((int)(1000*(r.getExpected()-r.getMin())/(r.getMax()-r.getMin()) + 0.5));
+                rValLabel.setText("r (nm) = " + String.format(Locale.US,"%.6g",r.getExpected()*1e9));
+                lock = false;
+              }
+            });
 
             final JLabel rMinLabel = new JLabel(/*"min = " + */String.format(Locale.US,"%.6g",r.getMin()*1e9));
             final JLabel rMaxLabel = new JLabel(/*"max = " + */String.format(Locale.US,"%.6g",r.getMax()*1e9));
@@ -320,7 +336,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
             /* density */
             final JSlider rhoSlider = new JSlider(0,1000);
-            FitValue rho = l.getDensity();
+            final FitValue rho = l.getDensity();
 
             final JLabel rhoValLabel = new JLabel("rho (g/cm^3) = 0.00000000e-1",SwingConstants.LEFT);
             rhoValLabel.setPreferredSize(new Dimension(rhoValLabel.getPreferredSize().width,rhoValLabel.getPreferredSize().height));
@@ -344,6 +360,14 @@ public class ScrollbarUpdater implements ListDataListener {
                 }
             };
             rhoSlider.addChangeListener(rhoChangeListener);
+            rho.addValueListener(new ValueListener() {
+              public void valueChanged(ValueEvent ev) {
+                lock = true;
+                rhoSlider.setValue((int)(1000*(rho.getExpected()-rho.getMin())/(rho.getMax()-rho.getMin()) + 0.5));
+                rhoValLabel.setText("rho (g/cm^3) = " + String.format(Locale.US,"%.6g",rho.getExpected()/1e3));
+                lock = false;
+              }
+            });
 
             final JLabel rhoMinLabel = new JLabel(/*"min = " + */String.format(Locale.US,"%.6g",rho.getMin()/1e3));
             final JLabel rhoMaxLabel = new JLabel(/*"max = " + */String.format(Locale.US,"%.6g",rho.getMax()/1e3));

@@ -70,8 +70,17 @@ public class Layer implements ValueListener {
        This method here does deep equality comparison, ie. it compares the
        contents of the objects.
      */
-    public static boolean layerDeepEquals(Layer l1, Layer l2)
+    public static boolean layerDeepEquals(Layer l1,
+                                          Map<FitValue,Integer> l1_numbering,
+                                          Layer l2,
+                                          Map<FitValue,Integer> l2_numbering)
     {
+      if (   l1_numbering.get(l1.d) != l2_numbering.get(l2.d)
+          || l1_numbering.get(l1.rho) != l2_numbering.get(l2.rho)
+          || l1_numbering.get(l1.r) != l2_numbering.get(l2.r))
+      {
+          return false;
+      }
       if (   !utilEquals(l1.name, l2.name)
           || !utilEquals(l1.d, l2.d)
           || !utilEquals(l1.rho, l2.rho)
@@ -118,6 +127,42 @@ public class Layer implements ValueListener {
         return result;
     }
 
+
+    private static FitValue getFitValue(Object o,
+                                        Map<Integer, FitValue> fitValueById)
+      throws InvalidStructException
+    {
+        Map<?,?> m;
+        if(!(o instanceof Map))
+            throw new InvalidStructException();
+        m = (Map<?,?>)o;
+        if (m.containsKey("fitvalrefid"))
+        {
+            Object o2;
+            o2 = m.get("fitvalrefid");
+            if(o2 == null || !(o2 instanceof Integer))
+                throw new InvalidStructException();
+            int fitvalrefid = (Integer)o2;
+            FitValue result = fitValueById.get(fitvalrefid);
+            if (result == null)
+            {
+                throw new NullPointerException();
+            }
+            return result;
+        }
+        FitValue result = FitValue.structImport(o);
+        if (m.containsKey("fitvalid"))
+        {
+            Object o2;
+            o2 = m.get("fitvalid");
+            if(o2 == null || !(o2 instanceof Integer))
+                throw new InvalidStructException();
+            int fitvalid = (Integer)o2;
+            fitValueById.put(fitvalid, result);
+        }
+        return result;
+    }
+
     /** Imports a layer from its fencodeable structure representation.
      * <p>
      * Lookup table can't be stored to the structure so we need to supply it as a parameter.
@@ -129,12 +174,13 @@ public class Layer implements ValueListener {
      * @return a new layer imported from the structure representation
      *
      * @param o the structure representation to import a Layer from
+     * @param fitValueById a mapping for FitValue by its id
      * @param table the lookup table
      * @param lambda the wavelength of the layer which is only stored to the structure representation of LayerStack
      * @throws InvalidStructException the structure does not represent a Layer
      * @throws ElementNotFound an element was not found in the lookup table for the given wavelength
      */
-    public static Layer structImport(Object o, LookupTable table, double lambda) throws InvalidStructException, ElementNotFound {
+    public static Layer structImport(Object o, Map<Integer, FitValue> fitValueById, LookupTable table, double lambda) throws InvalidStructException, ElementNotFound {
         Map<?,?> m;
         Object o2;
         Layer l = new Layer();
@@ -158,17 +204,17 @@ public class Layer implements ValueListener {
         o2 = m.get("d");
         if(o2 == null)
             throw new InvalidStructException("invalid thickness");
-        l.setThickness(FitValue.structImport(o2));
+        l.setThicknessObject(getFitValue(o2, fitValueById));
 
         o2 = m.get("r");
         if(o2 == null)
             throw new InvalidStructException("invalid roughness");
-        l.setRoughness(FitValue.structImport(o2));
+        l.setRoughnessObject(getFitValue(o2, fitValueById));
 
         o2 = m.get("rho");
         if(o2 == null)
             throw new InvalidStructException("invalid density");
-        l.setDensity(FitValue.structImport(o2));
+        l.setDensityObject(getFitValue(o2, fitValueById));
 
         try {
             o2 = m.get("compound1");
@@ -190,6 +236,31 @@ public class Layer implements ValueListener {
         return l;
     }
 
+    public Map<String, Object> setFitValue(
+        Map<FitValue, Integer> fitValueNumbering,
+        Set<FitValue> alreadyAdded,
+        FitValue val)
+    {
+        if (fitValueNumbering.containsKey(val))
+        {
+            Map<String,Object> structure = val.structExport();
+            if (alreadyAdded.contains(val))
+            {
+                structure.put("fitvalrefid", fitValueNumbering.get(val));
+            }
+            else
+            {
+                structure.put("fitvalid", fitValueNumbering.get(val));
+                alreadyAdded.add(val);
+            }
+            return structure;
+        }
+        else
+        {
+            return val.structExport();
+        }
+    }
+
     /** Exports a layer to its fencodeable structure representation.
      * <p>
      * Lookup table can't be stored to the structure.
@@ -200,12 +271,13 @@ public class Layer implements ValueListener {
      *
      * @return the structure representation of this layer without lookup table or wavelength information
      */
-    public Object structExport() {
+    public Object structExport(final Map<FitValue, Integer> fitValueNumbering,
+                               final Set<FitValue> alreadyAdded) {
         Map<String,Object> structure = new HashMap<String,Object>();
         structure.put("name",name);
-        structure.put("d",d.structExport());
-        structure.put("rho",rho.structExport());
-        structure.put("r",r.structExport());
+        structure.put("d",setFitValue(fitValueNumbering, alreadyAdded, d));
+        structure.put("rho",setFitValue(fitValueNumbering, alreadyAdded, rho));
+        structure.put("r",setFitValue(fitValueNumbering, alreadyAdded, r));
         structure.put("f",f);
         structure.put("compound1",compound1.toString());
         structure.put("compound2",compound2.toString());
@@ -224,20 +296,43 @@ public class Layer implements ValueListener {
             listener.layerPropertyChanged(ev);
     }
 
+    private static FitValue newFitValue(
+        Map<FitValue, Integer> fitValueNumbering,
+        Map<Integer, FitValue> newFitValues,
+        FitValue old)
+    {
+        if (fitValueNumbering.containsKey(old))
+        {
+            int i = fitValueNumbering.get(old);
+            if (newFitValues.containsKey(i))
+            {
+                return newFitValues.get(i);
+            }
+            FitValue val = old.deepCopy();
+            newFitValues.put(i, val);
+            return val;
+        }
+        else
+        {
+          return old.deepCopy();
+        }
+    }
+
     /** Makes a deep copy of this layer.
      *
      * @return A deep copy of this layer
      */
-    public Layer deepCopy() {
-        FitValue d2 = this.d.deepCopy();
-        FitValue rho2 = this.rho.deepCopy();
-        FitValue r2 = this.r.deepCopy();
+    public Layer deepCopy(Map<FitValue, Integer> fitValueNumbering,
+                          Map<Integer, FitValue> newFitValues) {
+        FitValue d2 = newFitValue(fitValueNumbering, newFitValues, d);
+        FitValue rho2 = newFitValue(fitValueNumbering, newFitValues, rho);
+        FitValue r2 = newFitValue(fitValueNumbering, newFitValues, r);
 
         Layer result = new Layer();
         result.name = this.name;
-        result.setThickness(d2);
-        result.setDensity(rho2);
-        result.setRoughness(r2);
+        result.setThicknessObject(d2);
+        result.setDensityObject(rho2);
+        result.setRoughnessObject(r2);
         result.f = this.f;
         result.compound1 = this.compound1;
         result.compound2 = this.compound2;
@@ -402,6 +497,18 @@ public class Layer implements ValueListener {
           this.d.deepCopyFrom(d);
         }
     };
+    /*
+       You may only call this for layers not owned by a layer stack
+     */
+    public void setThicknessObject(FitValue d)
+    {
+        if(d == null)
+            throw new NullPointerException();
+        if (this.d != null)
+            this.d.removeValueListener(this);
+        this.d = d;
+        this.d.addValueListener(this);
+    }
     /** Changes the FitValue object of mass density.
      *
      * <p>
@@ -422,6 +529,18 @@ public class Layer implements ValueListener {
           this.rho.deepCopyFrom(rho);
         }
     };
+    /*
+       You may only call this for layers not owned by a layer stack
+     */
+    public void setDensityObject(FitValue rho)
+    {
+        if(rho == null)
+            throw new NullPointerException();
+        if (this.rho != null)
+            this.rho.removeValueListener(this);
+        this.rho = rho;
+        this.rho.addValueListener(this);
+    }
     /** Changes the FitValue object of roughness.
      *
      * <p>
@@ -442,20 +561,55 @@ public class Layer implements ValueListener {
           this.r.deepCopyFrom(r);
         }
     };
+    /*
+       You may only call this for layers not owned by a layer stack
+     */
+    public void setRoughnessObject(FitValue r)
+    {
+        if(r == null)
+            throw new NullPointerException();
+        if (this.r != null)
+            this.r.removeValueListener(this);
+        this.r = r;
+        this.r.addValueListener(this);
+    }
+
 
     /** String representation.
-     *
-     * <p>
-     *
-     * The methods returns a string representation for the layer which is shown
-     * in layer stack lists.
-     *
+      
+       <p>
+      
+       The methods returns a string representation for the layer which is shown
+       in layer stack lists.
+      
+       @return String representation
+      
      */
     public String toString() {
+        return toString(new HashMap<FitValue, Integer>());
+    }
+    /** String representation.
+      
+       <p>
+      
+       The methods returns a string representation for the layer which is shown
+       in layer stack lists.
+      
+       @param fitValueNumbering Link numbers for linked FitValues
+       @return String representation
+     */
+    public String toString(Map<FitValue, Integer> fitValueNumbering) {
+        final Map<FitValue, Integer> n = fitValueNumbering;
         return this.name +
-	", d = " + String.format(Locale.US,"%.6g",this.d.getExpected()*1e9) + " nm " + (this.d.getEnabled() ? "(fit)" : "(no fit)") +
-	", rho = " + String.format(Locale.US,"%.6g",this.rho.getExpected()/1e3) + " g/cm^3 " + (this.rho.getEnabled() ? "(fit)" : "(no fit)") +
-	", r = " + String.format(Locale.US,"%.6g",this.r.getExpected()*1e9) + " nm " + (this.r.getEnabled() ? "(fit)" : "(no fit)");
+        ", d = " + String.format(Locale.US,"%.6g",this.d.getExpected()*1e9) + " nm " +
+          (n.containsKey(this.d) ? "[L" + n.get(this.d) + "] " : "") +
+          (this.d.getEnabled() ? "(fit)" : "(no fit)") +
+        ", rho = " + String.format(Locale.US,"%.6g",this.rho.getExpected()) + " g/cm^3 " +
+          (n.containsKey(this.rho) ? "[L" + n.get(this.rho) + "] " : "") +
+          (this.rho.getEnabled() ? "(fit)" : "(no fit)") +
+        ", r = " + String.format(Locale.US,"%.6g",this.r.getExpected()) + " nm " +
+          (n.containsKey(this.r) ? "[L" + n.get(this.r) + "] " : "") +
+          (this.r.getEnabled() ? "(fit)" : "(no fit)");
     }
 
 };
