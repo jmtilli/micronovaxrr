@@ -604,7 +604,7 @@ public class Layer implements ValueListener {
         ", d = " + String.format(Locale.US,"%.6g",this.d.getExpected()*1e9) + " nm " +
           (n.containsKey(this.d) ? "[L" + n.get(this.d) + "] " : "") +
           (this.d.getEnabled() ? "(fit)" : "(no fit)") +
-        ", rho = " + String.format(Locale.US,"%.6g",this.rho.getExpected()) + " g/cm^3 " +
+        ", rho = " + String.format(Locale.US,"%.6g",this.rho.getExpected()/1e3) + " g/cm^3 " +
           (n.containsKey(this.rho) ? "[L" + n.get(this.rho) + "] " : "") +
           (this.rho.getEnabled() ? "(fit)" : "(no fit)") +
         ", r = " + String.format(Locale.US,"%.6g",this.r.getExpected()*1e9) + " nm " +
