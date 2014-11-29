@@ -1008,10 +1008,13 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         wlPanel.add(new JLabel(" FWHM"));
         final JLabel fitConvLabel = new JLabel("");
         wlPanel.add(fitConvLabel);
-        wlPanel.add(new JLabel(" normalization"));
+        wlPanel.add(new JLabel(" norm"));
         final JLabel fitNormLabel = new JLabel("");
         wlPanel.add(fitNormLabel);
-        wlPanel.add(new JLabel(" sum term"));
+        wlPanel.add(new JLabel(" beam"));
+        final JLabel fitBeamLabel = new JLabel("");
+        wlPanel.add(fitBeamLabel);
+        wlPanel.add(new JLabel(" sum"));
         final JLabel fitSumLabel = new JLabel("");
         wlPanel.add(fitSumLabel);
 
@@ -1064,6 +1067,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 fitWlLabel.setText(String.format(Locale.US,"%.6f",fitLayers.getLambda()*1e9)+" nm");
                 fitConvLabel.setText(String.format(Locale.US,"%.6f",fitLayers.getStdDev().getExpected()*180/Math.PI*FWHM_SCALE)+" degrees");
                 fitNormLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getProd().getExpected())+" dB "+(fitLayers.getProd().getEnabled()?"(fit)":"(no fit)"));
+                fitBeamLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getBeam().getExpected())+" "+(fitLayers.getBeam().getEnabled()?"(fit)":"(no fit)"));
                 fitSumLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getSum().getExpected())+" dB " +(fitLayers.getSum().getEnabled()?"(fit)":"(no fit)"));
             }
         });
@@ -2085,7 +2089,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             return;
 
         double[] ds, delta1, beta1, delta, beta, alpha0rad, r, d;
-        double lambda, stddevrad;
+        double lambda, stddevrad, beam;
 
         ds = XRRSimul.depths2(opts.ndata, opts.min/1e9, opts.max/1e9);
         delta1 = XRRSimul.depthProfile(ds, layers, false, XRRSimul.XRRProperty.DELTA);
@@ -2106,10 +2110,11 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             alpha0rad[i] = data.alpha_0[i]*Math.PI/180;
         lambda = layers.getLambda();
         stddevrad = layers.getStdDev().getExpected();
+        beam = layers.getBeam().getExpected();
 
         double[] splitR, NCR;
         GraphData simulData;
-        splitR = XRRSimul.rawSimulate(alpha0rad, delta, beta, d, r, lambda, stddevrad);
+        splitR = XRRSimul.rawSimulate(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
 
         simulData = data.simulate(layers).normalize(layers);
         NCR = new double[simulData.simul.length];

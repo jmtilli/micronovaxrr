@@ -261,7 +261,7 @@ public class XRRSimul {
      *
      */
 
-    public static double[] rawSimulateComplex(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad) {
+    public static double[] rawSimulateComplex(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad, double beam) {
         Complex[] R;
         double[] R2;
         Complex[][] kz;
@@ -343,7 +343,11 @@ public class XRRSimul {
         }
         for(int i=0; i<R2.length; i++) {
             Complex Ri = R[i];
+            double F = beam*Math.sin(alpha0rad[i]);
+            if (F > 1.0)
+                F = 1.0;
             R2[i] = Ri.getReal()*Ri.getReal() + Ri.getImag()*Ri.getImag();
+            R2[i] *= F;
         }
 
         if(filter != null)
@@ -387,7 +391,7 @@ public class XRRSimul {
      *
      */
 
-    public static double[] rawSimulateComplexBuffer(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad) {
+    public static double[] rawSimulateComplexBuffer(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad, double beam) {
         ComplexBuffer[] R;
         double[] R2;
         ComplexBuffer[][] kz;
@@ -483,7 +487,11 @@ public class XRRSimul {
         for(int i=0; i<R2.length; i++) {
             ComplexBuffer Ri = R[i];
             double re = Ri.getReal(), im = Ri.getImag();
+            double F = beam*Math.sin(alpha0rad[i]);
+            if (F > 1.0)
+                F = 1.0;
             R2[i] = re*re + im*im;
+            R2[i] *= F;
         }
 
         if(filter != null)
@@ -529,7 +537,7 @@ public class XRRSimul {
      *
      */
 
-    public static double[] rawSimulate(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad) {
+    public static double[] rawSimulate(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad, double beam) {
         double[] R_real;
         double[] R_imag;
         double[] R2;
@@ -652,7 +660,11 @@ public class XRRSimul {
             }
         }
         for(int i=0; i<R2.length; i++) {
+            double F = beam*Math.sin(alpha0rad[i]);
+            if (F > 1.0)
+                F = 1.0;
             R2[i] = R_real[i]*R_real[i] + R_imag[i]*R_imag[i];
+            R2[i] *= F;
         }
 
 
@@ -679,6 +691,7 @@ public class XRRSimul {
         double[] r; // top interface roughness
         double lambda = layers.getLambda();
         double stddevrad = layers.getStdDev().getExpected();
+        double beam = layers.getBeam().getExpected();
 
         /* convert the layer stack to delta, beta, thickness and roughness arrays */
 
@@ -699,7 +712,7 @@ public class XRRSimul {
             beta[i+1] = delta[i+1] * compound.getBetaPerDelta();
         }
 
-        return rawSimulateComplex(alpha0rad, delta, beta, d, r, lambda, stddevrad);
+        return rawSimulateComplex(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
     }
     /** Call simulation with layers from a LayerStack.
      *
@@ -719,6 +732,7 @@ public class XRRSimul {
         double[] r; // top interface roughness
         double lambda = layers.getLambda();
         double stddevrad = layers.getStdDev().getExpected();
+        double beam = layers.getBeam().getExpected();
 
         /* convert the layer stack to delta, beta, thickness and roughness arrays */
 
@@ -739,7 +753,7 @@ public class XRRSimul {
             beta[i+1] = delta[i+1] * compound.getBetaPerDelta();
         }
 
-        return rawSimulateComplexBuffer(alpha0rad, delta, beta, d, r, lambda, stddevrad);
+        return rawSimulateComplexBuffer(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
     }
 
     /** Call simulation with layers from a LayerStack.
@@ -760,6 +774,7 @@ public class XRRSimul {
         double[] r; // top interface roughness
         double lambda = layers.getLambda();
         double stddevrad = layers.getStdDev().getExpected();
+        double beam = layers.getBeam().getExpected();
 
         /* convert the layer stack to delta, beta, thickness and roughness arrays */
 
@@ -780,6 +795,6 @@ public class XRRSimul {
             beta[i+1] = delta[i+1] * compound.getBetaPerDelta();
         }
 
-        return rawSimulate(alpha0rad, delta, beta, d, r, lambda, stddevrad);
+        return rawSimulate(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
     }
 }

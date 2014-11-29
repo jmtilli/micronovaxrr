@@ -47,44 +47,47 @@ public class LayerStack implements LayerListener, ValueListener {
     /* in decibels */
     private FitValue prod;
     private FitValue sum;
+    private FitValue beam;
 
     private LookupTable table;
 
 
     public double[] getFitValuesForFitting(FitValue.FitValueType type)
     {
-      double[] result = new double[2+3*layers.size()];
+      double[] result = new double[3+3*layers.size()];
       result[0] = prod.getValueForFitting(type);
       result[1] = sum.getValueForFitting(type);
+      result[2] = beam.getValueForFitting(type);
       for (int i = 0; i < layers.size(); i++)
       {
         Layer l = layers.get(i);
-        result[2+0*layers.size()+i] =
+        result[3+0*layers.size()+i] =
           l.getThickness().getValueForFitting(type);
-        result[2+1*layers.size()+i] =
+        result[3+1*layers.size()+i] =
           l.getDensity().getValueForFitting(type);
-        result[2+2*layers.size()+i] =
+        result[3+2*layers.size()+i] =
           l.getRoughness().getValueForFitting(type);
       }
       return result;
     }
     public void setFitValues(double[] values)
     {
-      if (values.length != 2+3*layers.size())
+      if (values.length != 3+3*layers.size())
       {
         throw new IllegalArgumentException();
       }
       this.prod.setExpected(values[0]);
       this.sum.setExpected(values[1]);
+      this.beam.setExpected(values[2]);
       /*
          If there are duplicate layers, the last value takes precedence.
        */
       for (int i = 0; i < layers.size(); i++)
       {
         Layer l = layers.get(i);
-        l.getThickness().setExpected(values[2+0*layers.size()+i]);
-        l.getDensity().setExpected(values[2+1*layers.size()+i]);
-        l.getRoughness().setExpected(values[2+2*layers.size()+i]);
+        l.getThickness().setExpected(values[3+0*layers.size()+i]);
+        l.getDensity().setExpected(values[3+1*layers.size()+i]);
+        l.getRoughness().setExpected(values[3+2*layers.size()+i]);
       }
     }
 
@@ -110,7 +113,8 @@ public class LayerStack implements LayerListener, ValueListener {
       // compare fit values
       if (   !this.stddev.equals(that.stddev)
           || !this.prod.equals(that.prod)
-          || !this.sum.equals(that.sum))
+          || !this.sum.equals(that.sum)
+          || !this.beam.equals(that.beam))
       {
         return false;
       }
@@ -216,8 +220,10 @@ public class LayerStack implements LayerListener, ValueListener {
         this.table = table;
         this.stddev = new FitValue(0,0,0.01*Math.PI/180,false,false);
         this.prod = new FitValue(-100,0,100,false);
+        this.beam = new FitValue(0,250,1000,false);
         this.sum = new FitValue(-200,-200,100,false);
         this.prod.addValueListener(this);
+        this.beam.addValueListener(this);
         this.sum.addValueListener(this);
         this.stddev.addValueListener(this);
     }
@@ -327,11 +333,17 @@ public class LayerStack implements LayerListener, ValueListener {
     public FitValue getProd() {
         return prod;
     }
+    public FitValue getBeam() {
+        return beam;
+    }
     public FitValue getSum() {
         return sum;
     }
     public void setProd(FitValue prod) {
         this.prod.deepCopyFrom(prod);
+    }
+    public void setBeam(FitValue beam) {
+        this.beam.deepCopyFrom(beam);
     }
     public void setSum(FitValue sum) {
         this.sum.deepCopyFrom(sum);
@@ -355,6 +367,7 @@ public class LayerStack implements LayerListener, ValueListener {
                                                      newFitValues));
         result.stddev.deepCopyFrom(this.stddev.deepCopy());
         result.prod.deepCopyFrom(this.prod.deepCopy());
+        result.beam.deepCopyFrom(this.beam.deepCopy());
         result.sum.deepCopyFrom(this.sum.deepCopy());
         return result;
     }
@@ -385,6 +398,7 @@ public class LayerStack implements LayerListener, ValueListener {
         m.put("measNormal",1);
         m.put("stddevObj", stddev.structExport());
         m.put("prod", prod.structExport());
+        m.put("beam", beam.structExport());
         m.put("sum", sum.structExport());
         m.put("measSum",0);
         if(additional_data != null)
@@ -447,6 +461,10 @@ public class LayerStack implements LayerListener, ValueListener {
         if (obj != null) {
             temp.prod.deepCopyFrom(FitValue.structImport(obj));
         }
+        obj = m.get("beam");
+        if (obj != null) {
+            temp.beam.deepCopyFrom(FitValue.structImport(obj));
+        }
         obj = m.get("sum");
         if (obj != null) {
             temp.sum.deepCopyFrom(FitValue.structImport(obj));
@@ -502,6 +520,7 @@ public class LayerStack implements LayerListener, ValueListener {
         this.lambda = temp.lambda;
         this.stddev.deepCopyFrom(temp.stddev);
         this.prod.deepCopyFrom(temp.prod);
+        this.beam.deepCopyFrom(temp.beam);
         this.sum.deepCopyFrom(temp.sum);
         this.table = temp.table;
         if(getSize() > 0)
