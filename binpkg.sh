@@ -13,4 +13,3 @@ cp deploy/examples/* xrr-bin/examples
 cp deploy/LICENSE.txt deploy/README* deploy/resolution.txt deploy/*.jar deploy/atomic_masses.txt xrr-bin
 cp deploy/run.sh deploy/run.bat xrr-bin
 cp deploy/default.layers xrr-bin
-cp deploy/JMatLink.dll xrr-bin
