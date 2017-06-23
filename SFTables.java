@@ -53,10 +53,10 @@ public class SFTables implements LookupTable {
                 massMap = Collections.unmodifiableMap(tempMap);
             }
             catch(NumberFormatException ex) {
-                throw new FileFormatException();
+                throw new FileFormatException(ex);
             }
             catch(NoSuchElementException ex) {
-                throw new FileFormatException();
+                throw new FileFormatException(ex);
             }
         }
     }
@@ -154,10 +154,10 @@ public class SFTables implements LookupTable {
 
         }
         catch(NumberFormatException ex) {
-            throw new FileFormatException();
+            throw new FileFormatException(ex);
         }
         catch(NoSuchElementException ex) {
-            throw new FileFormatException();
+            throw new FileFormatException(ex);
         }
     }
     /** Search for an element in the table

@@ -578,14 +578,24 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             table = new SFTables(new File("atomic_masses.txt"),new File("sf"));
         }
         catch(FileFormatException ex) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            ex.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
             JOptionPane.showMessageDialog(null,
-                "Can't load scattering factor files",
+                "Can't load scattering factor files\n" + stackTrace,
                 "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         catch(IOException ex) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            ex.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
             JOptionPane.showMessageDialog(null,
-                "Can't load scattering factor files",
+                "Can't load scattering factor files\n" + stackTrace,
                 "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
