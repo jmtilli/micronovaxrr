@@ -569,13 +569,23 @@ public class XRRApp extends JFrame implements ChooserWrapper {
     }
 
 
+    private static String getDir()
+    {
+        String path = XRRApp.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        File f = new File(path);
+        if (!f.isDirectory())
+        {
+            path = f.getParent();
+        }
+        return path;
+    }
 
 
 
     private boolean construct() {
         /* Load atomic masses and scattering factors */
         try {
-            table = new SFTables(new File("atomic_masses.txt"),new File("sf"));
+            table = new SFTables(new File(getDir(), "atomic_masses.txt"),new File(getDir(), "sf"));
         }
         catch(FileFormatException ex) {
             StringWriter writer = new StringWriter();
@@ -1951,9 +1961,10 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
 
         try {
-            File f = new File("default.layers");
+            String path = getDir();
+            File f = new File(path, "default.layers");
             if(f.exists())
-                loadLayers(new File("default.layers"),false);
+                loadLayers(new File(path, "default.layers"),false);
         }
         catch(LayerLoadException ex) {
             JOptionPane.showMessageDialog(null, "There was an error in the file default.layers:\n"+ex.getMessage(), "Error in default.layers", JOptionPane.ERROR_MESSAGE);
