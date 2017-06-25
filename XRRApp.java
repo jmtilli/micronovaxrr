@@ -571,13 +571,19 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
     private static String getDir()
     {
-        String path = XRRApp.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        File f = new File(path);
-        if (!f.isDirectory())
-        {
-            path = f.getParent();
+        try {
+            String path = XRRApp.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            File f = new File(path);
+            if (!f.isDirectory())
+            {
+                path = f.getParent();
+            }
+            return path;
         }
-        return path;
+        catch (java.net.URISyntaxException ex)
+        {
+            return ".";
+        }
     }
 
 
