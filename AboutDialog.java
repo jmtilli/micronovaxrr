@@ -52,7 +52,7 @@ public class AboutDialog extends JDialog {
 "\n"+
 "This program uses Uncommons Maths, Copyright 2006-2012 Daniel W. Dyer. It is\n"+
 "distributed under the Apache Software Licence, Version 2.0. This license\n"+
-"applies only to this particular .jar file. The license is produced here\n"+
+"applies only to this particular .jar file. The license is reproduced here\n"+
 "verbatim:\n"+
 "\n"+
 "---------------------- BEGIN APACHE SOFTWARE LICENSE 2.0 ----------------------\n"+
