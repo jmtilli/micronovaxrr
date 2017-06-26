@@ -1176,10 +1176,19 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         }
                     };
                     Algorithm algo = (Algorithm)algoBox.getSelectedItem();
-                    f = new JavaFitter(fitLight, data, endTask, plotTask, errTask2, fitLayers,
-                                       (Integer)popSizeModel.getNumber(), (Integer)iterationsModel.getNumber(),
-                                       (Double)firstAngleModel.getNumber(), (Double)lastAngleModel.getNumber(),
-                                       green, yellow, (Algorithm)algoBox.getSelectedItem(), (FitnessFunction)funcBox.getSelectedItem(), (Double)thresholdModel.getNumber(), (Integer)pModel.getNumber());//, nonlinBox.isSelected());
+                    try {
+                        f = new JavaFitter(fitLight, data, endTask, plotTask, errTask2, fitLayers,
+                                           (Integer)popSizeModel.getNumber(), (Integer)iterationsModel.getNumber(),
+                                           (Double)firstAngleModel.getNumber(), (Double)lastAngleModel.getNumber(),
+                                           green, yellow, (Algorithm)algoBox.getSelectedItem(), (FitnessFunction)funcBox.getSelectedItem(), (Double)thresholdModel.getNumber(), (Integer)pModel.getNumber());//, nonlinBox.isSelected());
+                    }
+                    catch (FittingNotStartedException ex)
+                    {
+                        JOptionPane.showMessageDialog(null,
+                            "There was an error with fitting.",
+                            "Fitting error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     startFitButton.setEnabled(false);
                     stopFitButton.setEnabled(true);
                     stopFitButton.addActionListener(new ActionListener() {

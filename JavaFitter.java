@@ -73,11 +73,15 @@ public class JavaFitter implements FitterInterface {
      */
 
     public JavaFitter(JPlotArea light, GraphData data, LayerTask endTask, LayerTask plotTask, Runnable errTask, LayerStack stack, int popsize, int iterations, double firstAngle, double lastAngle, Image green, Image yellow,
-            Algorithm algo, FitnessFunction func, double dBthreshold, int pNorm) {
+            Algorithm algo, FitnessFunction func, double dBthreshold, int pNorm) throws FittingNotStartedException {
         FittingErrorFunc func2;
         stack = stack.deepCopy();
         data = data.normalize(stack).convertToLinear();
         data = data.crop(firstAngle, lastAngle);
+        if (data.alpha_0.length < 2)
+        {
+            throw new FittingNotStartedException();
+        }
         this.green = green;
         this.yellow = yellow;
         this.light = light;
@@ -113,10 +117,17 @@ public class JavaFitter implements FitterInterface {
           default:
             throw new IllegalArgumentException();
         }
-        this.ctx = new XRRFittingCtx(stack, data,
-                                     algo == Algorithm.JavaCovDE,
-                                     algo != Algorithm.JavaEitherOrDE,
-                                     popsize, func2, exec);
+        try {
+            this.ctx = new XRRFittingCtx(stack, data,
+                                         algo == Algorithm.JavaCovDE,
+                                         algo != Algorithm.JavaEitherOrDE,
+                                         popsize, func2, exec);
+        }
+        catch (Throwable t)
+        {
+            exec.shutdown();
+            throw t;
+        }
         t.start();
     }
 
@@ -167,7 +178,7 @@ public class JavaFitter implements FitterInterface {
                 });
             }
         }
-        catch(Exception ex) {
+        catch(Throwable t) {
             SwingUtilities.invokeLater(errTask);
             light.newImage(green);
             this.exec.shutdown();
