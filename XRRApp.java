@@ -251,20 +251,25 @@ public class XRRApp extends JFrame implements ChooserWrapper {
     private void loadLayers(File f, boolean enable_hint) throws LayerLoadException {
         try {
             FileInputStream fstr = new FileInputStream(f);
-            BufferedInputStream bs = new BufferedInputStream(fstr);
-            Map<?,?> m;
-            Object add;
-            Map<?,?> addm;
-            Object structure = Fcode.fdecode(bs, true);
-            m = (Map<?,?>)structure;
-            hintPath = null;
-            if((add = m.get("additional_data")) != null) {
-                addm = (Map<?,?>)add;
-                if(enable_hint)
-                    hintPath = (String)addm.get("measPath");
+            try {
+                BufferedInputStream bs = new BufferedInputStream(fstr);
+                Map<?,?> m;
+                Object add;
+                Map<?,?> addm;
+                Object structure = Fcode.fdecode(bs, true);
+                m = (Map<?,?>)structure;
+                hintPath = null;
+                if((add = m.get("additional_data")) != null) {
+                    addm = (Map<?,?>)add;
+                    if(enable_hint)
+                        hintPath = (String)addm.get("measPath");
+                }
+                LayerStack newLayers = LayerStack.structImport(m, table);
+                layers.deepCopyFrom(newLayers);
             }
-            LayerStack newLayers = LayerStack.structImport(m, table);
-            layers.deepCopyFrom(newLayers);
+            finally {
+                fstr.close();
+            }
         }
         catch(IOException ex) {
             throw new LayerLoadException("I/O error");
@@ -1328,7 +1333,13 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     chooserDirectory = chooser.getCurrentDirectory();
                     try {
                         XRRImport.XRRData importdat;
-                        importdat = XRRImport.XRRImport(new FileInputStream(chooser.getSelectedFile()));
+                        FileInputStream filein = new FileInputStream(chooser.getSelectedFile());
+                        try {
+                            importdat = XRRImport.XRRImport(filein);
+                        }
+                        finally {
+                            filein.close();
+                        }
 
                         assert(importdat.alpha_0.length == importdat.meas.length);
                         assert(importdat.alpha_0.length > 0);
@@ -1403,7 +1414,13 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     chooserDirectory = chooser.getCurrentDirectory();
                     try {
                         AsciiImport.AsciiData importdat;
-                        importdat = AsciiImport.AsciiImport(new FileInputStream(chooser.getSelectedFile()));
+                        FileInputStream filein = new FileInputStream(chooser.getSelectedFile());
+                        try {
+                            importdat = AsciiImport.AsciiImport(filein);
+                        }
+                        finally {
+                            filein.close();
+                        }
 
                         assert(importdat.alpha_0.length == importdat.meas.length);
                         assert(importdat.alpha_0.length > 0);
@@ -1535,8 +1552,13 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     try {
                         Map<String,Object> additional_data = new HashMap<String,Object>();
                         FileOutputStream fstr = new FileOutputStream(chooser.getSelectedFile());
-                        additional_data.put("measPath",measPath == null ? "" : measPath);
-                        Fcode.fencode(layers.structExport(additional_data), fstr);
+                        try {
+                            additional_data.put("measPath",measPath == null ? "" : measPath);
+                            Fcode.fencode(layers.structExport(additional_data), fstr);
+                        }
+                        finally {
+                            fstr.close();
+                        }
                     }
                     catch(IOException ex) {
                         JOptionPane.showMessageDialog(null, "I/O error", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1577,12 +1599,17 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     chooserDirectory = chooser.getCurrentDirectory();
                     try {
                         OutputStream fstr = new FileOutputStream(chooser.getSelectedFile());
-                        Writer rw = new OutputStreamWriter(fstr);
-                        BufferedWriter bw = new BufferedWriter(rw);
-                        PrintWriter w = new PrintWriter(bw);
-                        w.print(layers);
-                        if(w.checkError())
-                          throw new IOException();
+                        try {
+                            Writer rw = new OutputStreamWriter(fstr);
+                            BufferedWriter bw = new BufferedWriter(rw);
+                            PrintWriter w = new PrintWriter(bw);
+                            w.print(layers);
+                            if(w.checkError())
+                              throw new IOException();
+                        }
+                        finally {
+                            fstr.close();
+                        }
                     }
                     catch(IOException ex) {
                         JOptionPane.showMessageDialog(null, "I/O error", "Error", JOptionPane.ERROR_MESSAGE);
