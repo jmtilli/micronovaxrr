@@ -186,7 +186,7 @@ public class ScrollbarUpdater implements ListDataListener {
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getThickness();
-                    FitRangeDialog dialog = new FitRangeDialog((JFrame)null,"d","g/cm^3");
+                    FitRangeDialog dialog = new FitRangeDialog((JFrame)null,"d","nm");
                     dialog.call(val,1e9);
 
                     /* We must send ONE change event every time, even if the physical position of the slider
@@ -306,7 +306,7 @@ public class ScrollbarUpdater implements ListDataListener {
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getRoughness();
-                    FitRangeDialog dialog = new FitRangeDialog((JFrame)null,"r","g/cm^3");
+                    FitRangeDialog dialog = new FitRangeDialog((JFrame)null,"r","nm");
                     dialog.call(val,1e9);
 
                     /* We must send ONE change event every time, even if the physical position of the slider
