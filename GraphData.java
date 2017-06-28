@@ -51,26 +51,15 @@ public class GraphData {
          */
         private static double log_gamma(double xx)
         {
-            double x, y, temporary, series;
-            double coefficients[] =
-                {
-                    76.18009172947146,
-                    -86.50532032941677,
-                    24.01409824083091,
-                    -1.231739572450155,
-                    0.1208650973866179e-2,
-                    -0.5395239384953e-5
-                };
-            int j;
-            y = x = xx;
-            temporary = x + 5.5;
-            temporary -= (x+0.5)*Math.log(temporary);
-            series = 1.000000000190015;
-            for (j = 0; j <= 5; j++)
-            {
-                series += coefficients[j]/(++y);
-            }
-            return -temporary + Math.log(2.5066282746310005*series/x);
+            double xx2 = xx*xx;
+            double xx3 = xx2*xx;
+            double xx5 = xx3*xx2;
+            double xx7 = xx5*xx2;
+            double xx9 = xx7*xx2;
+            double xx11 = xx9*xx2;
+            return xx*Math.log(xx) - xx - 0.5*Math.log(xx/(2*Math.PI)) + 
+                   1/(12*xx) - 1/(360*xx3) + 1/(1260*xx5) - 1/(1680*xx7) +
+                   1/(1188*xx9) - 691/(360360*xx11);
         }
         /**
          * Create next random Poisson-distributed value.
