@@ -43,9 +43,26 @@ public class GraphData {
 
     private static class PoissonApproxGenerator {
         private final Random rand = new Random();
+        private static double gammln(double xx)
+        {
+            double x,y,tmp,ser;
+            double cof[]={76.18009172947146,-86.50532032941677,
+                24.01409824083091,-1.231739572450155,
+                0.1208650973866179e-2,-0.5395239384953e-5};
+            int j;
+            y = x = xx;
+            tmp = x + 5.5;
+            tmp -= (x+0.5)*Math.log(tmp);
+            ser=1.000000000190015;
+            for (j = 0; j <= 5; j++)
+            {
+                ser += cof[j]/(++y);
+            }
+            return -tmp + Math.log(2.5066282746310005*ser/x);
+        }
         public int nextValue(double mean) {
             int result = 0;
-            if (mean < 500.0)
+            if (mean < 12.0)
             {
                 double L = Math.exp(-mean);
                 double p = 1;
@@ -57,25 +74,26 @@ public class GraphData {
                 while (p > L);
                 result--;
             }
-	    else if (mean < 100000.0)
-	    {
-                double t = 0.0;
-                while (t <= 1.0)
+            else
+            {
+                double sq = Math.sqrt(2.0*mean);
+                double alxm = Math.log(mean);
+                double g = mean*alxm - gammln(mean+1.0);
+                double y, em, t;
+                do
                 {
-                    t += -Math.log(rand.nextDouble())/mean;
-                    result++;
+                    do
+                    {
+                        y = Math.tan(Math.PI*rand.nextDouble());
+                        em = sq*y + mean;
+                    }
+                    while (em < 0.0);
+                    em = Math.floor(em);
+                    t = 0.9*(1.0+y*y)*Math.exp(em*alxm-gammln(em+1.0)-g);
                 }
-                result--;
-	    }
-	    else
-	    {
-	        result = (int)(rand.nextGaussian() * Math.sqrt(mean) + mean);
-                if (result < 0)
-                {
-                    // should probably never happen...
-                    result = 0;
-                }
-	    }
+                while (rand.nextDouble() > t);
+                result = (int)em;
+            }
             return result;
         };
     }
