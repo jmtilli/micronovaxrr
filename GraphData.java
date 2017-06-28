@@ -41,11 +41,23 @@ public class GraphData {
         this(alpha_0, meas, simul, false);
     }
 
-    private class PoissonApproxGenerator {
+    private static class PoissonApproxGenerator {
         private final Random rand = new Random();
         public int nextValue(double mean) {
             int result = 0;
-	    if (mean < 100000.0)
+            if (mean < 500.0)
+            {
+                double L = Math.exp(-mean);
+                double p = 1;
+                do
+                {
+                    result++;
+                    p *= rand.nextDouble();
+                }
+                while (p > L);
+                result--;
+            }
+	    else if (mean < 100000.0)
 	    {
                 double t = 0.0;
                 while (t <= 1.0)
