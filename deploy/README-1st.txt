@@ -1,7 +1,7 @@
 INSTALLATION
 
 
-This programs needs Java 1.5 to run. This program has been tested on Windows
+This programs needs Java 1.8 to run. This program has been tested on Windows
 and Linux, but it should work on any platform for which Java is available.
 
 
@@ -24,8 +24,10 @@ Unix-like operating systems) to start the program. Starting the program by
 double-clicking xrr.jar limits the maximum memory allocation to a value too
 small. Hitting the memory limit will result in unpredictable behavior. This
 note does not apply to modern computers with both a Java version greater than
-1.5 and 2 gigabytes of memory or more. With modern computers, you may start
-the program by double-clicking xrr.jar.
+1.5 and 2 gigabytes of memory or more. With modern computers, you may start the
+program by double-clicking xrr.jar. Note that the default binaries provided
+work only with Java 1.8, so running the software on Java 1.5 requires
+additional compilation work.
 
 
 If you need more materials than included or support for different wavelengths,
