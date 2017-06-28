@@ -43,23 +43,41 @@ public class GraphData {
 
     private static class PoissonApproxGenerator {
         private final Random rand = new Random();
-        private static double gammln(double xx)
+        /**
+         * Calculate natural logarithm of the gamma function.
+         *
+         * @param xx Argument of the gamma function
+         * @return gamma function value
+         */
+        private static double log_gamma(double xx)
         {
-            double x,y,tmp,ser;
-            double cof[]={76.18009172947146,-86.50532032941677,
-                24.01409824083091,-1.231739572450155,
-                0.1208650973866179e-2,-0.5395239384953e-5};
+            double x, y, temporary, series;
+            double coefficients[] =
+                {
+                    76.18009172947146,
+                    -86.50532032941677,
+                    24.01409824083091,
+                    -1.231739572450155,
+                    0.1208650973866179e-2,
+                    -0.5395239384953e-5
+                };
             int j;
             y = x = xx;
-            tmp = x + 5.5;
-            tmp -= (x+0.5)*Math.log(tmp);
-            ser=1.000000000190015;
+            temporary = x + 5.5;
+            temporary -= (x+0.5)*Math.log(temporary);
+            series = 1.000000000190015;
             for (j = 0; j <= 5; j++)
             {
-                ser += cof[j]/(++y);
+                series += coefficients[j]/(++y);
             }
-            return -tmp + Math.log(2.5066282746310005*ser/x);
+            return -temporary + Math.log(2.5066282746310005*series/x);
         }
+        /**
+         * Create next random Poisson-distributed value.
+         *
+         * @param mean Mean of the Poisson distribution
+         * @return Random Poisson-distributed value
+         */
         public int nextValue(double mean) {
             int result = 0;
             if (mean < 12.0)
@@ -76,20 +94,20 @@ public class GraphData {
             }
             else
             {
-                double sq = Math.sqrt(2.0*mean);
-                double alxm = Math.log(mean);
-                double g = mean*alxm - gammln(mean+1.0);
+                double sqrt = Math.sqrt(2.0*mean);
+                double log_mean = Math.log(mean);
+                double g = mean*log_mean - log_gamma(mean+1.0);
                 double y, em, t;
                 do
                 {
                     do
                     {
                         y = Math.tan(Math.PI*rand.nextDouble());
-                        em = sq*y + mean;
+                        em = sqrt*y + mean;
                     }
                     while (em < 0.0);
                     em = Math.floor(em);
-                    t = 0.9*(1.0+y*y)*Math.exp(em*alxm-gammln(em+1.0)-g);
+                    t = 0.9*(1.0+y*y)*Math.exp(em*log_mean-log_gamma(em+1.0)-g);
                 }
                 while (rand.nextDouble() > t);
                 result = (int)em;
