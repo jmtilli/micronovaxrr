@@ -12,7 +12,6 @@ copy deploy\examples\* xrr-src\deploy\examples
 copy deploy\README* xrr-src\deploy
 copy deploy\LICENSE.txt xrr-src\deploy
 copy deploy\jfreechart-1.0.1.jar xrr-src\deploy
-copy deploy\uncommons-maths-1.2.3.jar xrr-src\deploy
 copy deploy\Jama-1.0.3.jar xrr-src\deploy
 copy deploy\javafastcomplex.jar xrr-src\deploy
 copy deploy\atomic_masses.txt xrr-src\deploy

@@ -1,7 +1,5 @@
 import java.util.*;
 import java.io.*;
-import org.uncommons.maths.random.PoissonGenerator;
-import org.uncommons.maths.number.NumberGenerator;
 
 
 
@@ -43,22 +41,19 @@ public class GraphData {
         this(alpha_0, meas, simul, false);
     }
 
-    private class FieldNumberGenerator implements NumberGenerator<Double> {
-        double mean;
-        public Double nextValue() {
-            return mean;
-        };
-    }
     private class PoissonApproxGenerator {
         private final Random rand = new Random();
-        private final FieldNumberGenerator meanfield = new FieldNumberGenerator();
-	private final PoissonGenerator poisson = new PoissonGenerator(meanfield, rand);
         public int nextValue(double mean) {
-            int result;
+            int result = 0;
 	    if (mean < 100000.0)
 	    {
-                meanfield.mean = mean;
-	        result = poisson.nextValue();
+                double t = 0.0;
+                while (t <= 1.0)
+                {
+                    t += -Math.log(rand.nextDouble())/mean;
+                    result++;
+                }
+                result--;
 	    }
 	    else
 	    {
