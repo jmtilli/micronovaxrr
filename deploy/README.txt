@@ -42,13 +42,17 @@ maximum intensity between minimum and maximum normalization angles set to 1.
 
 Only measurements exported from PANalytical's software are supported. In order
 to import other file formats, you need to edit XRRImport.java, which requires
-Java programming skills.
+Java programming skills. Specifically, The file format is the .x00 file format.
+PANalytical's software may support other file formats as well, but this
+software doesn't.
 
 The wavelength of the measurement must be entered manually on the layer editor
 tab. The default wavelength is 1.54 nm (Cu K-alpha line). Scattering factors
 for other wavelengths are not included in this distribution. Instructions for
-installing complete scattering factor databases are in the file
-README-1st.txt.
+installing complete scattering factor databases are in the file README-1st.txt.
+The following elements are supported by this software: Al, As, Au, C, Ga, Ge,
+Hf, H, In, La, Mo, Nb, N, O, P, Pt, Sb, Si, S, Ta, Ti, W, Zn. If other elements
+are needed, you need to install complete scattering factor databases.
 
 
 The properties of layers can be adjusted by the sliders on the manual fit tab
@@ -68,17 +72,33 @@ If the simulated curve is not affected, convolution is not used.
 
 
 The simulated curve can be fitted to the measured curve automatically by a
-genetic algorithm on the Automatic fit tab. The actual values are not used by
-the automatic fitting algorithm, so you need to set minimum and maximum values
-correctly to get a good fit.
+genetic algorithm on the Automatic fit tab. The actual values are used by the
+automatic fitting algorithm as one population member. If the actual values
+represent a good fit but not the best possible fit, it is possible that the
+algorithm misconverges into this false local optimum. There are three
+algorithms: JavaDE, JavaCovDE and JavaEitherOrDE. JavaDE may be the most
+optimal algorithm for simple fitting problems as it does not need to calculate
+the covariance matrix. However, for hard multilayer fitting problems, JavaCovDE
+is recommended. JavaEitherOrDE is better than JavaDE but worse than JavaCovDE
+for hard multilayer fitting problems. There is usually no good reason to use
+JavaEitherOrDE other than scientific research related to fitting algorithms.
 
 
 Before fitting you have to import layer model by pressing the button "Import
 from manual fit". The range of angles used for fitting can be adjusted by the
-first angle and last angle settings. First angle should be set slightly lower
-than the critical angle. Good values for last angle are limited by the amount
-of noise. Iterations and population size are options of the genetic algorithm.
-Higher values are slower but may help find better fits.
+first angle and last angle settings. First angle should be set to a value where
+the beam doesn't go directly to the detector, usually 0.07 degrees is a good
+value. Good values for last angle are limited by the amount of noise especially
+if the fitting error function p-norm in logarithmic space is used. However, the
+default mixed relative/chi-squared function can reduce the harmful effects of
+noise, so the last angle with this fitting error function can be set to the
+maximum angle of the measurement. Iterations and population size are options of
+the genetic algorithm. Higher values are slower but may help find better fits.
+It is usually recommended that population size is about ten times the number of
+fitting parameters. The default 60 is good for 6 fitting parameters. Iteration
+count should be preferably higher rather than lower, as the fit can be
+interrupted early but the fit cannot be continued once the iteration count is
+reached. For this reason, the default iteration count is as high as 500. 
 
 
 The fit is started by pressing the Start fit button. After the fitting is
