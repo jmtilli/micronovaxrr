@@ -10,7 +10,7 @@ public class XRRFittingCtx {
   public XRRFittingCtx(LayerStack new_s, GraphData new_gd,
                        boolean cov_on, boolean traditional_recombination_on,
                        int npop, FittingErrorFunc new_func,
-                       ExecutorService exec)
+                       ExecutorService exec, AdvancedFitOptions opts)
   {
     this.s = new_s.deepCopy();
     this.gd = new_gd;
@@ -29,7 +29,7 @@ public class XRRFittingCtx {
         this.s.getFitValuesForFitting(FitValue.FitValueType.MIN),
         this.s.getFitValuesForFitting(FitValue.FitValueType.MAX),
         this.s.getFitValuesForFitting(FitValue.FitValueType.EXPECTED),
-        cov_on, traditional_recombination_on, npop, exec);
+        cov_on, traditional_recombination_on, npop, exec, opts);
   }
   public void iteration()
   {
@@ -101,7 +101,7 @@ public class XRRFittingCtx {
                                    new LinkedBlockingDeque<Runnable>());
     XRRFittingCtx init = new XRRFittingCtx(layers, gd, true, true, 40,
                                            new LogFittingErrorFunc(2),
-                                           exec);
+                                           exec, new AdvancedFitOptions());
     for (int i = 0; i < 100; i++)
     {
       init.iteration();

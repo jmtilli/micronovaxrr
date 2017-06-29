@@ -241,7 +241,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
     private enum PlotStyle {LIN, LOG, ALPHA4, SQRT};
 
-
+    private AdvancedFitOptions opts = new AdvancedFitOptions();
 
     /* these must point always to the same object */
     private LayerPlotter pfit;
@@ -1120,8 +1120,8 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(3,3,3,3);
         c.gridwidth = 1;
-        final JButton exportButton = new JButton("Export model");
-        final JButton importButton = new JButton("Import model");
+        final JButton exportButton = new JButton("Export");
+        final JButton importButton = new JButton("Import");
         importButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 fitLayers.deepCopyFrom(layers);
@@ -1130,8 +1130,9 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         plotControls.add(importButton,c);
         //c.gridwidth = GridBagConstraints.REMAINDER;
 
-        final JButton startFitButton = new JButton("Start fit");
-        final JButton stopFitButton = new JButton("Stop fit");
+        final JButton startFitButton = new JButton("Start");
+        final JButton stopFitButton = new JButton("Stop");
+        final JButton advancedButton = new JButton("Opts");
         final SpinnerNumberModel popSizeModel = new SpinnerNumberModel(60,20,2000,1);
         final SpinnerNumberModel iterationsModel = new SpinnerNumberModel(500,1,2000,1);
         final SpinnerNumberModel pModel = new SpinnerNumberModel(2,1,10,1);
@@ -1180,7 +1181,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         f = new JavaFitter(fitLight, data, endTask, plotTask, errTask2, fitLayers,
                                            (Integer)popSizeModel.getNumber(), (Integer)iterationsModel.getNumber(),
                                            (Double)firstAngleModel.getNumber(), (Double)lastAngleModel.getNumber(),
-                                           green, yellow, (Algorithm)algoBox.getSelectedItem(), (FitnessFunction)funcBox.getSelectedItem(), (Double)thresholdModel.getNumber(), (Integer)pModel.getNumber());//, nonlinBox.isSelected());
+                                           green, yellow, (Algorithm)algoBox.getSelectedItem(), (FitnessFunction)funcBox.getSelectedItem(), (Double)thresholdModel.getNumber(), (Integer)pModel.getNumber(), opts);//, nonlinBox.isSelected());
                     }
                     catch (FittingNotStartedException ex)
                     {
@@ -1209,6 +1210,12 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 }
             }
         });
+        advancedButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                AdvancedFitDialog diag = new AdvancedFitDialog(thisFrame);
+                diag.call(opts);
+            }
+        });
         plotControls.add(startFitButton,c);
         c.gridwidth = 1;
         exportButton.addActionListener(new ActionListener() {
@@ -1217,9 +1224,13 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             }
         });
         plotControls.add(exportButton,c);
-        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridwidth = 1;
         stopFitButton.setEnabled(false);
         plotControls.add(stopFitButton,c);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        stopFitButton.setEnabled(false);
+        plotControls.add(advancedButton,c);
 
 
         c.gridwidth = 1;
@@ -1260,7 +1271,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         plotControls.add(funcBox,c);
 
         c.gridwidth = 1;
-        plotControls.add(new JLabel("Threshold rel.f. (dB)"),c);
+        plotControls.add(new JLabel("Thres. rel.f. (dB)"),c);
         c.gridwidth = 1;
         plotControls.add(new JSpinner(thresholdModel),c);
 

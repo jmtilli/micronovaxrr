@@ -73,7 +73,8 @@ public class JavaFitter implements FitterInterface {
      */
 
     public JavaFitter(JPlotArea light, GraphData data, LayerTask endTask, LayerTask plotTask, Runnable errTask, LayerStack stack, int popsize, int iterations, double firstAngle, double lastAngle, Image green, Image yellow,
-            Algorithm algo, FitnessFunction func, double dBthreshold, int pNorm) throws FittingNotStartedException {
+            Algorithm algo, FitnessFunction func, double dBthreshold, int pNorm,
+            AdvancedFitOptions opts) throws FittingNotStartedException {
         FittingErrorFunc func2;
         stack = stack.deepCopy();
         data = data.normalize(stack).convertToLinear();
@@ -121,7 +122,7 @@ public class JavaFitter implements FitterInterface {
             this.ctx = new XRRFittingCtx(stack, data,
                                          algo == Algorithm.JavaCovDE,
                                          algo != Algorithm.JavaEitherOrDE,
-                                         popsize, func2, exec);
+                                         popsize, func2, exec, opts);
         }
         catch (Throwable t)
         {
