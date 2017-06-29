@@ -84,12 +84,12 @@ for hard multilayer fitting problems. There is usually no good reason to use
 JavaEitherOrDE other than scientific research related to fitting algorithms.
 
 
-Before fitting you have to import layer model by pressing the button "Import
-from manual fit". The range of angles used for fitting can be adjusted by the
-first angle and last angle settings. First angle should be set to a value where
-the beam doesn't go directly to the detector, usually 0.07 degrees is a good
-value. Good values for last angle are limited by the amount of noise especially
-if the fitting error function p-norm in logarithmic space is used. However, the
+Before fitting you have to import layer model by pressing the button "Import".
+The range of angles used for fitting can be adjusted by the first angle and
+last angle settings. First angle should be set to a value where the beam
+doesn't go directly to the detector, usually 0.07 degrees is a good value. Good
+values for last angle are limited by the amount of noise especially if the
+fitting error function p-norm in logarithmic space is used. However, the
 default mixed relative/chi-squared function can reduce the harmful effects of
 noise, so the last angle with this fitting error function can be set to the
 maximum angle of the measurement. Iterations and population size are options of
@@ -120,19 +120,19 @@ these need to be modified:
   - not used by JavaDE or JavaCovDE
 
 
-The fit is started by pressing the Start fit button. After the fitting is
-ready or interrupted by the Stop fit button, the fitted layer model can be
-exported to Layer editor and Manual fit tabs with the Export to manual fit
-button. The fitted model replaces the old model, so if the original model is
-better than the fit, do not export the fit. 
+The fit is started by pressing the Start fit button. After the fitting is ready
+or interrupted by the Stop fit button, the fitted layer model can be exported
+to Layer editor and Manual fit tabs with the Export button. The fitted model
+replaces the old model, so if the original model is better than the fit, do not
+export the fit. 
 
 You can load and save layer models with File -> Load layers and File -> Save
-layers. The layer model on Automatic fit tab is never used by these
-operations, so you need to export the model by the "Export to manual fit"
-button before saving it. Otherwise you will end up saving old unfitted data.
-Measured data isn't saved with the layer model so you can save a model which
-can be used as a basis for a model for new measurements. This means that you
-shouldn't delete the measured data because you will need to import it again.
+layers. The layer model on Automatic fit tab is never used by these operations,
+so you need to export the model by the "Export" button before saving it.
+Otherwise you will end up saving old unfitted data.  Measured data isn't saved
+with the layer model so you can save a model which can be used as a basis for a
+model for new measurements. This means that you shouldn't delete the measured
+data because you will need to import it again.
 
 The program doesn't add an extension to the file name automatically so you
 need to enter the complete name with the extension. You should choose an

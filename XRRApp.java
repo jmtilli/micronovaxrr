@@ -1491,7 +1491,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                                 "tab.\n\nYou're on the automatic fit tab.\n\n" +
                                 "To import " +
                                 "the model to the automatic fit tab, press " +
-                                "\"Import model\"",
+                                "\"Import\"",
                                 "Info", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
@@ -1551,7 +1551,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to save?",
+                            "\"Export\".\n\nDo you still want to save?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1605,7 +1605,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to export?",
+                            "\"Export\".\n\nDo you still want to export?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1677,7 +1677,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1705,7 +1705,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1731,7 +1731,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1757,7 +1757,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1786,7 +1786,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1812,7 +1812,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1838,7 +1838,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1864,7 +1864,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1893,7 +1893,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1919,7 +1919,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1945,7 +1945,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
@@ -1971,7 +1971,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             "from the model on the automatic fit tab.\n\n" +
                             "You're on the automatic fit tab. To export " +
                             "the model to the manual fit tab, press " +
-                            "\"Export model\".\n\nDo you still want to plot?",
+                            "\"Export\".\n\nDo you still want to plot?",
                             "Question", JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE)
                       != JOptionPane.YES_OPTION)
