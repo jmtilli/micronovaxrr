@@ -106,18 +106,24 @@ sqrt space. Threshold rel.f (dB) on the other hand is used by mixed relative /
 chi-squared and tells where the regime of relative fitting error function
 begins and the regime of chi-squared fitting error function ends.
 
-There are several non-adjustable fitting parameters that need code changes if
-these need to be modified:
-- Mutation strength (km): 0.7
-- Recombination probability to take from second gene (cr): 0.5
+There are several adjustable fitting parameters that can be changed by the Opts
+button:
+- Mutation strength (k_m): 0.7
+- Recombination probability to take from second gene (c_r): 0.5
 - Mutation individual parameter lambda: 1.0
   - 1.0 means use best individual (DE/best/1/bin)
   - 0.5 means move random individual halfway to best individual
   - 0.0 means use random individual (DE/rand/1/bin)
-- JavaEitherOrDE mutation probability (pm): 0.5
+- JavaEitherOrDE mutation probability (p_m): 0.5
   - not used by JavaDE or JavaCovDE
-- JavaEitherOrDE recombination strength (kr): 0.5*(km+1)
+- JavaEitherOrDE recombination strength (k_r): 0.5*(k_m+1)
   - not used by JavaDE or JavaCovDE
+
+Probably the only parameter worth adjusting is mutation strength. Lower
+mutation strength means convergence is fast, but there is a risk of
+misconvergence. Higher mutation strength slows down convergence but reduces the
+risk of misconvergence. Recommended values are k_m = 0.5 .. 0.75. The default
+is 0.7, but if you want faster convergence, try 0.6.
 
 
 The fit is started by pressing the Start fit button. After the fitting is ready
