@@ -100,6 +100,25 @@ count should be preferably higher rather than lower, as the fit can be
 interrupted early but the fit cannot be continued once the iteration count is
 reached. For this reason, the default iteration count is as high as 500. 
 
+The parameters p-norm and threshold rel.f (dB) are parameters of the fitting
+error functions. p-norm is used by p-norm in logarithmic space and p-norm in
+sqrt space. Threshold rel.f (dB) on the other hand is used by mixed relative /
+chi-squared and tells where the regime of relative fitting error function
+begins and the regime of chi-squared fitting error function ends.
+
+There are several non-adjustable fitting parameters that need code changes if
+these need to be modified:
+- Mutation strength (km): 0.7
+- Recombination probability to take from second gene (cr): 0.5
+- Mutation individual parameter lambda: 1.0
+  - 1.0 means use best individual (DE/best/1/bin)
+  - 0.5 means move random individual halfway to best individual
+  - 0.0 means use random individual (DE/rand/1/bin)
+- JavaEitherOrDE mutation probability (pm): 0.5
+  - not used by JavaDE or JavaCovDE
+- JavaEitherOrDE recombination strength (kr): 0.5*(km+1)
+  - not used by JavaDE or JavaCovDE
+
 
 The fit is started by pressing the Start fit button. After the fitting is
 ready or interrupted by the Stop fit button, the fitted layer model can be
