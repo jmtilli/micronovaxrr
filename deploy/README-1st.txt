@@ -43,10 +43,10 @@ elements can be added to atomic_masses.txt.
 DEFAULT LAYER MODEL:
 
 The layer model contains all the other information of the measurement setup
-except the actual measured intensities. The wavelength and instrument convolution
-width (specified by FWHM) are therefore part of the layer model. Usually these
-values are constant for a given diffractometer, so the same values of wavelength
-and FWHM are used in most setups.
+except the actual measured intensities. The wavelength and instrument
+convolution width (specified by FWHM) are therefore part of the layer model.
+Usually these values are constant for a given diffractometer, so the same
+values of wavelength and FWHM are used in most setups.
 
 If you want to have a specific layer model loaded automatically when the
 program starts, save the layer model to a file named "default.layers". On Unix
