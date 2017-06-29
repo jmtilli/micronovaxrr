@@ -5,7 +5,6 @@ mkdir xrr-bin\lib
 mkdir xrr-bin\librarysrc
 mkdir xrr-bin\sf
 mkdir xrr-bin\examples
-mkdir xrr-bin\nativelib
 copy librarysrc\* xrr-bin\librarysrc
 copy deploy\lib\* xrr-bin\lib   
 copy deploy\sf\* xrr-bin\sf
