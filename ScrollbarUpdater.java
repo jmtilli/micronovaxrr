@@ -641,14 +641,17 @@ public class ScrollbarUpdater implements ListDataListener {
             });
             c.gridwidth = 1;
             sliders.add(fValLabel,c);
+            c.gridwidth = 2;
             sliders.add(new JLabel(l.getCompound1().toString()),c);
             c.fill = GridBagConstraints.HORIZONTAL;
+            c.gridwidth = 1;
             c.weightx = 2;
             c.gridwidth = GridBagConstraints.RELATIVE;
             sliders.add(fSlider,c);
             c.fill = GridBagConstraints.NONE;
             c.gridwidth = GridBagConstraints.REMAINDER;
             c.weightx = 0;
+            c.gridwidth = 1;
             sliders.add(new JLabel(l.getCompound2().toString()),c);
 
             c.fill = GridBagConstraints.BOTH;
