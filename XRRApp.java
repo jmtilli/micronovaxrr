@@ -1096,7 +1096,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 final double FWHM_SCALE = 2*Math.sqrt(2*Math.log(2));
 
                 fitWlLabel.setText(String.format(Locale.US,"%.6f",fitLayers.getLambda()*1e9)+" nm");
-                fitConvLabel.setText(String.format(Locale.US,"%.6f",fitLayers.getStdDev().getExpected()*180/Math.PI*FWHM_SCALE)+" degrees");
+                fitConvLabel.setText(String.format(Locale.US,"%.6f",fitLayers.getStdDev().getExpected()*180/Math.PI*FWHM_SCALE)+"\u00B0");
                 fitNormLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getProd().getExpected())+" dB "+(fitLayers.getProd().getEnabled()?"(fit)":"(no fit)"));
                 fitBeamLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getBeam().getExpected())+" "+(fitLayers.getBeam().getEnabled()?"(fit)":"(no fit)"));
                 fitSumLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getSum().getExpected())+" dB " +(fitLayers.getSum().getEnabled()?"(fit)":"(no fit)"));

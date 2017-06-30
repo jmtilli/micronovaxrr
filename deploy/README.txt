@@ -58,8 +58,9 @@ are needed, you need to install complete scattering factor databases.
 The properties of layers can be adjusted by the sliders on the manual fit tab
 to match measured data and help the automatic fitting algorithm. The "fit"
 check box can be unchecked to disable automatic fitting of a certain parameter.
-The "Min" and "Max" buttons make the search space smaller by setting the minimum
-or maximum value to the current value, respectively.
+The "<" and ">" buttons make the search space smaller by setting the minimum or
+maximum value to the current value, respectively. The "2" buttons increase the
+search space.
 
 Limited resolution can be taken into account by convolving the simulated data
 with a Gaussian function, the FWHM of which can be specified by a slider on

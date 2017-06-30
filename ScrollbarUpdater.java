@@ -130,8 +130,36 @@ public class ScrollbarUpdater implements ListDataListener {
             final JLabel dMaxLabel = new JLabel(/*"max = " + */String.format(Locale.US,"%.6g",d.getMax()*1e9));
 
 
+            JButton minx2Button = new JButton("2");
+            minx2Button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getThickness();
+                    double newMin = val.getMin()-(val.getMax()-val.getMin());
+                    if (val.getMax() == val.getMin())
+                    {
+                        newMin = val.getMin() - 1/1e9;
+                    }
+                    if (newMin < 0)
+                    {
+                        newMin = 0;
+                    }
+                    val.setValues(newMin,val.getExpected(),val.getMax());
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    dSlider.setValue(newValue);
+                    lock = false;
+                    dChangeListener.stateChanged(null);
+                    dMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()*1e9));
+                    dMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()*1e9));
+                }
+            });
+            minx2Button.setPreferredSize(new Dimension((int)(minx2Button.getMinimumSize().width),minx2Button.getMinimumSize().height));
+            minx2Button.setMinimumSize(minx2Button.getPreferredSize());
+            minx2Button.setMaximumSize(minx2Button.getPreferredSize());
+
 	    /* This button changes the minimum value of the parameter range to the current value */
-            JButton minButton = new JButton("Min");
+            JButton minButton = new JButton("<");
             minButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getThickness();
@@ -151,6 +179,7 @@ public class ScrollbarUpdater implements ListDataListener {
 	    /* current label || min button || minimum value || slider || maximum label */
             c.gridwidth = 1;
             sliders.add(dValLabel,c);
+            sliders.add(minx2Button,c);
             sliders.add(minButton,c);
             sliders.add(dMinLabel,c);
             c.fill = GridBagConstraints.HORIZONTAL;
@@ -164,7 +193,7 @@ public class ScrollbarUpdater implements ListDataListener {
             sliders.add(dMaxLabel,c);
 
 	    /* This button changes the maximum value of the parameter range to the current value */
-            JButton maxButton = new JButton("Max");
+            JButton maxButton = new JButton(">");
             maxButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getThickness();
@@ -182,7 +211,32 @@ public class ScrollbarUpdater implements ListDataListener {
             maxButton.setMinimumSize(maxButton.getPreferredSize());
             sliders.add(maxButton,c);
 
-            JButton rangeButton = new JButton("Edit...");
+            JButton maxx2Button = new JButton("2");
+            maxx2Button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getThickness();
+                    double newMax = val.getMax()+(val.getMax()-val.getMin());
+                    if (val.getMax() == val.getMin())
+                    {
+                        newMax = val.getMax() + 1/1e9;
+                    }
+                    val.setValues(val.getMin(),val.getExpected(),newMax);
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    dSlider.setValue(newValue);
+                    lock = false;
+                    dChangeListener.stateChanged(null);
+                    dMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()*1e9));
+                    dMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()*1e9));
+                }
+            });
+            maxx2Button.setPreferredSize(new Dimension((int)(maxx2Button.getMinimumSize().width),maxx2Button.getMinimumSize().height));
+            maxx2Button.setMinimumSize(maxx2Button.getPreferredSize());
+            maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
+            sliders.add(maxx2Button,c);
+
+            JButton rangeButton = new JButton("Edit");
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getThickness();
@@ -252,8 +306,36 @@ public class ScrollbarUpdater implements ListDataListener {
             final JLabel rMinLabel = new JLabel(/*"min = " + */String.format(Locale.US,"%.6g",r.getMin()*1e9));
             final JLabel rMaxLabel = new JLabel(/*"max = " + */String.format(Locale.US,"%.6g",r.getMax()*1e9));
 
+            minx2Button = new JButton("2");
+            minx2Button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getRoughness();
+                    double newMin = val.getMin()-(val.getMax()-val.getMin());
+                    if (val.getMax() == val.getMin())
+                    {
+                        newMin = val.getMin() - 1/1e9;
+                    }
+                    if (newMin < 0)
+                    {
+                        newMin = 0;
+                    }
+                    val.setValues(newMin,val.getExpected(),val.getMax());
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    rSlider.setValue(newValue);
+                    lock = false;
+                    rChangeListener.stateChanged(null);
+                    rMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()*1e9));
+                    rMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()*1e9));
+                }
+            });
+            minx2Button.setPreferredSize(new Dimension((int)(minx2Button.getMinimumSize().width),minx2Button.getMinimumSize().height));
+            minx2Button.setMinimumSize(minx2Button.getPreferredSize());
+            minx2Button.setMaximumSize(minx2Button.getPreferredSize());
+
 	    /* This button changes the minimum value of the parameter range to the current value */
-            minButton = new JButton("Min");
+            minButton = new JButton("<");
             minButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getRoughness();
@@ -272,6 +354,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
             c.gridwidth = 1;
             sliders.add(rValLabel,c);
+            sliders.add(minx2Button,c);
             sliders.add(minButton,c);
             sliders.add(rMinLabel,c);
             c.fill = GridBagConstraints.HORIZONTAL;
@@ -284,7 +367,7 @@ public class ScrollbarUpdater implements ListDataListener {
             c.weightx = 0;
             sliders.add(rMaxLabel,c);
 
-            maxButton = new JButton("Max");
+            maxButton = new JButton(">");
             maxButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getRoughness();
@@ -302,7 +385,32 @@ public class ScrollbarUpdater implements ListDataListener {
             maxButton.setMinimumSize(maxButton.getPreferredSize());
             sliders.add(maxButton,c);
 
-            rangeButton = new JButton("Edit...");
+            maxx2Button = new JButton("2");
+            maxx2Button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getRoughness();
+                    double newMax = val.getMax()+(val.getMax()-val.getMin());
+                    if (val.getMax() == val.getMin())
+                    {
+                        newMax = val.getMax() + 1/1e9;
+                    }
+                    val.setValues(val.getMin(),val.getExpected(),newMax);
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    rSlider.setValue(newValue);
+                    lock = false;
+                    rChangeListener.stateChanged(null);
+                    rMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()*1e9));
+                    rMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()*1e9));
+                }
+            });
+            maxx2Button.setPreferredSize(new Dimension((int)(maxx2Button.getMinimumSize().width),maxx2Button.getMinimumSize().height));
+            maxx2Button.setMinimumSize(maxx2Button.getPreferredSize());
+            maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
+            sliders.add(maxx2Button,c);
+
+            rangeButton = new JButton("Edit");
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getRoughness();
@@ -372,8 +480,36 @@ public class ScrollbarUpdater implements ListDataListener {
             final JLabel rhoMinLabel = new JLabel(/*"min = " + */String.format(Locale.US,"%.6g",rho.getMin()/1e3));
             final JLabel rhoMaxLabel = new JLabel(/*"max = " + */String.format(Locale.US,"%.6g",rho.getMax()/1e3));
 
+            minx2Button = new JButton("2");
+            minx2Button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getDensity();
+                    double newMin = val.getMin()-(val.getMax()-val.getMin());
+                    if (val.getMax() == val.getMin())
+                    {
+                        newMin = val.getMin() - 1e3;
+                    }
+                    if (newMin < 0)
+                    {
+                        newMin = 0;
+                    }
+                    val.setValues(newMin,val.getExpected(),val.getMax());
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    rhoSlider.setValue(newValue);
+                    lock = false;
+                    rhoChangeListener.stateChanged(null);
+                    rhoMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()/1e3));
+                    rhoMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()/1e3));
+                }
+            });
+            minx2Button.setPreferredSize(new Dimension((int)(minx2Button.getMinimumSize().width),minx2Button.getMinimumSize().height));
+            minx2Button.setMinimumSize(minx2Button.getPreferredSize());
+            minx2Button.setMaximumSize(minx2Button.getPreferredSize());
+
 	    /* This button changes the minimum value of the parameter range to the current value */
-            minButton = new JButton("Min");
+            minButton = new JButton("<");
             minButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getDensity();
@@ -392,6 +528,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
             c.gridwidth = 1;
             sliders.add(rhoValLabel,c);
+            sliders.add(minx2Button,c);
             sliders.add(minButton,c);
             sliders.add(rhoMinLabel,c);
             c.fill = GridBagConstraints.HORIZONTAL;
@@ -404,7 +541,7 @@ public class ScrollbarUpdater implements ListDataListener {
             c.weightx = 0;
             sliders.add(rhoMaxLabel,c);
 
-            maxButton = new JButton("Max");
+            maxButton = new JButton(">");
             maxButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getDensity();
@@ -422,7 +559,32 @@ public class ScrollbarUpdater implements ListDataListener {
             maxButton.setMinimumSize(maxButton.getPreferredSize());
             sliders.add(maxButton,c);
 
-            rangeButton = new JButton("Edit...");
+            maxx2Button = new JButton("2");
+            maxx2Button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getDensity();
+                    double newMax = val.getMax()+(val.getMax()-val.getMin());
+                    if (val.getMax() == val.getMin())
+                    {
+                        newMax = val.getMax() + 1e3;
+                    }
+                    val.setValues(val.getMin(),val.getExpected(),newMax);
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    rhoSlider.setValue(newValue);
+                    lock = false;
+                    rhoChangeListener.stateChanged(null);
+                    rhoMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()/1e3));
+                    rhoMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()/1e3));
+                }
+            });
+            maxx2Button.setPreferredSize(new Dimension((int)(maxx2Button.getMinimumSize().width),maxx2Button.getMinimumSize().height));
+            maxx2Button.setMinimumSize(maxx2Button.getPreferredSize());
+            maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
+            sliders.add(maxx2Button,c);
+
+            rangeButton = new JButton("Edit");
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getDensity();
