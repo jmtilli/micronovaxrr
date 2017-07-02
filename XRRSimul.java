@@ -268,7 +268,7 @@ public class XRRSimul {
         double k0 = 2*Math.PI/lambda;
         final double stddevs = 4;
         double[] filter = null;
-        double dalpha0rad = (alpha0rad[alpha0rad.length-1] - alpha0rad[0])/(alpha0rad.length-1);
+        double dalpha0rad = alpha0rad.length > 1 ? (alpha0rad[alpha0rad.length-1] - alpha0rad[0])/(alpha0rad.length-1) : 1;
 
 
         filter = gaussianFilter(dalpha0rad, stddevrad, stddevs);
@@ -398,7 +398,7 @@ public class XRRSimul {
         double k0 = 2*Math.PI/lambda;
         final double stddevs = 4;
         double[] filter = null;
-        double dalpha0rad = (alpha0rad[alpha0rad.length-1] - alpha0rad[0])/(alpha0rad.length-1);
+        double dalpha0rad = alpha0rad.length > 1 ? (alpha0rad[alpha0rad.length-1] - alpha0rad[0])/(alpha0rad.length-1) : 1;
 
 
         filter = gaussianFilter(dalpha0rad, stddevrad, stddevs);
@@ -546,7 +546,7 @@ public class XRRSimul {
         double k0 = 2*Math.PI/lambda;
         final double stddevs = 4;
         double[] filter = null;
-        double dalpha0rad = (alpha0rad[alpha0rad.length-1] - alpha0rad[0])/(alpha0rad.length-1);
+        double dalpha0rad = alpha0rad.length > 1 ? (alpha0rad[alpha0rad.length-1] - alpha0rad[0])/(alpha0rad.length-1) : 1;
 
 
         filter = gaussianFilter(dalpha0rad, stddevrad, stddevs);
