@@ -27,6 +27,7 @@ public class XRRImport {
     public static XRRData XRRImport(InputStream s) throws XRRImportException, IOException {
         double[] alpha_0;
         double[] meas;
+        Boolean is_2theta_omega = null;
         try {
             Double firstAngle = null, stepWidth = null;
             Integer nrOfData = null;
@@ -40,6 +41,24 @@ public class XRRImport {
                 line = r.readLine();
                 if(line == null)
                     throw new XRRImportException();
+                if(line.length() > 10 && line.substring(0,10).equals("ScanAxis, ")) {
+                    String axis;
+                    if(is_2theta_omega != null)
+                        throw new XRRImportException();
+                    axis = line.substring(10);
+                    if (axis.equals("2Theta/Omega"))
+                    {
+                      is_2theta_omega = Boolean.TRUE;
+                    }
+                    else if (axis.equals("Omega/2Theta"))
+                    {
+                      is_2theta_omega = Boolean.FALSE;
+                    }
+                    else
+                    {
+                      throw new XRRImportException();
+                    }
+                }
                 if(line.length() > 12 && line.substring(0,12).equals("FirstAngle, ")) {
                     if(firstAngle != null)
                         throw new XRRImportException();
@@ -64,6 +83,13 @@ public class XRRImport {
             int size = nrOfData.intValue();
             double alpha = firstAngle.doubleValue();
             double width = stepWidth.doubleValue();
+            if (is_2theta_omega == null)
+              throw new XRRImportException();
+            if (is_2theta_omega)
+            {
+              alpha /= 2;
+              width /= 2;
+            }
 
             alpha_0 = new double[size];
             meas = new double[size];
