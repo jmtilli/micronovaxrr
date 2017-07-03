@@ -79,19 +79,32 @@ public class SFTables implements LookupTable {
      */
     public SFTables(File m, File d) throws FileFormatException, IOException {
         tables = Collections.synchronizedMap(new HashMap<String,SFTable>());
-        masses = new AtomicMasses(new FileInputStream(m));
+        FileInputStream fstr = new FileInputStream(m);
+        try {
+            masses = new AtomicMasses(fstr);
+        }
+        finally {
+            fstr.close();
+        }
         readTables(d);
     }
     private void readTables(File d) throws FileFormatException, IOException {
         for(String s: masses.massMap.keySet()) {
             File f = new File(d,s.toLowerCase()+".nff");
-            InputStream is = null;
+            FileInputStream is = null;
             try {
                 is = new FileInputStream(f);
             }
             catch(IOException e) {}
             if(is != null)
-                read(s, is);
+            {
+                try {
+                    read(s, is);
+                }
+                finally {
+                    is.close();
+                }
+            }
         }
     }
     private class SFData implements Comparable<SFData> {
