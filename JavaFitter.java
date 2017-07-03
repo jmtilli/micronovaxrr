@@ -98,6 +98,7 @@ public class JavaFitter implements FitterInterface {
             }
         });
         int cpus = Runtime.getRuntime().availableProcessors();
+        boolean ok = false;
         this.exec = new ThreadPoolExecutor(cpus, cpus,
                                            1, TimeUnit.SECONDS,
                                            new LinkedBlockingDeque<Runnable>());
@@ -123,11 +124,14 @@ public class JavaFitter implements FitterInterface {
                                          algo == Algorithm.JavaCovDE,
                                          algo != Algorithm.JavaEitherOrDE,
                                          popsize, func2, exec, opts);
+            ok = true;
         }
-        catch (Throwable t)
+        finally
         {
-            exec.shutdown();
-            throw t;
+            if (!ok)
+            {
+                exec.shutdown();
+            }
         }
         t.start();
     }

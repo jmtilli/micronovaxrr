@@ -32,9 +32,9 @@ public class SingleScrollbarUpdater implements ValueListener {
 
     private boolean noRecursion = false;
 
-    private boolean minIsZero;
+    private final boolean minIsZero;
 
-    public SingleScrollbarUpdater(final FitValue val, final String prefix, final double multiplier, boolean minIsZero) {
+    public SingleScrollbarUpdater(final FitValue val, final String prefix, final double multiplier, final boolean minIsZero) {
         this.val = val;
         this.prefix = prefix;
         this.multiplier = multiplier;
