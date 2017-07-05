@@ -1,8 +1,9 @@
 INSTALLATION
 
 
-This programs needs Java 1.8 to run. This program has been tested on Windows
-and Linux, but it should work on any platform for which Java is available.
+This programs needs Java version at least 1.6 to run. This program has been
+tested on Windows and Linux, but it should work on any platform for which Java
+is available.
 
 
 
