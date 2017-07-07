@@ -144,15 +144,14 @@
           <zipfileset dir="deploy" prefix="xrr-src/deploy">
               <patternset refid="examples" />
               <patternset refid="doc" />
-              <patternset refid="javadb" />
-              <patternset refid="javaaux" />
               <patternset refid="shellscripts" />
-              <patternset refid="libdeps" />
           </zipfileset>
           <zipfileset dir="." prefix="xrr-src">
               <patternset refid="libsrcdeps" />
               <patternset refid="shellscripts" />
-
+              <patternset refid="javadb" />
+              <patternset refid="javaaux" />
+              <patternset refid="libdeps" />
               <patternset refid="src" />
               <patternset refid="srcaux" />
               <patternset refid="srcdoc" />

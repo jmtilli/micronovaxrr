@@ -1,6 +1,13 @@
 *.class
 /xrr.jar
 /deploy/xrr.jar
+/deploy/Jama-1.0.3.jar
+/deploy/atomic_masses.txt
+/deploy/default.layers
+/deploy/javafastcomplex.jar
+/deploy/jfreechart-1.0.1.jar
+/deploy/lib/
+/deploy/sf/
 /.tstamp
 /xrr-bin.zip
 /xrr-bin/
