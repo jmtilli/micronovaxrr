@@ -395,12 +395,12 @@ public class LayerStack implements LayerListener, ValueListener {
         m.put("layers",layerStructs);
         m.put("lambda",lambda);
         m.put("stddev",stddev.getExpected());
-        m.put("measNormal",1);
+        m.put("measNormal",1.0);
         m.put("stddevObj", stddev.structExport());
         m.put("prod", prod.structExport());
         m.put("beam", beam.structExport());
         m.put("sum", sum.structExport());
-        m.put("measSum",0);
+        m.put("measSum",0.0);
         if(additional_data != null)
             m.put("additional_data",additional_data);
         return m;
