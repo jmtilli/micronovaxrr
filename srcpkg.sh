@@ -13,3 +13,4 @@ cp deploy/run.sh deploy/run.bat xrr-src/deploy
 cp deploy/default.layers xrr-src/deploy
 cp *.java *.png *.sh *.bat manifest.txt xrr-src
 cp librarysrc/* xrr-src/librarysrc
+cp build.xml xrr-src

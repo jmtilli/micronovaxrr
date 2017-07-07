@@ -1,1 +1,4 @@
 *.class
+/xrr.jar
+/deploy/xrr.jar
+/.tstamp

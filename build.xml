@@ -1,0 +1,201 @@
+<project name="XRR" default="copy" basedir=".">
+    <description>
+      XRR project build file
+    </description>
+  <!-- set global properties for this build -->
+  <!-- we can't use location here since it appears not to work in include names -->
+  <property name="src" value="."/>
+  <!--<property name="build" location="build"/>-->
+  <!--<property name="dist"  location="dist"/>-->
+
+  <target name="init" depends="maybeclean">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <touch file=".tstamp"/>
+    <!-- Create the build directory structure used by compile -->
+    <!-- <mkdir dir="${build}"/> -->
+  </target>
+
+  <path id="classpath">
+    <!--<pathelement path="${classpath}"/>-->
+    <pathelement location="jfreechart-1.0.1.jar"/>
+    <pathelement location="javafastcomplex.jar"/>
+    <pathelement location="Jama-1.0.3.jar"/>
+  </path>
+
+  <patternset id="shellscripts">
+      <include name="run.sh"/>
+      <include name="run.bat"/>
+  </patternset>
+
+  <patternset id="examples">
+      <include name="examples/"/>
+  </patternset>
+
+  <patternset id="libdeps">
+      <include name="jfreechart-1.0.1.jar"/>
+      <include name="javafastcomplex.jar"/>
+      <include name="Jama-1.0.3.jar"/>
+      <include name="lib/jcommon-1.0.0.jar"/>
+  </patternset>
+  <patternset id="libsrcdeps">
+      <include name="librarysrc/jcommon-1.0.0.zip"/>
+      <include name="librarysrc/jfreechart-1.0.1.zip"/>
+  </patternset>
+
+  <patternset id="srcdoc">
+  </patternset>
+
+  <patternset id="doc">
+      <include name="README-1st.txt"/>
+      <include name="README-export.txt"/>
+      <include name="README.txt"/>
+      <include name="LICENSE.txt"/>
+      <include name="resolution.txt"/>
+  </patternset>
+
+  <patternset id="src">
+      <include name="*.java"/>
+  </patternset>
+
+  <patternset id="srcaux">
+      <include name="*.png"/>
+  </patternset>
+
+  <patternset id="build">
+      <include name="build.xml"/>
+      <include name="manifest.txt"/>
+      <include name="*.bat"/>
+      <include name="*.sh"/>
+  </patternset>
+
+  <patternset id="javadb">
+      <!-- java databases -->
+      <include name="atomic_masses.txt"/>
+      <include name="sf/"/>
+  </patternset>
+
+  <patternset id="javaaux">
+      <include name="default.layers"/>
+  </patternset>
+
+  <target name="compile" depends="init" description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <!-- <javac srcdir="${src}" destdir="${build}"/> -->
+    <!-- <javac srcdir="." destdir="." /> -->
+    <javac srcdir="${src}" debug="on" source="1.5" target="1.5">
+			  <compilerarg value="-Xlint:unchecked"/>
+        <include name="*.java"/>
+        <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <target name="copy" depends="jar" description="copy">
+      <copy file="xrr.jar" todir="deploy"/>
+      <copy file="javafastcomplex.jar" todir="deploy"/>
+      <copy file="jfreechart-1.0.1.jar" todir="deploy"/>
+      <copy file="Jama-1.0.3.jar" todir="deploy"/>
+      <copy file="lib/jcommon-1.0.0.jar" todir="deploy/lib"/>
+      <copy file="atomic_masses.txt" todir="deploy"/>
+      <copy file="default.layers" todir="deploy"/>
+      <copy file="run.sh" todir="deploy"/>
+      <copy file="run.bat" todir="deploy"/>
+      <copy todir="deploy/sf">
+        <fileset dir="sf"/>
+      </copy>
+  </target>
+
+  <target name="jar" depends="compile" description="jar">
+      <jar destfile="xrr.jar">
+          <fileset dir="${src}">
+              <!--<include name="**/*.class"/>-->
+              <include name="**/*.class"/>
+              <include name="*.png"/>
+          </fileset>
+          <manifest>
+              <!--<attribute name="Built-By" value="${user.name}"/>-->
+              <attribute name="Class-Path" value="jfreechart-1.0.1.jar javafastcomplex.jar Jama-1.0.3.jar"/>
+              <attribute name="Main-Class" value="XRRApp"/>
+          </manifest>
+      </jar>
+  </target>
+
+  <target name="bindist" depends="copy" description="make distfile">
+      <zip destfile="xrr-bin.zip">
+          <zipfileset dir="deploy" prefix="xrr-bin">
+              <patternset refid="examples" />
+              <patternset refid="doc" />
+              <patternset refid="javadb" />
+              <patternset refid="javaaux" />
+              <patternset refid="shellscripts" />
+              <patternset refid="libdeps" />
+              <patternset>
+                  <include name="xrr.jar" />
+              </patternset>
+          </zipfileset>
+          <zipfileset dir="." prefix="xrr-bin">
+              <patternset refid="libsrcdeps" />
+          </zipfileset>
+      </zip>
+  </target>
+
+  <target name="srcdist" depends="copy" description="make distfile">
+      <zip destfile="xrr-src.zip">
+          <zipfileset dir="deploy" prefix="xrr-src/deploy">
+              <patternset refid="examples" />
+              <patternset refid="doc" />
+              <patternset refid="javadb" />
+              <patternset refid="javaaux" />
+              <patternset refid="shellscripts" />
+              <patternset refid="libdeps" />
+          </zipfileset>
+          <zipfileset dir="." prefix="xrr-src">
+              <patternset refid="libsrcdeps" />
+              <patternset refid="shellscripts" />
+
+              <patternset refid="src" />
+              <patternset refid="srcaux" />
+              <patternset refid="srcdoc" />
+              <patternset refid="build" />
+          </zipfileset>
+      </zip>
+  </target>
+  <target name="dist" depends="srcdist,bindist" description="make distfiles" />
+
+  <target name="chkclean">
+    <uptodate property="xmlBuild.notRequired" targetfile=".tstamp">
+      <srcfiles dir="." includes="build.xml"/>
+    </uptodate>
+  </target>
+
+  <target name="maybeclean" depends="chkclean" unless="xmlBuild.notRequired">
+    <ant target="clean"/>
+  </target>
+
+  <target name="clean" description="clean up" >
+    <delete>
+        <fileset dir="${src}" includes="**/*.class"/>
+    </delete>
+    <delete>
+        <fileset dir=".">
+            <include name=".tstamp" />
+        </fileset>
+    </delete>
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <!-- <delete dir="${build}"/> -->
+    <!-- <delete dir="${dist}"/> -->
+  </target>
+
+  <target name="distclean" depends="clean" description="clean up distributions" >
+    <delete>
+        <fileset dir=".">
+            <include name="xrr-src.zip" />
+            <include name="xrr-bin.zip" />
+            <include name="xrr.jar" />
+        </fileset>
+    </delete>
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <!-- <delete dir="${build}"/> -->
+    <!-- <delete dir="${dist}"/> -->
+  </target>
+</project>

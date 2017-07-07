@@ -24,3 +24,4 @@ copy *.png xrr-src
 copy *.sh xrr-src
 copy *.bat xrr-src
 copy manifest.txt xrr-src
+copy build.xml xrr-src
