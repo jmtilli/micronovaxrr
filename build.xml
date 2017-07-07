@@ -91,16 +91,16 @@
   </target>
 
   <target name="copy" depends="jar" description="copy">
-      <copy file="xrr.jar" todir="deploy"/>
-      <copy file="javafastcomplex.jar" todir="deploy"/>
-      <copy file="jfreechart-1.0.1.jar" todir="deploy"/>
-      <copy file="Jama-1.0.3.jar" todir="deploy"/>
-      <copy file="lib/jcommon-1.0.0.jar" todir="deploy/lib"/>
-      <copy file="atomic_masses.txt" todir="deploy"/>
-      <copy file="default.layers" todir="deploy"/>
-      <copy file="run.sh" todir="deploy"/>
-      <copy file="run.bat" todir="deploy"/>
-      <copy todir="deploy/sf">
+      <copy todir="deploy" overwrite="true">
+        <fileset file="default.layers"/>
+        <fileset file="atomic_masses.txt"/>
+        <fileset file="xrr.jar"/>
+        <fileset file="javafastcomplex.jar"/>
+        <fileset file="jfreechart-1.0.1.jar"/>
+        <fileset file="Jama-1.0.3.jar"/>
+      </copy>
+      <copy file="lib/jcommon-1.0.0.jar" todir="deploy/lib" overwrite="true"/>
+      <copy todir="deploy/sf" overwrite="true">
         <fileset dir="sf"/>
       </copy>
   </target>
