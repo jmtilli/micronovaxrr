@@ -91,7 +91,7 @@
   </target>
 
   <target name="copy" depends="jar" description="copy">
-      <copy todir="deploy" overwrite="true">
+      <copy todir="deploy" overwrite="true" preservelastmodified="true">
         <fileset file="default.layers"/>
         <fileset file="atomic_masses.txt"/>
         <fileset file="xrr.jar"/>
@@ -99,8 +99,9 @@
         <fileset file="jfreechart-1.0.1.jar"/>
         <fileset file="Jama-1.0.3.jar"/>
       </copy>
-      <copy file="lib/jcommon-1.0.0.jar" todir="deploy/lib" overwrite="true"/>
-      <copy todir="deploy/sf" overwrite="true">
+      <copy file="lib/jcommon-1.0.0.jar" todir="deploy/lib" overwrite="true"
+            preservelastmodified="true"/>
+      <copy todir="deploy/sf" overwrite="true" preservelastmodified="true">
         <fileset dir="sf"/>
       </copy>
   </target>
