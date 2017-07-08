@@ -170,7 +170,7 @@ public class XRRImport {
                 {
                     throw new XRRImportException();
                 }
-                strtimes = dataPoints.getStringNotNull("countingTimes").split(" ", 0);
+                strtimes = dataPoints.getStringNotNull("countingTimes").trim().split("[ \t\r\n]+", 0);
                 times = new double[strtimes.length];
                 for (int i = 0; i < times.length; i++)
                 {
@@ -192,7 +192,7 @@ public class XRRImport {
             {
                 throw new XRRImportException();
             }
-            counts = dataPoints.getStringNotNull("intensities").split(" ", 0);
+            counts = dataPoints.getStringNotNull("intensities").trim().split("[ \t\r\n]+", 0);
             for (DocumentFragment positions: dataPoints.getMulti("positions"))
             {
                 if (!positions.getAttrStringNotNull("axis").equals("2Theta"))
