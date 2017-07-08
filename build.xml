@@ -22,6 +22,12 @@
     <pathelement location="javafastcomplex.jar"/>
     <pathelement location="Jama-1.0.3.jar"/>
   </path>
+  <path id="classpathreg">
+    <pathelement path="."/>
+    <pathelement location="jfreechart-1.0.1.jar"/>
+    <pathelement location="javafastcomplex.jar"/>
+    <pathelement location="Jama-1.0.3.jar"/>
+  </path>
 
   <patternset id="shellscripts">
       <include name="run.sh"/>
@@ -104,6 +110,19 @@
       <copy todir="deploy/sf" overwrite="true" preservelastmodified="true">
         <fileset dir="sf"/>
       </copy>
+  </target>
+
+  <target name="regress" depends="copy" description="regression tests">
+    <java classname="ChemicalFormula" classpathref="classpathreg" fork="true">
+      <assertions>
+        <enable/>
+      </assertions>
+    </java>
+    <java classname="Fcode" classpathref="classpathreg" fork="true">
+      <assertions>
+        <enable/>
+      </assertions>
+    </java>
   </target>
 
   <target name="jar" depends="compile" description="jar">
