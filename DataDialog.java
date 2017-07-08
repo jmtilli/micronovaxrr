@@ -6,21 +6,6 @@ import java.util.*;
 
 
 
-class DepthProfileDialog extends DataDialog {
-    public DepthProfileDialog(JFrame f, double defaultMin, double defaultMax) {
-        super(f, "Depth profile options", "depth", "nm", 1000, defaultMin, defaultMax, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-    }
-}
-
-
-
-/* Dialog for importing empty measurements */
-class LoadEmptyDialog extends DataDialog {
-    public LoadEmptyDialog(JFrame f) {
-        super(f, "Empty measurement options", "angle", null, 700, 0, 3, 0, 90);
-    }
-}
-
 class DataDialog extends JDialog {
     private JTextField minF, maxF, ndataF;
     DataOptions options;
