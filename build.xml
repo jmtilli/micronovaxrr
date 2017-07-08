@@ -20,12 +20,14 @@
     <!--<pathelement path="${classpath}"/>-->
     <pathelement location="jfreechart-1.0.1.jar"/>
     <pathelement location="javafastcomplex.jar"/>
+    <pathelement location="javaxmlfrag.jar"/>
     <pathelement location="Jama-1.0.3.jar"/>
   </path>
   <path id="classpathreg">
     <pathelement path="."/>
     <pathelement location="jfreechart-1.0.1.jar"/>
     <pathelement location="javafastcomplex.jar"/>
+    <pathelement location="javaxmlfrag.jar"/>
     <pathelement location="Jama-1.0.3.jar"/>
   </path>
 
@@ -41,6 +43,7 @@
   <patternset id="libdeps">
       <include name="jfreechart-1.0.1.jar"/>
       <include name="javafastcomplex.jar"/>
+      <include name="javaxmlfrag.jar"/>
       <include name="Jama-1.0.3.jar"/>
       <include name="lib/jcommon-1.0.0.jar"/>
   </patternset>
@@ -102,6 +105,7 @@
         <fileset file="atomic_masses.txt"/>
         <fileset file="xrr.jar"/>
         <fileset file="javafastcomplex.jar"/>
+        <fileset file="javaxmlfrag.jar"/>
         <fileset file="jfreechart-1.0.1.jar"/>
         <fileset file="Jama-1.0.3.jar"/>
       </copy>
@@ -134,7 +138,7 @@
           </fileset>
           <manifest>
               <!--<attribute name="Built-By" value="${user.name}"/>-->
-              <attribute name="Class-Path" value="jfreechart-1.0.1.jar javafastcomplex.jar Jama-1.0.3.jar"/>
+              <attribute name="Class-Path" value="jfreechart-1.0.1.jar javafastcomplex.jar javaxmlfrag.jar Jama-1.0.3.jar"/>
               <attribute name="Main-Class" value="XRRApp"/>
           </manifest>
       </jar>

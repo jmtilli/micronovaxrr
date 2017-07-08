@@ -19,6 +19,7 @@ copy deploy\resolution.txt xrr-src\deploy
 copy jfreechart-1.0.1.jar xrr-src
 copy Jama-1.0.3.jar xrr-src
 copy javafastcomplex.jar xrr-src
+copy javaxmlfrag.jar xrr-src
 copy atomic_masses.txt xrr-src
 
 copy deploy\run.sh xrr-src\deploy
