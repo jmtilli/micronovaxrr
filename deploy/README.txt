@@ -42,9 +42,9 @@ maximum intensity between minimum and maximum normalization angles set to 1.
 
 Only measurements exported from PANalytical's software are supported. In order
 to import other file formats, you need to edit XRRImport.java, which requires
-Java programming skills. Specifically, The file format is the .x00 file format.
-PANalytical's software may support other file formats as well, but this
-software doesn't.
+Java programming skills. Specifically, the file formats supported are the .x00
+file format and the XRDML file format. PANalytical's software may support other
+file formats as well, but this software doesn't.
 
 The wavelength of the measurement must be entered manually on the layer editor
 tab. The default wavelength is 1.54 nm (Cu K-alpha line). Scattering factors
