@@ -2,6 +2,7 @@ import java.io.*;
 import fi.iki.jmtilli.javaxmlfrag.*;
 import javax.xml.parsers.*;
 import org.xml.sax.*;
+import java.util.*;
 
 
 /** Measurement importing code.
@@ -15,10 +16,9 @@ public class XRRImport {
     private XRRImport() {}
     /** The imported data */
     public static class XRRData {
-        public final double[] alpha_0, meas;
-        public XRRData(double[] alpha_0, double[] meas) {
-            this.alpha_0 = alpha_0;
-            this.meas = meas;
+        public final double[][] arrays;
+        public XRRData(double[][] arrays) {
+            this.arrays = arrays;
         }
     };
     /** Imports measurement file from an InputStream.
@@ -111,13 +111,24 @@ public class XRRImport {
         catch(NumberFormatException ex) {
             throw new XRRImportException();
         }
-        return new XRRData(alpha_0, meas);
+        return new XRRData(new double[][]{alpha_0, meas});
     }
     public static XRRData XRDMLImport(InputStream s) throws XRRImportException, IOException
     {
+        DocumentFragment doc_frag;
+        try
+        {
+            doc_frag = DocumentFragmentHandler.parseWhole(s);
+        }
+        catch(ParserConfigurationException ex)
+        {
+            return null;
+        }
+        catch(SAXException ex)
+        {
+            return null;
+        }
         try {
-            DocumentFragment doc_frag =
-                DocumentFragmentHandler.parseWhole(s);
             DocumentFragment measurement;
             DocumentFragment scan;
             DocumentFragment dataPoints;
@@ -187,17 +198,9 @@ public class XRRImport {
                 meas[i] = Double.parseDouble(counts[i])/time;
                 alpha_0[i] = start + i*step;
             }
-            return new XRRData(alpha_0, meas);
-        }
-        catch(ParserConfigurationException ex)
-        {
-            throw new XRRImportException();
+            return new XRRData(new double[][]{alpha_0, meas});
         }
         catch(NumberFormatException ex)
-        {
-            throw new XRRImportException();
-        }
-        catch(SAXException ex)
         {
             throw new XRRImportException();
         }
@@ -205,6 +208,56 @@ public class XRRImport {
         {
             throw new XRRImportException();
         }
+    }
+    public static XRRData asciiImport(InputStream is) throws XRRImportException, IOException {
+        ArrayList<ArrayList<Double>> data = new ArrayList<ArrayList<Double>>();
+        double[][] arrays;
+        int cols = -1;
+        BufferedReader r = new BufferedReader(new InputStreamReader(is));
+        try {
+            String line;
+            while((line = r.readLine()) != null) {
+                StringTokenizer t = new StringTokenizer(line);
+                int curcols = 0;
+                ArrayList<Double> list = new ArrayList<Double>();
+                while (t.hasMoreTokens())
+                {
+                    String s = t.nextToken();
+                    double d = Double.parseDouble(s);
+                    if (curcols == 0 && (d < 0 || d > 90))
+                    {
+                        throw new XRRImportException();
+                    }
+                    curcols++;
+                    list.add(d);
+                }
+                if ((cols >= 0 && cols != curcols) || curcols < 2)
+                {
+                    throw new XRRImportException();
+                }
+                if (cols < 0)
+                {
+                    cols = curcols;
+                }
+                data.add(list);
+            }
+        }
+        catch(NumberFormatException ex) {
+            throw new XRRImportException();
+        }
+        catch(NoSuchElementException ex) {
+            throw new XRRImportException();
+        }
+        arrays = new double[cols][];
+        for (int i = 0; i < cols; i++)
+        {
+            arrays[i] = new double[data.size()];
+            for (int j = 0; j < data.size(); j++)
+            {
+                arrays[i][j] = data.get(j).get(i);
+            }
+        }
+        return new XRRData(arrays);
     }
     /** Imports measurement file from an InputStream.
      *
@@ -215,6 +268,7 @@ public class XRRImport {
      * */
     public static XRRData XRRImport(InputStream s) throws XRRImportException, IOException {
         BufferedInputStream bs = new BufferedInputStream(s);
+        XRRData data;
         byte[] header = new byte[10];
         bs.mark(16);
         bs.read(header, 0, 10);
@@ -223,6 +277,13 @@ public class XRRImport {
         {
             return X00Import(bs);
         }
-        return XRDMLImport(bs);
+        bs.mark(16*1024*1024);
+        data = XRDMLImport(bs);
+        if (data == null)
+        {
+            bs.reset();
+            return asciiImport(bs);
+        }
+        return data;
     }
 };

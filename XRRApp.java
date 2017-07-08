@@ -1365,17 +1365,20 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             filein.close();
                         }
 
-                        assert(importdat.alpha_0.length == importdat.meas.length);
-                        assert(importdat.alpha_0.length > 0);
+                        for (int i = 1; i < importdat.arrays.length; i++)
+                        {
+                            assert(importdat.arrays[i].length == importdat.arrays[0].length);
+                            assert(importdat.arrays[i].length > 0);
+                        }
 
-                        ImportDialog dialog = new ImportDialog(thisFrame,importdat.alpha_0.length,
-                            importdat.alpha_0[0], importdat.alpha_0[importdat.alpha_0.length-1], false);
+                        ImportDialog dialog = new ImportDialog(thisFrame,importdat.arrays[0].length,
+                            importdat.arrays[0][0], importdat.arrays[0][importdat.arrays[0].length-1], importdat.arrays.length);
                         ImportOptions opts = dialog.call();
                         dialog.dispose();
                         if(opts == null)
                             return;
 
-                        loadMeasurement(importdat.alpha_0, importdat.meas, opts);
+                        loadMeasurement(importdat.arrays[0], importdat.arrays[opts.meascol-1], opts);
 
                         measPath = chooser.getSelectedFile().getAbsolutePath();
                         String fname = chooser.getName(chooser.getSelectedFile());
@@ -1429,50 +1432,6 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             }
         });
 
-        fileLoadAscii.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                JFileChooser chooser = new JFileChooser();
-                if(chooserDirectory != null)
-                    chooser.setCurrentDirectory(chooserDirectory);
-                if(chooser.showOpenDialog(thisFrame) == JFileChooser.APPROVE_OPTION) {
-                    chooserDirectory = chooser.getCurrentDirectory();
-                    try {
-                        AsciiImport.AsciiData importdat;
-                        FileInputStream filein = new FileInputStream(chooser.getSelectedFile());
-                        try {
-                            importdat = AsciiImport.AsciiImport(filein);
-                        }
-                        finally {
-                            filein.close();
-                        }
-
-                        assert(importdat.alpha_0.length == importdat.meas.length);
-                        assert(importdat.alpha_0.length > 0);
-
-                        ImportDialog dialog = new ImportDialog(thisFrame,importdat.alpha_0.length,
-                            importdat.alpha_0[0], importdat.alpha_0[importdat.alpha_0.length-1], true);
-                        ImportOptions opts = dialog.call();
-                        dialog.dispose();
-                        if(opts == null)
-                            return;
-
-                        loadMeasurement(importdat.alpha_0, opts.importSimul ? importdat.simul : importdat.meas, opts);
-
-                        measPath = null;
-
-                        setTitle("XRR");
-                    }
-                    catch(XRRImportException ex) {
-                        JOptionPane.showMessageDialog(null, "Invalid file format", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                    catch(IOException ex) {
-                        JOptionPane.showMessageDialog(null, "I/O error", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            }
-        });
-
-        fileMenu.add(fileLoadAscii);
         fileMenu.add(fileSwap);
         fileMenu.addSeparator();
 
