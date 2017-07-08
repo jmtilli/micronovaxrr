@@ -50,11 +50,12 @@ Usually these values are constant for a given diffractometer, so the same
 values of wavelength and FWHM are used in most setups.
 
 If you want to have a specific layer model loaded automatically when the
-program starts, save the layer model to a file named "default.layers". On Unix
-systems, the name is case sensitive. The file should be saved to the directory
-that contains the files atomic_masses.txt and octave_path.txt. If you use a
-source package, the directory is called "deploy". If you install a binary
-package, the directory is the main directory which is usually called "xrr-bin".
+program starts, save the layer model to a file named "default.layers" or
+"default.layers.gz". On Unix systems, the name is case sensitive. The file
+should be saved to the directory that contains the files atomic_masses.txt and
+octave_path.txt. If you use a source package, the directory is called "deploy".
+If you install a binary package, the directory is the main directory which is
+usually called "xrr-bin".
 
 You might want to set the wavelength and FWHM to correct values and add a
 substrate layer to the default layer model.
@@ -63,4 +64,5 @@ An example default layer model is provided with the program. Because of this,
 if you modify this default layer model or install your own, you must be aware
 that installing a new version of this program will overwrite your default layer
 model. If you don't want your default model overwritten when updating the
-program, you must keep a backup copy of your own default.layers.
+program, you must keep a backup copy of your own default.layers or
+default.layers.gz.

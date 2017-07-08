@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.util.*;
+import java.util.zip.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.imageio.*;
@@ -253,10 +254,21 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             FileInputStream fstr = new FileInputStream(f);
             try {
                 BufferedInputStream bs = new BufferedInputStream(fstr);
+                byte[] bytes = new byte[2];
+                InputStream str = bs;
+                bs.mark(2);
+                bs.read(bytes, 0, 2);
+                bs.reset();
+                if (bytes[0] == (byte) (GZIPInputStream.GZIP_MAGIC&0xFF) &&
+                    bytes[1] == (byte) (GZIPInputStream.GZIP_MAGIC >> 8))
+                {
+                  GZIPInputStream gz = new GZIPInputStream(bs);
+                  str = gz;
+                }
                 Map<?,?> m;
                 Object add;
                 Map<?,?> addm;
-                Object structure = Fcode.fdecode(bs, true);
+                Object structure = Fcode.fdecode(str, true);
                 m = (Map<?,?>)structure;
                 hintPath = null;
                 if((add = m.get("additional_data")) != null) {
@@ -1576,12 +1588,24 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     chooserDirectory = chooser.getCurrentDirectory();
                     try {
                         Map<String,Object> additional_data = new HashMap<String,Object>();
-                        FileOutputStream fstr = new FileOutputStream(chooser.getSelectedFile());
+                        File f = chooser.getSelectedFile();
+                        String fs = f.getPath();
+                        FileOutputStream fstr = new FileOutputStream(f);
+                        OutputStream str = fstr;
+                        if (fs.endsWith(".gz"))
+                        {
+                            str = new GZIPOutputStream(fstr, true);
+                        }
                         try {
                             additional_data.put("measPath",measPath == null ? "" : measPath);
-                            Fcode.fencode(layers.structExport(additional_data), fstr);
+                            Fcode.fencode(layers.structExport(additional_data), str);
                         }
                         finally {
+                            str.flush();
+                            if (str != fstr)
+                            {
+                                str.close();
+                            }
                             fstr.close();
                         }
                     }
@@ -2020,12 +2044,18 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
         try {
             String path = getDir();
-            File f = new File(path, "default.layers");
+            File f = new File(path, "default.layers.gz");
             if(f.exists())
-                loadLayers(new File(path, "default.layers"),false);
+                loadLayers(new File(path, "default.layers.gz"),false);
+            else
+            {
+                f = new File(path, "default.layers");
+                if(f.exists())
+                    loadLayers(new File(path, "default.layers"),false);
+            }
         }
         catch(LayerLoadException ex) {
-            JOptionPane.showMessageDialog(null, "There was an error in the file default.layers:\n"+ex.getMessage(), "Error in default.layers", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "There was an error in the file default.layers(.gz):\n"+ex.getMessage(), "Error in default.layers(.gz)", JOptionPane.ERROR_MESSAGE);
         }
 
 

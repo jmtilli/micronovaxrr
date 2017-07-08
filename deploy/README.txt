@@ -141,10 +141,16 @@ with the layer model so you can save a model which can be used as a basis for a
 model for new measurements. This means that you shouldn't delete the measured
 data because you will need to import it again.
 
-The program doesn't add an extension to the file name automatically so you
-need to enter the complete name with the extension. You should choose an
-extension like ".layers" which isn't used by other programs. For example,
-enter "06050304measure2.layers" instead of "06050304measure2".
+The program doesn't add an extension to the file name automatically so you need
+to enter the complete name with the extension. You should choose an extension
+like ".layers" which isn't used by other programs. For example, enter
+"06050304measure2.layers" instead of "06050304measure2". If you want to save
+some disk space, you can compress the file by using the extension ".gz" either
+as-is or (recommended) along with some other extension. So, for example,
+"06050304measure2.layers.gz" is compressed. Also, "06050304measure2.gz" is
+compressed but as it lacks information that it is a layers file, this is not a
+recommended file name. Note that old versions of the software cannot read
+gzipped files.
 
 
 
