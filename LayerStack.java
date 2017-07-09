@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.*;
 import java.util.*;
+import fi.iki.jmtilli.javaxmlfrag.*;
 
 
 /** Layer model.
@@ -36,7 +37,7 @@ import java.util.*;
  *
  */
 
-public class LayerStack implements LayerListener, ValueListener {
+public class LayerStack implements LayerListener, ValueListener, XMLRowable {
     private ArrayList<Layer> layers;
     private final Set<ListDataListener> listListeners = new HashSet<ListDataListener>();
     private final Set<LayerModelListener> modelListeners = new HashSet<LayerModelListener>();
@@ -404,6 +405,23 @@ public class LayerStack implements LayerListener, ValueListener {
         if(additional_data != null)
             m.put("additional_data",additional_data);
         return m;
+    }
+
+    public void toXMLRow(DocumentFragment f)
+    {
+        DocumentFragment fl;
+        Map<FitValue, Integer> fitValueNumbering = getFitValueNumbering();
+        Set<FitValue> alreadyAdded = new HashSet<FitValue>();
+        f.setAttrDouble("lamda", lambda);
+        f.set("sum").setRow("fitvalue", sum);
+        f.set("prod").setRow("fitvalue", prod);
+        f.set("beam").setRow("fitvalue", beam);
+        f.set("stddev").setRow("fitvalue", stddev);
+        fl = f.set("layers");
+        for (Layer l: this.layers)
+        {
+            fl.add("layers").setThisRow(l.xmlRowable(fitValueNumbering, alreadyAdded));
+        }
     }
 
     /** Imports a layer stack from its fencodeable structure representation.

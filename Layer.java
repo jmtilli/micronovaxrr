@@ -1,6 +1,7 @@
 /* Layer */
 
 import java.util.*;
+import fi.iki.jmtilli.javaxmlfrag.*;
 
 
 
@@ -283,6 +284,47 @@ public class Layer implements ValueListener {
         structure.put("compound2",compound2.toString());
         return structure;
     }
+
+    public XMLRowable xmlRowable(final Map<FitValue, Integer> fitValueNumbering,
+                                 final Set<FitValue> alreadyAdded)
+    {
+        return new XMLRowable() {
+            public void setFitValue(DocumentFragment f, String name,
+                                    FitValue val)
+            {
+                if (fitValueNumbering.containsKey(val))
+                {
+                    if (alreadyAdded.contains(val))
+                    {
+                        f.set(name).setRow("fitvalue", val);
+                        f.get(name).get("fitvalue").setAttrInt(
+                            "fitvalrefid", fitValueNumbering.get(val));
+                    }
+                    else
+                    {
+                        f.set(name).setRow("fitvalue", val);
+                        f.get(name).get("fitvalue").setAttrInt(
+                            "fitvalid", fitValueNumbering.get(val));
+                        alreadyAdded.add(val);
+                    }
+                }
+                else
+                {
+                    f.set(name).setRow("fitvalue", val);
+                }
+            }
+            public void toXMLRow(DocumentFragment frag) {
+                frag.setAttrString("name", name);
+                frag.setString("compound1", compound1.toString());
+                frag.setString("compound2", compound2.toString());
+                frag.setDouble("f", f);
+                setFitValue(frag, "d", d);
+                setFitValue(frag, "rho", rho);
+                setFitValue(frag, "r", r);
+            }
+        };
+    }
+
 
     /** This can be sent by a FitValue */
     public void valueChanged(ValueEvent ev) {

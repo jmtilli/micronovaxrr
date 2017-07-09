@@ -9,6 +9,10 @@ import javax.imageio.*;
 import org.jfree.data.xy.*;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import org.xml.sax.SAXException;
+import fi.iki.jmtilli.javaxmlfrag.*;
 
 
 
@@ -1543,8 +1547,17 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             str = new GZIPOutputStream(fstr, true);
                         }
                         try {
-                            additional_data.put("measPath",measPath == null ? "" : measPath);
-                            Fcode.fencode(layers.structExport(additional_data), str);
+                            if (fs.endsWith(".xml") || fs.endsWith(".xml.gz"))
+                            {
+                                DocumentFragment doc = new DocumentFragment("xrrmodel");
+                                doc.setThisRow(layers);
+                                doc.unparse(XMLDocumentType.WHOLE, str);
+                            }
+                            else
+                            {
+                                additional_data.put("measPath",measPath == null ? "" : measPath);
+                                Fcode.fencode(layers.structExport(additional_data), str);
+                            }
                         }
                         finally {
                             str.flush();
@@ -1559,6 +1572,15 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         JOptionPane.showMessageDialog(null, "I/O error", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                     catch(FencException ex) {
+                        JOptionPane.showMessageDialog(null, "Internal error", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    catch(ParserConfigurationException ex) {
+                        JOptionPane.showMessageDialog(null, "Internal error", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    catch(TransformerConfigurationException ex) {
+                        JOptionPane.showMessageDialog(null, "Internal error", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    catch(TransformerException ex) {
                         JOptionPane.showMessageDialog(null, "Internal error", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }

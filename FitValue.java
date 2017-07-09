@@ -2,6 +2,7 @@
 
 
 import java.util.*;
+import fi.iki.jmtilli.javaxmlfrag.*;
 
 
 /* Not immutable! */
@@ -13,7 +14,7 @@ import java.util.*;
  * and not thread safe.
  *
  */
-public class FitValue {
+public class FitValue implements XMLRowable {
     private double min, expected, max;
     private boolean enable; /* whether to fit the value or not */
     private boolean supported;
@@ -194,6 +195,13 @@ public class FitValue {
         return val;
     }
 
+    public void toXMLRow(DocumentFragment f)
+    {
+        f.setAttrDouble("min", min);
+        f.setAttrDouble("expected", expected);
+        f.setAttrDouble("max", max);
+        f.setAttrInt("enable", enable?1:0);
+    }
     public double getMin() { return this.min; };
     public double getMax() { return this.max; };
     public double getExpected() { return this.expected; };
