@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xrrmodel lambda="1.54056E-10" measPath="/home/juhis/micronova xrr/deploy/examples/gaaspn_xrr.xrdml">
+  <sum>
+    <fitvalue enable="1" expected="-47.28890148725159" max="100.0" min="-200.0"/>
+  </sum>
+  <prod>
+    <fitvalue enable="1" expected="0.08361715149169922" max="10.0" min="-10.0"/>
+  </prod>
+  <beam>
+    <fitvalue enable="1" expected="397.7177620829735" max="1000.0" min="0.0"/>
+  </beam>
+  <stddev>
+    <fitvalue enable="0" expected="0.0" max="1.7453292519943296E-4" min="0.0"/>
+  </stddev>
+  <layers>
+    <layer name="GaAsPN layer">
+      <compound1>Ga100As32P67N1</compound1>
+      <compound2>Ga100As32P67N1</compound2>
+      <f>0.6</f>
+      <d>
+        <fitvalue enable="1" expected="2.0594634694973757E-8" max="2.95E-8" min="1.48975E-8"/>
+      </d>
+      <rho>
+        <fitvalue enable="1" expected="4125.163481116067" max="4840.0" min="3717.12"/>
+      </rho>
+      <r>
+        <fitvalue enable="1" expected="1.1131448198761546E-9" max="2.0E-9" min="0.0"/>
+      </r>
+    </layer>
+    <layer name="GaP buffer layer">
+      <compound1>GaP</compound1>
+      <compound2>GaP</compound2>
+      <f>0.6</f>
+      <d>
+        <fitvalue enable="1" expected="5.524711250385767E-8" max="5.0E-7" min="0.0"/>
+      </d>
+      <rho>
+        <fitvalue enable="1" expected="3757.545809089209" max="4138.0" min="1000.0"/>
+      </rho>
+      <r>
+        <fitvalue enable="1" expected="6.866114071406757E-10" max="5.0E-8" min="0.0"/>
+      </r>
+    </layer>
+    <layer name="GaP substrate">
+      <compound1>GaP</compound1>
+      <compound2>GaP</compound2>
+      <f>0.6</f>
+      <d>
+        <fitvalue enable="0" expected="0.0" max="5.0E-7" min="0.0"/>
+      </d>
+      <rho>
+        <fitvalue enable="0" expected="4138.0" max="4138.0" min="4138.0"/>
+      </rho>
+      <r>
+        <fitvalue enable="1" expected="2.131865171615507E-8" max="5.0E-8" min="0.0"/>
+      </r>
+    </layer>
+  </layers>
+</xrrmodel>
