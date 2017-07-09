@@ -245,17 +245,23 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             FileInputStream fstr = new FileInputStream(f);
             try {
                 BufferedInputStream bs = new BufferedInputStream(fstr);
-                byte[] bytes = new byte[2];
+                byte[] bytes = new byte[4];
                 BufferedInputStream str = bs;
                 LayerStack newLayers;
-                bs.mark(2);
-                bs.read(bytes, 0, 2);
+                bs.mark(4);
+                bs.read(bytes, 0, 4);
                 bs.reset();
                 if (bytes[0] == (byte) (GZIPInputStream.GZIP_MAGIC&0xFF) &&
                     bytes[1] == (byte) (GZIPInputStream.GZIP_MAGIC >> 8))
                 {
                   GZIPInputStream gz = new GZIPInputStream(bs);
                   str = new BufferedInputStream(gz);
+                }
+                else if (bytes[0] == 'P' && bytes[1] == 'K' &&
+                         bytes[2] == 3 && bytes[3] == 4)
+                {
+                    ZipOneInputStream gz = new ZipOneInputStream(bs);
+                    str = new BufferedInputStream(gz);
                 }
                 Map<?,?> m;
                 Object add;
@@ -1575,12 +1581,21 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         {
                             str = new GZIPOutputStream(fstr, true);
                         }
+                        else if (fs.endsWith(".zip"))
+                        {
+                            String plain = fs.substring(0, fs.length()-4);
+                            str = new ZipOneOutputStream(fstr, plain);
+                        }
                         try {
-                            if (fs.endsWith(".xml") || fs.endsWith(".xml.gz") ||
+                            if (fs.endsWith(".xml") ||
+                                fs.endsWith(".xml.gz") ||
+                                fs.endsWith(".xml.zip") ||
                                 fs.endsWith(".xmllayers") ||
                                 fs.endsWith(".xmllayers.gz") ||
+                                fs.endsWith(".xmllayers.zip") ||
                                 fs.endsWith(".xml.layers") ||
-                                fs.endsWith(".xml.layers.gz"))
+                                fs.endsWith(".xml.layers.gz") ||
+                                fs.endsWith(".xml.layers.zip"))
                             {
                                 DocumentFragment doc = new DocumentFragment("xrrmodel");
                                 doc.setThisRow(layers);
@@ -2051,14 +2066,19 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         try {
             String[] names = {
                 "default.xmllayers.gz",
+                "default.xmllayers.zip",
                 "default.xmllayers",
                 "default.xml.layers.gz",
+                "default.xml.layers.zip",
                 "default.xml.layers",
                 "default.layers.xml.gz",
+                "default.layers.xml.zip",
                 "default.layers.xml",
                 "default.xml.gz",
+                "default.xml.zip",
                 "default.xml",
                 "default.layers.gz",
+                "default.layers.zip",
                 "default.layers"
             };
             String path = getDir();

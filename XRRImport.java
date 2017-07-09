@@ -388,6 +388,15 @@ outer:
             bs.read(header, 0, 10);
             bs.reset();
         }
+        else if (header[0] == 'P' && header[1] == 'K' &&
+                 header[2] == 3 && header[3] == 4)
+        {
+            ZipOneInputStream gz = new ZipOneInputStream(bs);
+            bs = new BufferedInputStream(gz);
+            bs.mark(16);
+            bs.read(header, 0, 10);
+            bs.reset();
+        }
         if (new String(header).equals("HR-XRDScan"))
         {
             return X00Import(bs);
