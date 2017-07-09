@@ -341,6 +341,28 @@ public class XRRImport {
         }
         return new XRRData(arrays);
     }
+    private static void readWhiteSpace(BufferedInputStream bs) throws IOException
+    {
+        byte[] array = new byte[1024];
+        int j = 0;
+outer:
+        while (true)
+        {
+            bs.mark(2048);
+            bs.read(array, 0, 1024);
+            for (int i = 0; i < 1024; i++)
+            {
+                if (array[i] != '\t' && array[i] != '\n' &&
+                    array[i] != '\r' && array[i] != ' ')
+                {
+                    bs.reset();
+                    j = i;
+                    break outer;
+                }
+            }
+        }
+        bs.read(array, 0, j);
+    }
     /** Imports measurement file from an InputStream.
      *
      * @param s the stream to import the measurement from
@@ -352,6 +374,7 @@ public class XRRImport {
         BufferedInputStream bs = new BufferedInputStream(s);
         XRRData data;
         byte[] header = new byte[10];
+        int ch;
         bs.mark(16);
         bs.read(header, 0, 10);
         bs.reset();
@@ -359,13 +382,19 @@ public class XRRImport {
         {
             return X00Import(bs);
         }
-        bs.mark(16*1024*1024);
-        data = XRDMLImport(bs);
-        if (data == null)
+        readWhiteSpace(bs);
+        bs.mark(16);
+        ch = bs.read();
+        bs.reset();
+        if (ch == '<')
         {
-            bs.reset();
-            return asciiImport(bs);
+            data = XRDMLImport(bs);
+            if (data == null)
+            {
+                throw new XRRImportException();
+            }
+            return data;
         }
-        return data;
+        return asciiImport(bs);
     }
 };
