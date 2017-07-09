@@ -13,7 +13,7 @@ public class ImportDialog extends JDialog {
                        meascolF;
     private JCheckBox importSimul;
     ImportOptions options;
-    public ImportDialog(JFrame f, int nmeas, double min, double max, final int numCols)
+    public ImportDialog(JFrame f, int nmeas, double min, double max, final boolean[] valid)
     {
         super(f,"Import options",true);
         Container dialog;
@@ -35,11 +35,11 @@ public class ImportDialog extends JDialog {
                                   +" and "+
                                   String.format(Locale.US,"%.4f",max)
                                   +"."),c);
-        if (numCols > 0)
+        if (valid.length > 0)
         {
             c.fill = GridBagConstraints.HORIZONTAL;
             c.gridwidth = GridBagConstraints.REMAINDER;
-            gridPanel.add(new JLabel("The file contains " + numCols + " columns"), c);
+            gridPanel.add(new JLabel("The file contains " + valid.length + " columns"), c);
         }
 
         c.fill = GridBagConstraints.NONE;
@@ -88,6 +88,7 @@ public class ImportDialog extends JDialog {
         btnPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         btn = new JButton("OK");
         btn.addActionListener(new ActionListener(){
+            class NotValidException extends Exception {}
             public void actionPerformed(ActionEvent ev) {
                 try {
                     int modulo = Integer.parseInt(moduloF.getText());
@@ -96,13 +97,18 @@ public class ImportDialog extends JDialog {
                     double minNormal = Double.parseDouble(minNormalF.getText());
                     double maxNormal = Double.parseDouble(maxNormalF.getText());
                     int meascol = Integer.parseInt(meascolF.getText());
-                    if(minNormal > maxNormal || minAngle > maxAngle || modulo <= 0 || meascol <= 1 || meascol > numCols)
+                    if(minNormal > maxNormal || minAngle > maxAngle || modulo <= 0 || meascol <= 1 || meascol > valid.length)
                         throw new IllegalArgumentException();
+                    if (!valid[meascol-1])
+                        throw new NotValidException();
                     options = new ImportOptions(modulo, minAngle, maxAngle, minNormal, maxNormal, meascol);
                     setVisible(false);
                 }
                 catch(NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "Number format error", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                catch(NotValidException e) {
+                    JOptionPane.showMessageDialog(null, "The selected column does not contain only numeric data", "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 catch(IllegalArgumentException e) {
                     JOptionPane.showMessageDialog(null, "Invalid values", "Error", JOptionPane.ERROR_MESSAGE);
@@ -123,7 +129,7 @@ public class ImportDialog extends JDialog {
         meascolF = new JTextField("123456");
         meascolF.setMinimumSize(meascolF.getPreferredSize());
         meascolF.setPreferredSize(meascolF.getPreferredSize());
-        if (numCols == 3)
+        if (valid.length == 3 && valid[0] && valid[1] && valid[2])
         {
             meascolF.setText("3");
         }
@@ -136,7 +142,7 @@ public class ImportDialog extends JDialog {
         importSimulPanel.add(new JLabel("Measurement column (counts)"));
         importSimulPanel.add(meascolF);
         importSimulPanel.setMaximumSize(new Dimension(Short.MAX_VALUE,importSimulPanel.getPreferredSize().height));
-        if(numCols > 2)
+        if(valid.length > 2)
             dialog.add(importSimulPanel);
         dialog.add(Box.createVerticalGlue());
         dialog.add(btnPanel);
