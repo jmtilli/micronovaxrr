@@ -249,6 +249,11 @@ public class XRRImport {
         try {
             String line;
             while((line = r.readLine()) != null) {
+                line = line.trim().replaceAll("#.*$", "").trim();
+                if (line.equals(""))
+                {
+                    continue;
+                }
                 StringTokenizer t = new StringTokenizer(line);
                 int curcols = 0;
                 ArrayList<Double> list = new ArrayList<Double>();
