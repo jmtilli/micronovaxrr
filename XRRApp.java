@@ -1547,7 +1547,11 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             str = new GZIPOutputStream(fstr, true);
                         }
                         try {
-                            if (fs.endsWith(".xml") || fs.endsWith(".xml.gz"))
+                            if (fs.endsWith(".xml") || fs.endsWith(".xml.gz") ||
+                                fs.endsWith(".xmllayers") ||
+                                fs.endsWith(".xmllayers.gz") ||
+                                fs.endsWith(".xml.layers") ||
+                                fs.endsWith(".xml.layers.gz"))
                             {
                                 DocumentFragment doc = new DocumentFragment("xrrmodel");
                                 doc.setThisRow(layers);
