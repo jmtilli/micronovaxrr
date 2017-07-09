@@ -2041,20 +2041,34 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         helpMenu.add(helpAbout);
 
 
+        String defaultLayersName = "default.xmllayers";
         try {
+            String[] names = {
+                "default.xmllayers.gz",
+                "default.xmllayers",
+                "default.xml.layers.gz",
+                "default.xml.layers",
+                "default.layers.xml.gz",
+                "default.layers.xml",
+                "default.xml.gz",
+                "default.xml",
+                "default.layers.gz",
+                "default.layers"
+            };
             String path = getDir();
-            File f = new File(path, "default.layers.gz");
-            if(f.exists())
-                loadLayers(new File(path, "default.layers.gz"),false);
-            else
+            for (String name: names)
             {
-                f = new File(path, "default.layers");
-                if(f.exists())
-                    loadLayers(new File(path, "default.layers"),false);
+                File f = new File(path, name);
+                if (f.exists())
+                {
+                    defaultLayersName = name;
+                    loadLayers(new File(path, name),false);
+                    break;
+                }
             }
         }
         catch(LayerLoadException ex) {
-            JOptionPane.showMessageDialog(null, "There was an error in the file default.layers(.gz):\n"+ex.getMessage(), "Error in default.layers(.gz)", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "There was an error in the file " + defaultLayersName + ":\n"+ex.getMessage(), "Error in " + defaultLayersName, JOptionPane.ERROR_MESSAGE);
         }
 
 
