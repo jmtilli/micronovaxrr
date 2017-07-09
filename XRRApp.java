@@ -281,6 +281,12 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         DocumentFragmentHandler.parseWhole(str);
                     doc_frag.assertTag("xrrmodel");
                     newLayers = new LayerStack(doc_frag, table);
+                    hintPath = null;
+                    if (doc_frag.getAttrStringObject("measPath") != null &&
+                        enable_hint)
+                    {
+                        hintPath = doc_frag.getAttrStringNotNull("measPath");
+                    }
                 }
                 layers.deepCopyFrom(newLayers);
             }
