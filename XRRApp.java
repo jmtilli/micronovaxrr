@@ -1551,6 +1551,10 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             {
                                 DocumentFragment doc = new DocumentFragment("xrrmodel");
                                 doc.setThisRow(layers);
+                                if (measPath != null)
+                                {
+                                    doc.setAttrString("measPath", measPath);
+                                }
                                 doc.unparse(XMLDocumentType.WHOLE, str);
                             }
                             else
