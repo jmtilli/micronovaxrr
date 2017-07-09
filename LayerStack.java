@@ -52,7 +52,6 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
 
     private LookupTable table;
 
-
     public double[] getFitValuesForFitting(FitValue.FitValueType type)
     {
       double[] result = new double[3+3*layers.size()];
@@ -412,7 +411,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         DocumentFragment fl;
         Map<FitValue, Integer> fitValueNumbering = getFitValueNumbering();
         Set<FitValue> alreadyAdded = new HashSet<FitValue>();
-        f.setAttrDouble("lamda", lambda);
+        f.setAttrDouble("lambda", lambda);
         f.set("sum").setRow("fitvalue", sum);
         f.set("prod").setRow("fitvalue", prod);
         f.set("beam").setRow("fitvalue", beam);
@@ -420,7 +419,28 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         fl = f.set("layers");
         for (Layer l: this.layers)
         {
-            fl.add("layers").setThisRow(l.xmlRowable(fitValueNumbering, alreadyAdded));
+            fl.add("layer").setThisRow(l.xmlRowable(fitValueNumbering, alreadyAdded));
+        }
+    }
+
+    public LayerStack(DocumentFragment f, LookupTable table)
+    throws ChemicalFormulaException, ElementNotFound
+    {
+        DocumentFragment layersNode = f.getNotNull("layers");
+        this.sum = new FitValue(f.getNotNull("sum").getNotNull("fitvalue"));
+        this.prod = new FitValue(f.getNotNull("prod").getNotNull("fitvalue"));
+        this.beam = new FitValue(f.getNotNull("beam").getNotNull("fitvalue"));
+        this.stddev = new FitValue(f.getNotNull("stddev").getNotNull("fitvalue"));
+        this.lambda = f.getAttrDoubleNotNull("lambda");
+        this.layers = new ArrayList<Layer>();
+        List<Layer> order = new ArrayList<Layer>();
+        Map<String, FitValue> fitValueById = new HashMap<String, FitValue>();
+        for(DocumentFragment layerNode: layersNode.getMulti("layer")) {
+            Layer l = new Layer(layerNode, table, this.lambda, fitValueById);
+            order.add(l);
+        }
+        for(Layer l: order) {
+            this.layers.add(l);
         }
     }
 

@@ -418,6 +418,44 @@ public class Layer implements ValueListener {
         setF(f);
     }
 
+    private FitValue getFitValue(DocumentFragment f,
+                                 Map<String, FitValue> fitValueById)
+    {
+        if (f.getNotNull("fitvalue").getAttrStringObject("fitvalrefid") != null)
+        {
+            FitValue result = fitValueById.get(
+                f.getNotNull("fitvalue").getAttrStringNotNull("fitvalrefid"));
+            if (result == null)
+            {
+                throw new NullPointerException();
+            }
+            return result;
+        }
+        FitValue result = new FitValue(f.getNotNull("fitvalue"));
+        String id = f.getNotNull("fitvalue").getAttrStringObject("fitvalid");
+        if (id != null)
+        {
+            fitValueById.put(id, result);
+        }
+        return result;
+    }
+
+    public Layer(DocumentFragment frag, LookupTable table, double lambda,
+                 Map<String, FitValue> fitValueById)
+    throws ChemicalFormulaException, ElementNotFound
+    {
+        this.table = table;
+        this.lambda = lambda;
+        setName(frag.getAttrStringNotNull("name"));
+        setThicknessObject(getFitValue(frag.getNotNull("d"), fitValueById));
+        setDensityObject(getFitValue(frag.getNotNull("rho"), fitValueById));
+        setRoughnessObject(getFitValue(frag.getNotNull("r"), fitValueById));
+        setCompounds(new ChemicalFormula(frag.getStringNotNull("compound1")),
+                     new ChemicalFormula(frag.getStringNotNull("compound2")));
+        setF(frag.getDoubleNotNull("f"));
+    }
+
+
     /** Changes the layer name */
     public void setName(String name) {
         if(name == null)

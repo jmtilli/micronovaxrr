@@ -87,6 +87,18 @@ public class FitValue implements XMLRowable {
         this.supported = supported;
         setValues(min, expected, max, enable);
     }
+    public FitValue(DocumentFragment frag)
+    {
+        this(frag, true);
+    }
+    public FitValue(DocumentFragment frag, boolean supported)
+    {
+        min = frag.getAttrDoubleNotNull("min");
+        expected = frag.getAttrDoubleNotNull("expected");
+        max = frag.getAttrDoubleNotNull("max");
+        enable = frag.getAttrIntNotNull("enable") != 0;
+        this.supported = supported;
+    }
 
     public void addValueListener(ValueListener l) {
         listeners.add(l);

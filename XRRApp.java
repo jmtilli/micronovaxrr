@@ -246,7 +246,8 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             try {
                 BufferedInputStream bs = new BufferedInputStream(fstr);
                 byte[] bytes = new byte[2];
-                InputStream str = bs;
+                BufferedInputStream str = bs;
+                LayerStack newLayers;
                 bs.mark(2);
                 bs.read(bytes, 0, 2);
                 bs.reset();
@@ -254,20 +255,33 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     bytes[1] == (byte) (GZIPInputStream.GZIP_MAGIC >> 8))
                 {
                   GZIPInputStream gz = new GZIPInputStream(bs);
-                  str = gz;
+                  str = new BufferedInputStream(gz);
                 }
                 Map<?,?> m;
                 Object add;
                 Map<?,?> addm;
-                Object structure = Fcode.fdecode(str, true);
-                m = (Map<?,?>)structure;
-                hintPath = null;
-                if((add = m.get("additional_data")) != null) {
-                    addm = (Map<?,?>)add;
-                    if(enable_hint)
-                        hintPath = (String)addm.get("measPath");
+                str.mark(1);
+                str.read(bytes, 0, 1);
+                str.reset();
+                if (bytes[0] == 'd')
+                {
+                    Object structure = Fcode.fdecode(str, true);
+                    m = (Map<?,?>)structure;
+                    hintPath = null;
+                    if((add = m.get("additional_data")) != null) {
+                        addm = (Map<?,?>)add;
+                        if(enable_hint)
+                            hintPath = (String)addm.get("measPath");
+                    }
+                    newLayers = LayerStack.structImport(m, table);
                 }
-                LayerStack newLayers = LayerStack.structImport(m, table);
+                else
+                {
+                    DocumentFragment doc_frag =
+                        DocumentFragmentHandler.parseWhole(str);
+                    doc_frag.assertTag("xrrmodel");
+                    newLayers = new LayerStack(doc_frag, table);
+                }
                 layers.deepCopyFrom(newLayers);
             }
             finally {
@@ -280,8 +294,17 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         catch(FdecException ex) {
             throw new LayerLoadException("Invalid low-level file format");
         }
+        catch(ParserConfigurationException ex) {
+            throw new LayerLoadException("No XML parser found");
+        }
+        catch(SAXException ex) {
+            throw new LayerLoadException("Invalid physical XML format");
+        }
         catch(ElementNotFound ex) {
             throw new LayerLoadException(ex.getMessage());
+        }
+        catch(ChemicalFormulaException ex) {
+            throw new LayerLoadException("Invalid chemical formula: " + ex.getMessage());
         }
         catch(ClassCastException ex) {
             throw new LayerLoadException("Invalid low-level file format");
