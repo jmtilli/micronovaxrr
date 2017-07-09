@@ -1,10 +1,10 @@
 This directory contains the following true XRR measurements:
 
 - gaaspn_xrr.x00: nominally 20 nm thick GaAsPN layer on nominally 70 nm thick
-  GaP buffer layer on GaP substrate
+  GaP buffer layer on GaP substrate. Also available in XRDML format.
 
 - xrr003.x00: nominally 30 nm thick GaAsPN layer directly on top of GaP
-  substrate
+  substrate. Also, xrr003.xrdml is available in XRDML format.
 
 And the following simulated fitting target (can be loaded with "File" -> "Load
 ASCII export"):
