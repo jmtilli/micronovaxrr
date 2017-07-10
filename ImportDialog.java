@@ -13,7 +13,7 @@ public class ImportDialog extends JDialog {
                        meascolF;
     private JCheckBox importSimul;
     ImportOptions options;
-    public ImportDialog(JFrame f, int nmeas, double min, double max, final boolean[] valid)
+    public ImportDialog(JFrame f, int nmeas, double min, double max, final boolean[] valid, boolean isTwoTheta)
     {
         super(f,"Import options",true);
         Container dialog;
@@ -74,7 +74,7 @@ public class ImportDialog extends JDialog {
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridPanel.add(new JPanel(),c);
 
-        final JCheckBox divideAngleByTwo = new JCheckBox("divide angle by two (angle in file is 2Theta instead of Theta)");
+        final JCheckBox divideAngleByTwo = new JCheckBox("divide angle by two (angle in file is 2Theta instead of Theta)", isTwoTheta);
         gridPanel.add(divideAngleByTwo,c);
 
         gridPanel.setMaximumSize(new Dimension(Short.MAX_VALUE,gridPanel.getPreferredSize().height));

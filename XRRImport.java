@@ -19,13 +19,18 @@ public class XRRImport {
     public static class XRRData {
         public final double[][] arrays;
         public final boolean[] valid;
-        public XRRData(double[][] arrays) {
+        public boolean isTwoTheta;
+        public XRRData(double[][] arrays, boolean isTwoTheta) {
+            this.isTwoTheta = isTwoTheta;
             this.arrays = arrays;
             this.valid = new boolean[arrays.length];
             for (int i = 0; i < arrays.length; i++)
             {
                 this.valid[i] = (arrays[i] != null);
             }
+        }
+        public XRRData(double[][] arrays) {
+            this(arrays, false);
         }
     };
     /** Imports measurement file from an InputStream.
@@ -265,10 +270,13 @@ public class XRRImport {
             }
         }
         XRRData dat = asciiImportReader(in);
+        dat.isTwoTheta = true;
+        /*
         for (int i = 0; i < dat.arrays[0].length; i++)
         {
             dat.arrays[0][i] /= 2.0;
         }
+        */
         return dat;
     }
     public static XRRData rigakuImport(InputStream is) throws XRRImportException, IOException {
@@ -386,7 +394,7 @@ public class XRRImport {
                     {
                         double d = Double.parseDouble(val.trim());
                         meas[i] = d;
-                        alpha_0[i] = (start + i*step)/2.0;
+                        alpha_0[i] = (start + i*step);
                         i++;
                     }
                 }
@@ -398,7 +406,7 @@ public class XRRImport {
         catch(IndexOutOfBoundsException ex) {
             throw new XRRImportException();
         }
-        return new XRRData(new double[][]{alpha_0, meas});
+        return new XRRData(new double[][]{alpha_0, meas}, true);
     }
     public static XRRData asciiImportReader(BufferedReader r) throws XRRImportException, IOException {
         ArrayList<ArrayList<Double>> data = new ArrayList<ArrayList<Double>>();
@@ -597,10 +605,10 @@ outer:
         }
         for (int i = 0; i < steps; i++)
         {
-            alpha_0[i] = (xStart + xStep*i)/2.0;
+            alpha_0[i] = (xStart + xStep*i);
             meas[i] = readLeFloat(s);
         }
-        return new XRRData(new double[][]{alpha_0, meas});
+        return new XRRData(new double[][]{alpha_0, meas}, true);
     }
         
     public static XRRData brukerImport2(InputStream s)
@@ -642,10 +650,10 @@ outer:
         
         for (int i = 0; i < steps; i++)
         {
-            alpha_0[i] = (xStart + xStep*i)/2.0;
+            alpha_0[i] = (xStart + xStep*i);
             meas[i] = readLeFloat(s);
         }
-        return new XRRData(new double[][]{alpha_0, meas});
+        return new XRRData(new double[][]{alpha_0, meas}, true);
     }
         
     public static XRRData brukerImport101(InputStream s)
@@ -710,12 +718,10 @@ outer:
         s.skip(supplementaryHeaderSize);
         for (int i = 0; i < steps; i++)
         {
-            // XXX which one of these is correct?
-            //alpha_0[i] = (startTwoTheta + 2*stepSize*i)/2.0;
-            alpha_0[i] = (startTwoTheta + stepSize*i)/2.0;
+            alpha_0[i] = (startTwoTheta + stepSize*i);
             meas[i] = readLeFloat(s);
         }
-        return new XRRData(new double[][]{alpha_0, meas});
+        return new XRRData(new double[][]{alpha_0, meas}, true);
     }
     /** Imports measurement file from an InputStream.
      *
