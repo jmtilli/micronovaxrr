@@ -248,6 +248,29 @@ public class XRRImport {
             throw new XRRImportException();
         }
     }
+    public static XRRData UXDImport(BufferedReader in) throws XRRImportException, IOException {
+        String line;
+        for (;;)
+        {
+            in.mark(256*1024);
+            line = in.readLine();
+            if (line == null)
+            {
+                throw new XRRImportException();
+            }
+            if (!line.trim().startsWith(";") && !line.trim().startsWith("_"))
+            {
+                in.reset();
+                break;
+            }
+        }
+        XRRData dat = asciiImportReader(in);
+        for (int i = 0; i < dat.arrays[0].length; i++)
+        {
+            dat.arrays[0][i] /= 2.0;
+        }
+        return dat;
+    }
     public static XRRData rigakuImport(InputStream is) throws XRRImportException, IOException {
         double[] alpha_0 = null, meas = null;
         double start = Double.NaN;
@@ -377,12 +400,11 @@ public class XRRImport {
         }
         return new XRRData(new double[][]{alpha_0, meas});
     }
-    public static XRRData asciiImport(InputStream is) throws XRRImportException, IOException {
+    public static XRRData asciiImportReader(BufferedReader r) throws XRRImportException, IOException {
         ArrayList<ArrayList<Double>> data = new ArrayList<ArrayList<Double>>();
         double[][] arrays;
         int cols = -1;
         int validCols = 0;
-        BufferedReader r = new BufferedReader(new InputStreamReader(is));
         try {
             String line;
             while((line = r.readLine()) != null) {
@@ -470,6 +492,10 @@ public class XRRImport {
             throw new XRRImportException();
         }
         return new XRRData(arrays);
+    }
+    public static XRRData asciiImport(InputStream is) throws XRRImportException, IOException {
+        BufferedReader r = new BufferedReader(new InputStreamReader(is));
+        return asciiImportReader(r);
     }
     private static void readWhiteSpace(BufferedInputStream bs) throws IOException
     {
@@ -752,6 +778,40 @@ outer:
         bs.mark(16);
         ch = bs.read();
         bs.reset();
+        if (ch == '_')
+        {
+            String line;
+            BufferedReader r = new BufferedReader(new InputStreamReader(bs));
+            line = r.readLine();
+            if (line.trim().startsWith("_FILEVERSION"))
+            {
+                return UXDImport(r);
+            }
+            throw new XRRImportException();
+        }
+        if (ch == ';')
+        {
+            BufferedReader r = new BufferedReader(new InputStreamReader(bs));
+            String line;
+            r.readLine();
+            for (;;)
+            {
+                line = r.readLine();
+                if (line == null)
+                {
+                    throw new XRRImportException();
+                }
+                if (!line.trim().startsWith(";"))
+                {
+                    break;
+                }
+            }
+            if (line.trim().startsWith("_FILEVERSION"))
+            {
+                return UXDImport(r);
+            }
+            return asciiImportReader(r);
+        }
         if (ch == '<')
         {
             data = XRDMLImport(bs);
