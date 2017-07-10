@@ -461,6 +461,12 @@ public class XRRApp extends JFrame implements ChooserWrapper {
     }
     private void loadMeasurement(double[] alpha_0, double[] meas, ImportOptions opts) {
         double max = 1e-99;
+        if (opts.divAngleByTwo)
+        {
+            for(int i=0; i<alpha_0.length; i++) {
+                alpha_0[i] /= 2;
+            }
+        }
         for(int i=0; i<meas.length; i++) {
             if(alpha_0[i] >= opts.minNormal
                     && alpha_0[i] <= opts.maxNormal
