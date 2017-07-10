@@ -852,6 +852,43 @@ outer:
         }
         return new XRRData(new double[][]{alpha_0, meas}, true);
     }
+    public static XRRData BRMLImport(InputStream s) throws XRRImportException, IOException {
+        DocumentFragment doc_frag;
+        double[] alpha_0, meas;
+        try
+        {
+            doc_frag = DocumentFragmentHandler.parseWhole(s);
+        }
+        catch(ParserConfigurationException ex)
+        {
+            throw new XRRImportException("Can't parse Experiment0/RawData0.xml");
+        }
+        catch(SAXException ex)
+        {
+            throw new XRRImportException("Can't parse Experiment0/RawData0.xml");
+        }
+        doc_frag.assertTag("RawData");
+        DocumentFragment dataRoute =
+            doc_frag.getNotNull("DataRoutes").getNotNull("DataRoute");
+        ArrayList<DocumentFragment> datums = dataRoute.getMulti("Datum");
+        alpha_0 = new double[datums.size()];
+        meas = new double[datums.size()];
+        int i = 0;
+        for (DocumentFragment datum: datums)
+        {
+            String[] strs = datum.getThisStringNotEmpty().split(",");
+            if (strs.length < 5)
+            {
+                throw new XRRImportException();
+            }
+            double theta = Double.parseDouble(strs[3]);
+            double counts = Double.parseDouble(strs[4]);
+            alpha_0[i] = theta;
+            meas[i] = counts;
+            i++;
+        }
+        return new XRRData(new double[][]{alpha_0, meas});
+    }
     /** Imports measurement file from an InputStream.
      *
      * @param s the stream to import the measurement from
@@ -879,8 +916,12 @@ outer:
         else if (header[0] == 'P' && header[1] == 'K' &&
                  header[2] == 3 && header[3] == 4)
         {
-            ZipOneInputStream gz = new ZipOneInputStream(bs);
+            ZipOneOrBrukerInputStream gz = new ZipOneOrBrukerInputStream(bs);
             bs = new BufferedInputStream(gz);
+            if (gz.isBruker())
+            {
+                return BRMLImport(bs);
+            }
             bs.mark(16);
             bs.read(header, 0, 10);
             bs.reset();
