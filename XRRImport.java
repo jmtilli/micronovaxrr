@@ -33,6 +33,88 @@ public class XRRImport {
             this(arrays, false);
         }
     };
+    public static XRRData UDFImport(InputStream s) throws XRRImportException, IOException {
+        double[] alpha_0;
+        double[] meas;
+        Boolean is_2theta_omega = null;
+        try {
+            Double firstAngle = null, stepWidth = null, lastAngle = null;
+            InputStreamReader rr = new InputStreamReader(s);
+            BufferedReader r = new BufferedReader(rr);
+
+            String line = r.readLine();
+            if(line == null || !line.startsWith("SampleIdent,"))
+                throw new XRRImportException();
+            for(;;) {
+                line = r.readLine();
+                if(line == null)
+                    throw new XRRImportException();
+                if(line.startsWith("DataAngleRange,")) {
+                    if(firstAngle != null)
+                        throw new XRRImportException();
+                    if (!line.endsWith(",/"))
+                        throw new XRRImportException();
+                    String[] ar = line.substring(15, line.length()-2).split(",");
+                    if (ar.length != 2)
+                        throw new XRRImportException();
+                    firstAngle = new Double(ar[0]);
+                    lastAngle = new Double(ar[1]);
+                }
+                if(line.startsWith("ScanStepSize,")) {
+                    if(stepWidth != null)
+                        throw new XRRImportException();
+                    if (!line.endsWith(",/"))
+                        throw new XRRImportException();
+                    String[] ar = line.substring(13, line.length()-2).split(",");
+                    if (ar.length != 1)
+                        throw new XRRImportException();
+                    stepWidth = new Double(ar[0]);
+                }
+                if(line.equals("RawScan"))
+                    break;
+            }
+            if(stepWidth == null || firstAngle == null || lastAngle == null)
+                throw new XRRImportException();
+
+            int size = (int)((lastAngle - firstAngle)/stepWidth + 1.0 + 0.5);
+            double alpha = firstAngle.doubleValue();
+            double width = stepWidth.doubleValue();
+
+            alpha_0 = new double[size];
+            meas = new double[size];
+
+            boolean last = false;
+            int i = 0;
+            while (!last) {
+                line = r.readLine();
+                if(line == null)
+                    throw new XRRImportException();
+                if (line.endsWith("/"))
+                {
+                    line = line.substring(0, line.length() - 1);
+                    last = true;
+                }
+                String[] vals = line.split(",");
+                for (String val: vals)
+                {
+                    if(i >= size)
+                        throw new XRRImportException();
+                    alpha_0[i] = alpha + i*width;
+                    meas[i] = Double.parseDouble(val);
+                    i++;
+                }
+            }
+            line = r.readLine();
+            if(line != null && !line.equals("\u001A"))
+                throw new XRRImportException();
+            if(i != size)
+                throw new XRRImportException();
+        }
+        catch(NumberFormatException ex) {
+            throw new XRRImportException();
+        }
+        return new XRRData(new double[][]{alpha_0, meas}, true);
+    }
     /** Imports measurement file from an InputStream.
      *
      * @param s the stream to import the measurement from
@@ -780,10 +862,10 @@ outer:
     public static XRRData XRRImport(InputStream s) throws XRRImportException, IOException {
         BufferedInputStream bs = new BufferedInputStream(s);
         XRRData data;
-        byte[] header = new byte[10];
+        byte[] header = new byte[12];
         int ch;
         bs.mark(16);
-        bs.read(header, 0, 10);
+        bs.read(header, 0, 12);
         bs.reset();
         if (header[0] == (byte) (GZIPInputStream.GZIP_MAGIC&0xFF) &&
             header[1] == (byte) (GZIPInputStream.GZIP_MAGIC >> 8))
@@ -836,6 +918,10 @@ outer:
         if (new String(header).startsWith("HR-XRDScan"))
         {
             return X00Import(bs);
+        }
+        if (new String(header).startsWith("SampleIdent,"))
+        {
+            return UDFImport(bs);
         }
         readWhiteSpace(bs);
         bs.mark(16);
