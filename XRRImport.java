@@ -361,6 +361,80 @@ public class XRRImport {
         */
         return dat;
     }
+    public static XRRData rasImport(InputStream is) throws XRRImportException, IOException {
+        double[] alpha_0 = null, meas = null;
+        int count = -1;
+        boolean begun = false;
+        boolean ended = false;
+        int i = 0;
+        BufferedReader r = new BufferedReader(new InputStreamReader(is));
+        try
+        {
+            String line;
+            while((line = r.readLine()) != null)
+            {
+                if (line.trim().equals(""))
+                {
+                    continue;
+                }
+                else if (line.startsWith("*RAS_INT_START"))
+                {
+                    begun = true;
+                }
+                else if (line.startsWith("*RAS_INT_END"))
+                {
+                    ended = true;
+                }
+                else if (line.startsWith("*RAS_DATA_END"))
+                {
+                    ended = true;
+                }
+                else if (line.startsWith("*MEAS_DATA_COUNT"))
+                {
+                    line = line.replaceAll(
+                        "\\*MEAS_DATA_COUNT \"([0-9]+(.[0-9]+)?)\"$", "$1");
+                    count = (int)(Double.parseDouble(line) + 0.5);
+                    System.out.println(count);
+                    alpha_0 = new double[count];
+                    meas = new double[count];
+                }
+                else if (line.startsWith("*"))
+                {
+                }
+                else if (line.trim().equals(""))
+                {
+                }
+                else
+                {
+                    String[] vals = line.split(" ");
+                    if (!begun || ended)
+                    {
+                        throw new XRRImportException();
+                    }
+                    if (vals.length < 2)
+                    {
+                        throw new XRRImportException();
+                    }
+                    if (meas == null || alpha_0 == null)
+                    {
+                        throw new XRRImportException();
+                    }
+                    double d1 = Double.parseDouble(vals[0]);
+                    double d2 = Double.parseDouble(vals[1]);
+                    alpha_0[i] = d1;
+                    meas[i] = d2;
+                    i++;
+                }
+            }
+        }
+        catch(NumberFormatException ex) {
+            throw new XRRImportException();
+        }
+        catch(IndexOutOfBoundsException ex) {
+            throw new XRRImportException();
+        }
+        return new XRRData(new double[][]{alpha_0, meas}, false);
+    }
     public static XRRData rigakuImport(InputStream is) throws XRRImportException, IOException {
         double[] alpha_0 = null, meas = null;
         double start = Double.NaN;
@@ -430,6 +504,9 @@ public class XRRImport {
                         throw new XRRImportException();
                     }
                 }
+                else if (line.startsWith("*COUNTER"))
+                {
+                }
                 else if (line.startsWith("*COUNT"))
                 {
                     String[] vals = line.split("=", 2);
@@ -458,6 +535,9 @@ public class XRRImport {
                     ended = true;
                 }
                 else if (line.startsWith("*"))
+                {
+                }
+                else if (line.trim().equals(""))
                 {
                 }
                 else
@@ -955,6 +1035,11 @@ outer:
             header[2] == 'Y' && header[3] == 'P' && header[4] == 'E')
         {
             return rigakuImport(bs);
+        }
+        if (header[0] == '*' && header[1] == 'R' &&
+            header[2] == 'A' && header[3] == 'S')
+        {
+            return rasImport(bs);
         }
         if (new String(header).startsWith("HR-XRDScan"))
         {
