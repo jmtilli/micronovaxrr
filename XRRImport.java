@@ -70,7 +70,7 @@ public class XRRImport {
                         throw new XRRImportException();
                     stepWidth = new Double(ar[0]);
                 }
-                if(line.equals("RawScan"))
+                if(line.matches("^RawScan[ \t\r]*$"))
                     break;
             }
             if(stepWidth == null || firstAngle == null || lastAngle == null)
