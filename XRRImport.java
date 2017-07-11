@@ -335,31 +335,129 @@ public class XRRImport {
             throw new XRRImportException();
         }
     }
-    public static XRRData UXDImport(BufferedReader in) throws XRRImportException, IOException {
+    public static XRRData UXDTwoThetaCountsImport(BufferedReader in) throws XRRImportException, IOException
+    {
+        Double interim = null;
         String line;
+        int i = 0;
+        ArrayList<double[]> vals = new ArrayList<double[]>();
         for (;;)
         {
-            in.mark(256*1024);
             line = in.readLine();
             if (line == null)
             {
-                throw new XRRImportException();
-            }
-            if (!line.trim().startsWith(";") && !line.trim().startsWith("_"))
-            {
-                in.reset();
+                if (interim != null)
+                    throw new XRRImportException();
                 break;
             }
+            for (String token: line.split("[ \t\r\n]+"))
+            {
+                if (interim != null)
+                {
+                    double y = Double.parseDouble(token);
+                    double x = interim;
+                    double[] both = new double[]{x, y};
+                    vals.add(both);
+                    i++;
+                    interim = null;
+                }
+                else
+                {
+                    interim = Double.parseDouble(token);
+                }
+            }
         }
-        XRRData dat = asciiImportReader(in);
-        dat.isTwoTheta = true;
-        /*
-        for (int i = 0; i < dat.arrays[0].length; i++)
+        double[] alpha_0 = new double[vals.size()];
+        double[] meas = new double[vals.size()];
+        for (i = 0; i < alpha_0.length; i++)
         {
-            dat.arrays[0][i] /= 2.0;
+            alpha_0[i] = vals.get(i)[0];
+            meas[i] = vals.get(i)[1];
         }
-        */
-        return dat;
+        return new XRRData(new double[][]{alpha_0, meas}, true);
+    }
+    public static XRRData UXDCountsImport(BufferedReader in, double start, double step) throws XRRImportException, IOException
+    {
+        int i = 0;
+        ArrayList<double[]> vals = new ArrayList<double[]>();
+        String line;
+        for (;;)
+        {
+            line = in.readLine();
+            if (line == null || line.trim().equals(""))
+            {
+                break;
+            }
+            line = line.trim();
+            for (String token: line.split("[ \t\r\n]+"))
+            {
+                double y = Double.parseDouble(token);
+                double x = start + step*i;
+                double[] both = new double[]{x, y};
+                vals.add(both);
+                i++;
+            }
+        }
+        double[] alpha_0 = new double[vals.size()];
+        double[] meas = new double[vals.size()];
+        for (i = 0; i < alpha_0.length; i++)
+        {
+            alpha_0[i] = vals.get(i)[0];
+            meas[i] = vals.get(i)[1];
+        }
+        return new XRRData(new double[][]{alpha_0, meas}, true);
+    }
+    public static XRRData UXDImport(BufferedReader in) throws XRRImportException, IOException {
+        String line;
+        Double start = null, step = null;
+        try
+        {
+            for (;;)
+            {
+                line = in.readLine();
+                if (line == null)
+                {
+                    throw new XRRImportException();
+                }
+                if (line.matches("^_2THETACOUNTS[ \t\r]*$"))
+                {
+                    /*
+                    XRRData dat = asciiImportReader(in);
+                    dat.isTwoTheta = true;
+                    return dat;
+                    */
+                    XRRData dat = UXDTwoThetaCountsImport(in);
+                    dat.isTwoTheta = true;
+                    return dat;
+                }
+                if (line.startsWith("_START="))
+                {
+                    start = Double.parseDouble(line.substring(7).trim());
+                }
+                if (line.startsWith("_STEPSIZE="))
+                {
+                    step = Double.parseDouble(line.substring(10).trim());
+                }
+                if (line.matches("^_COUNTS[ \t\r]*$"))
+                {
+                    if (start == null || step == null)
+                        throw new XRRImportException();
+                    XRRData dat = UXDCountsImport(in, start, step);
+                    dat.isTwoTheta = true;
+                    return dat;
+                }
+                if (!line.trim().startsWith(";") && !line.trim().startsWith("_"))
+                {
+                    throw new XRRImportException();
+                }
+            }
+        }
+        catch(NumberFormatException ex) {
+            throw new XRRImportException();
+        }
+        catch(IndexOutOfBoundsException ex) {
+            throw new XRRImportException();
+        }
     }
     public static XRRData rasImport(InputStream is) throws XRRImportException, IOException {
         double[] alpha_0 = null, meas = null;
