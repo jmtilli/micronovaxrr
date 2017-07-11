@@ -1,5 +1,26 @@
 Example files of the following supported formats are missing:
 - Bruker RAS
-- Bruker 1
-- Bruker 2
+- Bruker RAW 1
+- Bruker RAW 2
 - BRML (Bruker markup language)
+
+Here are some sample Bruker RAW 2 files:
+http://www.mx.iucr.org/iucr-top/comm/cpd/QARR/raw/cpd-1a.raw
+http://www.mx.iucr.org/iucr-top/comm/cpd/QARR/raw/cpd-1b.raw
+http://www.mx.iucr.org/iucr-top/comm/cpd/QARR/raw/cpd-1c.raw
+http://www.mx.iucr.org/iucr-top/comm/cpd/QARR/raw/cpd-2.raw
+http://www.mx.iucr.org/iucr-top/comm/cpd/QARR/raw/cpd-3.raw
+
+Bruker RAW 1 files seem to be nowehere to be found. However, the code of the
+xylib library can be used as a reference: https://github.com/wojdyr/xylib/
+
+Here is sample Bruker RAS file:
+https://github.com/mtex-toolbox/mtex/blob/master/data/PoleFigure/Bruker_xrd_10-10.ras
+...except it contains multiple scans, so you need to edit with a text editor to
+contain only one scan.
+
+Here are some BRML files:
+https://github.com/aboulle/DxTools/tree/master/Examples
+Especially interesting is the Temperature.brml file. They seem to contain more
+than one scan per file, but this software doesn't care and imports the first
+scan.
