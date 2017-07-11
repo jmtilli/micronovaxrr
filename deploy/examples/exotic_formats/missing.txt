@@ -1,6 +1,5 @@
 Example files of the following supported formats are missing:
 - Bruker RAS
-- Bruker RAW 1
 - Bruker RAW 2
 - BRML (Bruker markup language)
 
@@ -10,9 +9,6 @@ http://www.mx.iucr.org/iucr-top/comm/cpd/QARR/raw/cpd-1b.raw
 http://www.mx.iucr.org/iucr-top/comm/cpd/QARR/raw/cpd-1c.raw
 http://www.mx.iucr.org/iucr-top/comm/cpd/QARR/raw/cpd-2.raw
 http://www.mx.iucr.org/iucr-top/comm/cpd/QARR/raw/cpd-3.raw
-
-Bruker RAW 1 files seem to be nowehere to be found. However, the code of the
-xylib library can be used as a reference: https://github.com/wojdyr/xylib/
 
 Here is sample Bruker RAS file:
 https://github.com/mtex-toolbox/mtex/blob/master/data/PoleFigure/Bruker_xrd_10-10.ras
