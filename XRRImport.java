@@ -394,7 +394,6 @@ public class XRRImport {
                     line = line.replaceAll(
                         "\\*MEAS_DATA_COUNT \"([0-9]+(.[0-9]+)?)\"$", "$1");
                     count = (int)(Double.parseDouble(line) + 0.5);
-                    System.out.println(count);
                     alpha_0 = new double[count];
                     meas = new double[count];
                 }
