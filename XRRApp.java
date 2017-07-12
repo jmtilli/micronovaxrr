@@ -2075,6 +2075,91 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         helpMenu.add(helpAbout);
 
 
+        String defaultMeasName = "default.xrdml.gz";
+        try {
+            String[] names = {
+                "default.xrdml.gz",
+                "default.xrdml.zip",
+                "default.xrdml",
+                "default.x00.gz",
+                "default.x00.zip",
+                "default.x00",
+                "default.brml",
+                "default.brml",
+                "default.udf.gz",
+                "default.udf.zip",
+                "default.udf",
+                "default.rd.gz",
+                "default.rd.zip",
+                "default.rd",
+                "default.sd.gz",
+                "default.sd.zip",
+                "default.sd",
+                "default.raw.gz",
+                "default.raw.zip",
+                "default.raw",
+                "default.uxd.gz",
+                "default.uxd.zip",
+                "default.uxd",
+                "default.ras.gz",
+                "default.ras.zip",
+                "default.ras",
+                "default.dat.gz",
+                "default.dat.zip",
+                "default.dat",
+                "default.asc.gz",
+                "default.asc.zip",
+                "default.asc",
+                "default.rig.gz",
+                "default.rig.zip",
+                "default.rig",
+                "default.txt.gz",
+                "default.txt.zip",
+                "default.txt",
+                "default.xy.gz",
+                "default.xy.zip",
+                "default.xy",
+            };
+            String path = getDir();
+            for (String name: names)
+            {
+                File f = new File(path, name);
+                if (f.exists())
+                {
+                    XRRImport.XRRData importdat;
+                    defaultMeasName = f.getName();
+                    FileInputStream filein = new FileInputStream(f);
+                    try {
+                        importdat = XRRImport.XRRImport(filein);
+                    }
+                    finally {
+                        filein.close();
+                    }
+                    ImportOptions opts = new ImportOptions(1, 0, 90, 0.07, 90, 2, importdat.isTwoTheta);
+
+                    for (int i = 1; i < importdat.arrays.length; i++)
+                    {
+                        assert(importdat.arrays[i].length == importdat.arrays[0].length);
+                        assert(importdat.arrays[i].length > 0);
+                    }
+                    loadMeasurement(importdat.arrays[0], importdat.arrays[opts.meascol-1], opts);
+                    measPath = f.getAbsolutePath();
+                    String fname = f.getName();
+                    hintPath = null;
+
+                    setTitle("XRR ("+fname+")");
+                    break;
+                }
+            }
+        }
+        catch(XRRImportException ex) {
+            JOptionPane.showMessageDialog(null, "There was an error in the file " + defaultMeasName + ":\n"+ex.getMessage(), "Error in " + defaultMeasName, JOptionPane.ERROR_MESSAGE);
+        }
+        catch(IOException ex) {
+            JOptionPane.showMessageDialog(null, "There was an error in reading the file " + defaultMeasName + ":\n"+ex.getMessage(), "Error in reading " + defaultMeasName, JOptionPane.ERROR_MESSAGE);
+        }
+
+
         String defaultLayersName = "default.xmllayers";
         try {
             String[] names = {
