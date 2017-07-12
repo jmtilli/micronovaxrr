@@ -1177,7 +1177,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         final SpinnerNumberModel iterationsModel = new SpinnerNumberModel(500,1,2000,1);
         final SpinnerNumberModel pModel = new SpinnerNumberModel(2,1,10,1);
         final SpinnerNumberModel firstAngleModel = new SpinnerNumberModel(0.07,0,10,0.01);
-        final SpinnerNumberModel lastAngleModel = new SpinnerNumberModel(2.25,0,10,0.01);
+        final SpinnerNumberModel lastAngleModel = new SpinnerNumberModel(10.00,0,10,0.01);
         final SpinnerNumberModel thresholdModel = new SpinnerNumberModel(-30,-500,500,0.1);
         final JComboBox<Algorithm> algoBox = new JComboBox<Algorithm>(Algorithm.values());
         final JComboBox<FitnessFunction> funcBox = new JComboBox<FitnessFunction>(FitnessFunction.values());
