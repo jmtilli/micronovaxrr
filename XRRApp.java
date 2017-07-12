@@ -2135,13 +2135,23 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     finally {
                         filein.close();
                     }
-                    ImportOptions opts = new ImportOptions(1, 0, 90, 0.07, 90, 2, importdat.isTwoTheta);
 
                     for (int i = 1; i < importdat.arrays.length; i++)
                     {
                         assert(importdat.arrays[i].length == importdat.arrays[0].length);
                         assert(importdat.arrays[i].length > 0);
                     }
+                    boolean[] valid = importdat.valid;
+                    int col;
+                    if (valid.length == 3 && valid[0] && valid[1] && valid[2])
+                    {
+                        col = 3;
+                    }
+                    else
+                    {
+                        col = 2;
+                    }
+                    ImportOptions opts = new ImportOptions(1, 0, 90, 0.07, 90, col, importdat.isTwoTheta);
                     loadMeasurement(importdat.arrays[0], importdat.arrays[opts.meascol-1], opts);
                     measPath = f.getAbsolutePath();
                     String fname = f.getName();
