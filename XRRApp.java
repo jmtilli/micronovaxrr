@@ -233,12 +233,56 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
     private enum PlotStyle {LIN, LOG, ALPHA4, SQRT};
 
+    private Properties props = new Properties();
+
     private AdvancedFitOptions opts = new AdvancedFitOptions();
 
     /* these must point always to the same object */
     private LayerPlotter pfit;
     private LayerPlotter p;
     private LayerStack fitLayers;
+
+    private int settingInt(String key, int default_value, int min, int max)
+    {
+        try {
+            String val = props.getProperty(key);
+            if (val == null)
+            {
+                return default_value;
+            }
+            int num = Integer.parseInt(val);
+            if (num < min || num > max)
+            {
+                return default_value;
+            }
+            return num;
+        }
+        catch (NumberFormatException ex)
+        {
+            return default_value;
+        }
+    }
+
+    private double settingDouble(String key, double default_value, double min, double max)
+    {
+        try {
+            String val = props.getProperty(key);
+            if (val == null)
+            {
+                return default_value;
+            }
+            double num = Double.parseDouble(val);
+            if (num < min || num > max)
+            {
+                return default_value;
+            }
+            return num;
+        }
+        catch (NumberFormatException ex)
+        {
+            return default_value;
+        }
+    }
 
     private void loadLayers(File f, boolean enable_hint) throws LayerLoadException {
         try {
@@ -661,6 +705,97 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             String stackTrace = writer.toString();
             JOptionPane.showMessageDialog(null,
                 "Can't load scattering factor files\n" + stackTrace,
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        /* Load properties */
+        try {
+            File f = new File(getDir(), "default.properties");
+            if (f.exists())
+            {
+                FileInputStream pfin = new FileInputStream(f);
+                try {
+                    props.load(pfin);
+                }
+                finally {
+                    pfin.close();
+                }
+            }
+            else
+            {
+                props.setProperty("autofit.popsize", "60");
+                props.setProperty("autofit.iters", "500");
+                props.setProperty("autofit.firstAngle", "0.07");
+                props.setProperty("autofit.lastAngle", "10.0");
+                props.setProperty("autofit.algorithm", "0");
+                props.setProperty("autofit.fitnessFunc", "0");
+                props.setProperty("autofit.thresRelF", "-30");
+                props.setProperty("autofit.pNorm", "2");
+                props.setProperty("autofit.k_m", "0.7");
+                props.setProperty("autofit.k_r", "0.85");
+                props.setProperty("autofit.p_m", "0.5");
+                props.setProperty("autofit.c_r", "0.5");
+                props.setProperty("autofit.lambda", "1.0");
+                props.setProperty("autofit.reportPerf", "false");
+            }
+            opts.km = Double.parseDouble(props.getProperty("autofit.k_m"));
+            if (opts.km <= 0 || opts.km >= 1)
+            {
+                throw new NumberFormatException();
+            }
+            opts.kr = Double.parseDouble(props.getProperty("autofit.k_r"));
+            if (opts.kr <= 0 || opts.kr >= 1)
+            {
+                throw new NumberFormatException();
+            }
+            opts.pm = Double.parseDouble(props.getProperty("autofit.p_m"));
+            if (opts.pm <= 0 || opts.pm >= 1)
+            {
+                throw new NumberFormatException();
+            }
+            opts.cr = Double.parseDouble(props.getProperty("autofit.c_r"));
+            if (opts.cr <= 0 || opts.cr >= 1)
+            {
+                throw new NumberFormatException();
+            }
+            opts.lambda = Double.parseDouble(props.getProperty("autofit.lambda"));
+            if (opts.lambda < 0 || opts.lambda > 1)
+            {
+                throw new NumberFormatException();
+            }
+            opts.reportPerf = Boolean.parseBoolean(props.getProperty("autofit.reportPerf"));
+        }
+        catch(NumberFormatException ex) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            ex.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            JOptionPane.showMessageDialog(null,
+                "Can't load properties\n" + stackTrace,
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        catch(IllegalArgumentException ex) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            ex.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            JOptionPane.showMessageDialog(null,
+                "Can't load properties\n" + stackTrace,
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        catch(IOException ex) {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter( writer );
+            ex.printStackTrace( printWriter );
+            printWriter.flush();
+            String stackTrace = writer.toString();
+            JOptionPane.showMessageDialog(null,
+                "Can't load properties\n" + stackTrace,
                 "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -1173,14 +1308,16 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         final JButton startFitButton = new JButton("Start");
         final JButton stopFitButton = new JButton("Stop");
         final JButton advancedButton = new JButton("Opts");
-        final SpinnerNumberModel popSizeModel = new SpinnerNumberModel(60,20,2000,1);
-        final SpinnerNumberModel iterationsModel = new SpinnerNumberModel(500,1,2000,1);
-        final SpinnerNumberModel pModel = new SpinnerNumberModel(2,1,10,1);
-        final SpinnerNumberModel firstAngleModel = new SpinnerNumberModel(0.07,0,10,0.01);
-        final SpinnerNumberModel lastAngleModel = new SpinnerNumberModel(10.00,0,10,0.01);
-        final SpinnerNumberModel thresholdModel = new SpinnerNumberModel(-30,-500,500,0.1);
+        final SpinnerNumberModel popSizeModel = new SpinnerNumberModel(settingInt("autofit.popsize", 60, 20, 2000),20,2000,1);
+        final SpinnerNumberModel iterationsModel = new SpinnerNumberModel(settingInt("autofit.iters", 500, 1, 2000),1,2000,1);
+        final SpinnerNumberModel pModel = new SpinnerNumberModel(settingInt("autofit.pNorm", 2, 1, 10),1,10,1);
+        final SpinnerNumberModel firstAngleModel = new SpinnerNumberModel(settingDouble("autofit.firstAngle", 0.07, 0, 10),0,10,0.01);
+        final SpinnerNumberModel lastAngleModel = new SpinnerNumberModel(settingDouble("autofit.lastAngle", 10, 0, 10),0,10,0.01);
+        final SpinnerNumberModel thresholdModel = new SpinnerNumberModel(settingDouble("autofit.thresRelF", -30, -500, 500),-500,500,0.1);
         final JComboBox<Algorithm> algoBox = new JComboBox<Algorithm>(Algorithm.values());
+        algoBox.setSelectedItem(Algorithm.values()[settingInt("autofit.algorithm", 0, 0, Algorithm.values().length)]);
         final JComboBox<FitnessFunction> funcBox = new JComboBox<FitnessFunction>(FitnessFunction.values());
+        funcBox.setSelectedItem(FitnessFunction.values()[settingInt("autofit.fitnessFunc", 0, 0, FitnessFunction.values().length)]);
         /*
         final JCheckBox nonlinBox = new JCheckBox("Nonlinear fitness space estimation");
         nonlinBox.setSelected(true);
