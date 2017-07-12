@@ -3,8 +3,8 @@
  * All the supported algorithms and their human-readable names.
  */
 public enum Algorithm {
-    JavaDE("JavaDE"),
     JavaCovDE("JavaCovDE"),
+    JavaDE("JavaDE"),
     JavaEitherOrDE("JavaEitherOrDE");
 
     private final String name;
