@@ -21,6 +21,7 @@ import org.jfree.chart.plot.*;
  */
 
 public class JavaFitter implements FitterInterface {
+    private long start;
     private Thread t;
     private ExecutorService exec;
     private JPlotArea light;
@@ -91,6 +92,7 @@ public class JavaFitter implements FitterInterface {
         this.errTask = errTask;
         this.iterations = iterations;
         this.stack = stack;
+        this.start = System.nanoTime();
         closing = false;
         t = new Thread(new Runnable() {
             public void run() {
@@ -193,10 +195,18 @@ public class JavaFitter implements FitterInterface {
         final LayerStack stackToReturn = stack.deepCopy();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                String msg = "";
+                if(ctx.reportPerf())
+                {
+                    long end = System.nanoTime();
+                    msg = "Fitting took " +
+                        String.format("%.2f", (end - start) / 1e9) +
+                        " seconds.";
+                }
                 if(plotTask != null)
                     plotTask.run(stackToReturn,"");
                 if(endTask != null)
-                    endTask.run(stackToReturn,"");
+                    endTask.run(stackToReturn, msg);
             }
         });
         light.newImage(green);

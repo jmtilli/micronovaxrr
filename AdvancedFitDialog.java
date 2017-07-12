@@ -12,6 +12,7 @@ import java.util.*;
 public class AdvancedFitDialog extends JDialog {
     private boolean succesful;
     private JTextField kmField, krField, pmField, crField, lambdaField;
+    private JCheckBox perfButton;
     private AdvancedFitOptions v;
 
     private void initialize()
@@ -49,6 +50,9 @@ public class AdvancedFitDialog extends JDialog {
         lambdaField = new JTextField("1.0",7);
         lambdaField.setMinimumSize(lambdaField.getPreferredSize());
         gridPanel.add(lambdaField,c);
+        perfButton = new JCheckBox("Report performance");
+        perfButton.setMinimumSize(perfButton.getPreferredSize());
+        gridPanel.add(perfButton,c);
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridPanel.add(new JPanel(),c);
 
@@ -83,6 +87,7 @@ public class AdvancedFitDialog extends JDialog {
                     v.pm = pm;
                     v.cr = cr;
                     v.lambda = lambda;
+                    v.reportPerf = perfButton.isSelected();
 
                     succesful = true;
                     setVisible(false);
@@ -126,6 +131,7 @@ public class AdvancedFitDialog extends JDialog {
         pmField.setText(String.format(Locale.US,"%.6g",v.pm));
         crField.setText(String.format(Locale.US,"%.6g",v.cr));
         lambdaField.setText(String.format(Locale.US,"%.6g",v.lambda));
+        perfButton.setSelected(v.reportPerf);
         setVisible(true);
         return succesful;
     }

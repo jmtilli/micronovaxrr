@@ -1201,6 +1201,13 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             fileLoadEmpty.setEnabled(true);
                             fileSwap.setEnabled(true);
                             pfit.setAdditionalTitle("");
+                            if (msg != null && !msg.isEmpty())
+                            {
+                                JOptionPane.showMessageDialog(null,
+                                    msg,
+                                    "Fitting performance",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            }
                         }
                     };
                     final Runnable errTask2 = new Runnable() {
