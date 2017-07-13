@@ -6,10 +6,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import org.jfree.data.xy.*;
-import org.jfree.chart.*;
-import org.jfree.chart.plot.*;
-
 
 
 /** Thread for automatic fitting.
