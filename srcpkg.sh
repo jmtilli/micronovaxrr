@@ -13,6 +13,7 @@ cp jfreechart-1.0.1.jar Jama-1.0.3.jar javafastcomplex.jar javaxmlfrag.jar atomi
 cp deploy/run.sh deploy/run.bat xrr-src/deploy
 cp run.sh run.bat xrr-src
 cp default.layers xrr-src
+cp default.properties xrr-src
 cp *.java *.png *.sh *.bat manifest.txt xrr-src
 cp librarysrc/* xrr-src/librarysrc
 cp build.xml xrr-src

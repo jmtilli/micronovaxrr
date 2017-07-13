@@ -13,5 +13,6 @@ if not exist deploy\lib md deploy\lib
 copy lib\jcommon-1.0.0.jar deploy\lib
 copy atomic_masses.txt deploy
 copy default.layers deploy
+copy default.properties deploy
 if not exist deploy\sf md deploy\sf
 copy sf\*.nff deploy\sf

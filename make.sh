@@ -14,5 +14,6 @@ mkdir -p deploy/lib
 cp lib/jcommon-1.0.0.jar deploy/lib
 cp atomic_masses.txt deploy
 cp default.layers deploy
+cp default.properties deploy
 mkdir -p deploy/sf
 cp sf/*.nff deploy/sf

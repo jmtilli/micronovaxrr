@@ -29,6 +29,7 @@ copy run.sh xrr-src
 copy run.bat xrr-src
 
 copy default.layers xrr-src
+copy default.properties xrr-src
 
 copy *.java xrr-src
 copy *.png xrr-src

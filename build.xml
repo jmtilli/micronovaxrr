@@ -86,6 +86,7 @@
 
   <patternset id="javaaux">
       <include name="default.layers"/>
+      <include name="default.properties"/>
   </patternset>
 
   <target name="compile" depends="init" description="compile the source " >
@@ -102,6 +103,7 @@
   <target name="copy" depends="jar" description="copy">
       <copy todir="deploy" overwrite="true" preservelastmodified="true">
         <fileset file="default.layers"/>
+        <fileset file="default.properties"/>
         <fileset file="atomic_masses.txt"/>
         <fileset file="xrr.jar"/>
         <fileset file="javafastcomplex.jar"/>
