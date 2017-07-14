@@ -1302,11 +1302,6 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         fit.add(fitPlotArea,BorderLayout.CENTER);
         JPanel plotControls = new JPanel();
         plotControls.setLayout(new GridBagLayout());
-        c.ipadx = c.ipady = 1;
-        c.anchor = GridBagConstraints.NORTH;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.insets = new Insets(3,3,3,3);
-        c.gridwidth = 1;
         final JButton exportButton = new JButton("Export");
         final JButton importButton = new JButton("Import");
         importButton.addActionListener(new ActionListener() {
@@ -1314,8 +1309,6 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 fitLayers.deepCopyFrom(layers);
             }
         });
-        plotControls.add(importButton,c);
-        //c.gridwidth = GridBagConstraints.REMAINDER;
 
         final JButton startFitButton = new JButton("Start");
         final JButton stopFitButton = new JButton("Stop");
@@ -1421,21 +1414,33 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 diag.call(opts);
             }
         });
-        plotControls.add(startFitButton,c);
-        c.gridwidth = 1;
         exportButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 layers.deepCopyFrom(fitLayers);
             }
         });
-        plotControls.add(exportButton,c);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridBagLayout());
+        c.ipadx = c.ipady = 1;
+        c.anchor = GridBagConstraints.NORTH;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(3,3,3,3);
+        c.gridwidth = 1;
+        buttonPanel.add(importButton,c);
+        //c.gridwidth = GridBagConstraints.REMAINDER;
+        buttonPanel.add(startFitButton,c);
+        c.gridwidth = 1;
+        buttonPanel.add(exportButton,c);
         c.gridwidth = 1;
         stopFitButton.setEnabled(false);
-        plotControls.add(stopFitButton,c);
+        buttonPanel.add(stopFitButton,c);
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         stopFitButton.setEnabled(false);
-        plotControls.add(advancedButton,c);
+        buttonPanel.add(advancedButton,c);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        plotControls.add(buttonPanel, c);
 
 
         c.gridwidth = 1;
