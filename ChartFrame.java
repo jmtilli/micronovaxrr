@@ -7,6 +7,9 @@ import java.io.*;
 import org.jfree.data.xy.*;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
+import org.knowm.xchart.*;
+import org.knowm.xchart.style.*;
+import org.knowm.xchart.style.markers.*;
 
 
 
@@ -43,21 +46,49 @@ public class ChartFrame extends JFrame {
     public ChartFrame(final ChooserWrapper wrapper, String title, int w, int h, boolean legend, final DataArray xdata, String xtitle, final java.util.List<NamedArray> ydata, String ytitle, double ymin, double ymax)
     {
         super(title);
+        Color[] colors = new Color[]{Color.RED, Color.BLUE};
 
-        XYSeries series;
+        double[] xar = new double[xdata.array.length];
+
+        XYChart xychart = new XYChartBuilder().width(w).height(h).title(title).xAxisTitle(xtitle).yAxisTitle(ytitle).build();
+
+        xychart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
+        xychart.getStyler().setDefaultSeriesRenderStyle(org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Line);
+        xychart.getStyler().setYAxisLabelAlignment(Styler.TextAlignment.Right);
+        //xychart.getStyler().setYAxisDecimalPattern("$ #,###.##");
+        xychart.getStyler().setPlotMargin(0);
+        xychart.getStyler().setPlotContentSize(.95);
+        xychart.getStyler().setLegendVisible(legend);
+
+        org.jfree.data.xy.XYSeries series;
         XYSeriesCollection dataset;
         XYPlot xyplot;
         JFreeChart chart;
         int n = xdata.array.length;
 
+        for (int i = 0; i < n; i++)
+        {
+            xar[i] = xdata.array[i]*xdata.scale;
+        }
+
         dataset = new XYSeriesCollection();
-        for(int j=0; j<ydata.size(); j++) {
+        for(int j=ydata.size()-1; j>=0; j--) {
             NamedArray y = ydata.get(j);
-            series = new XYSeries(y.name);
+            double[] yar = new double[y.array.length];
+            String name = y.name;
+            series = new org.jfree.data.xy.XYSeries(y.name);
             for(int i=0; i<n; i++) {
+                yar[i] = y.array[i]*y.scale;
                 series.add(xdata.scale*xdata.array[i], y.scale*y.array[i]);
             }
             dataset.addSeries(series);
+            if (name == null || name.equals(""))
+            {
+                name = "data";
+            }
+            org.knowm.xchart.XYSeries ser = xychart.addSeries(name, xar, yar);
+            ser.setLineColor(colors[j]);
+            ser.setMarker(new None());
         }
 
 
@@ -68,6 +99,9 @@ public class ChartFrame extends JFrame {
         if(ymin != ymax) {
             xyplot.getRangeAxis().setAutoRange(false);
             xyplot.getRangeAxis().setRange(ymin,ymax);
+            System.out.println("min " + ymin + " max " + ymax);
+            xychart.getStyler().setYAxisMin(ymin);
+            xychart.getStyler().setYAxisMax(ymax);
         }
 
         Container cp;
@@ -85,7 +119,11 @@ public class ChartFrame extends JFrame {
         JChartArea a = new JChartArea();
         a.newChart(chart);
         a.setPreferredSize(new Dimension(w, h));
-        cp.add(a,c);
+        //cp.add(a,c);
+        //cp.add(new SwingWrapper<XYChart>(xychart).getXChartPanel(), c);
+        XChartPanel<XYChart> chartPanel = new XChartPanel<XYChart>(xychart);
+        //new SwingWrapper<XYChart>(xychart).displayChart();
+        cp.add(chartPanel, c);
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
