@@ -683,13 +683,13 @@ public class Layer implements ValueListener {
         return this.name +
         ", d = " + String.format(Locale.US,"%.6g",this.d.getExpected()*1e9) + " nm " +
           (n.containsKey(this.d) ? "[L" + n.get(this.d) + "] " : "") +
-          (this.d.getEnabled() ? "(fit)" : "(no fit)") +
+          (this.d.getEnabled() ? "(fit)" : "(no)") +
         ", rho = " + String.format(Locale.US,"%.6g",this.rho.getExpected()/1e3) + " g/cm^3 " +
           (n.containsKey(this.rho) ? "[L" + n.get(this.rho) + "] " : "") +
-          (this.rho.getEnabled() ? "(fit)" : "(no fit)") +
+          (this.rho.getEnabled() ? "(fit)" : "(no)") +
         ", r = " + String.format(Locale.US,"%.6g",this.r.getExpected()*1e9) + " nm " +
           (n.containsKey(this.r) ? "[L" + n.get(this.r) + "] " : "") +
-          (this.r.getEnabled() ? "(fit)" : "(no fit)");
+          (this.r.getEnabled() ? "(fit)" : "(no)");
     }
 
 };
