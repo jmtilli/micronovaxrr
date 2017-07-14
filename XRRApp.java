@@ -658,6 +658,14 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
     }
 
+    private void defaultProp(String key, String value)
+    {
+        if (props.getProperty(key) == null)
+        {
+            props.setProperty(key, value);
+        }
+    }
+
 
     private static String getDir()
     {
@@ -719,23 +727,22 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     pfin.close();
                 }
             }
-            else
-            {
-                props.setProperty("autofit.popsize", "60");
-                props.setProperty("autofit.iters", "500");
-                props.setProperty("autofit.firstAngle", "0.07");
-                props.setProperty("autofit.lastAngle", "10.0");
-                props.setProperty("autofit.algorithm", "0");
-                props.setProperty("autofit.fitnessFunc", "0");
-                props.setProperty("autofit.thresRelF", "-30");
-                props.setProperty("autofit.pNorm", "2");
-                props.setProperty("autofit.k_m", "0.7");
-                props.setProperty("autofit.k_r", "0.85");
-                props.setProperty("autofit.p_m", "0.5");
-                props.setProperty("autofit.c_r", "0.5");
-                props.setProperty("autofit.lambda", "1.0");
-                props.setProperty("autofit.reportPerf", "false");
-            }
+            defaultProp("autofit.popsize", "60");
+            defaultProp("autofit.iters", "500");
+            defaultProp("autofit.firstAngle", "0.07");
+            defaultProp("autofit.lastAngle", "10.0");
+            defaultProp("autofit.algorithm", "0");
+            defaultProp("autofit.fitnessFunc", "0");
+            defaultProp("autofit.thresRelF", "-30");
+            defaultProp("autofit.pNorm", "2");
+            defaultProp("autofit.k_m", "0.7");
+            defaultProp("autofit.k_r", "0.85");
+            defaultProp("autofit.p_m", "0.5");
+            defaultProp("autofit.c_r", "0.5");
+            defaultProp("autofit.lambda", "1.0");
+            defaultProp("autofit.reportPerf", "false");
+            defaultProp("plot.dbMin", "-70");
+            defaultProp("plot.dbMax", "0");
             opts.km = Double.parseDouble(props.getProperty("autofit.k_m"));
             if (opts.km <= 0 || opts.km >= 1)
             {
@@ -762,6 +769,8 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 throw new NumberFormatException();
             }
             opts.reportPerf = Boolean.parseBoolean(props.getProperty("autofit.reportPerf"));
+            dbMin = Double.parseDouble(props.getProperty("plot.dbMin"));
+            dbMax = Double.parseDouble(props.getProperty("plot.dbMax"));
         }
         catch(NumberFormatException ex) {
             StringWriter writer = new StringWriter();
@@ -1486,6 +1495,9 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         final JChartArea plotarea = new JChartArea();
 
         p = new LayerPlotter(plotarea, light, layers, data, green, yellow, dbMin, dbMax);
+
+        p.setDbRange(dbMin, dbMax);
+        pfit.setDbRange(dbMin, dbMax);
 
         plotarea.setPreferredSize(new Dimension(600,400));
         graph.add(plotarea,BorderLayout.CENTER);
