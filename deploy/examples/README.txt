@@ -59,4 +59,5 @@ select the algorithm "JavaCovDE". Set the last angle to 3 degrees. Use 280 as
 the population size and 500 iterations. You should obtain a relatively good
 fit. For fun, you can also test the "JavaDE" algorithm. It does not have the
 improvements suggested in the article, and therefore, fitting is much slower
-and poorer if the initial guess is not correct.
+and poorer if the initial guess is not correct. You can also see what effect
+it has if you use linked parameters (covga_tofit_linked.layers).
