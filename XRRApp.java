@@ -1426,18 +1426,18 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(3,3,3,3);
         c.gridwidth = 1;
-        buttonPanel.add(importButton,c);
+        buttonPanel.add(importButton);
         //c.gridwidth = GridBagConstraints.REMAINDER;
-        buttonPanel.add(startFitButton,c);
+        buttonPanel.add(startFitButton);
         c.gridwidth = 1;
-        buttonPanel.add(exportButton,c);
+        buttonPanel.add(exportButton);
         c.gridwidth = 1;
         stopFitButton.setEnabled(false);
-        buttonPanel.add(stopFitButton,c);
+        buttonPanel.add(stopFitButton);
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         stopFitButton.setEnabled(false);
-        buttonPanel.add(advancedButton,c);
+        buttonPanel.add(advancedButton);
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         plotControls.add(buttonPanel, c);
