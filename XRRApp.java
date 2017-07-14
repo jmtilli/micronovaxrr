@@ -239,6 +239,22 @@ public class XRRApp extends JFrame implements ChooserWrapper {
     private LayerPlotter p;
     private LayerStack fitLayers;
 
+    private boolean settingBool(String key, boolean default_value)
+    {
+        try {
+            String val = props.getProperty(key);
+            if (val == null)
+            {
+                return default_value;
+            }
+            return Boolean.parseBoolean(val);
+        }
+        catch (NumberFormatException ex)
+        {
+            return default_value;
+        }
+    }
+
     private int settingInt(String key, int default_value, int min, int max)
     {
         try {
@@ -1295,7 +1311,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         JPanel fitSouth = new JPanel();
         JList<String> fitList = new JList<String>(fitLayers.listModel);
         JScrollPane fitListPane = new JScrollPane(fitList);
-        fitListPane.setPreferredSize(new Dimension(400,150));
+        fitListPane.setPreferredSize(new Dimension(400,190));
 
         fitPlotArea.setPreferredSize(new Dimension(600,400));
         fitPlotArea.setPreferredSize(new Dimension(600,400));
@@ -1316,10 +1332,12 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         final SpinnerNumberModel popSizeModel = new SpinnerNumberModel(settingInt("autofit.popsize", 60, 20, 2000),20,2000,1);
         final SpinnerNumberModel iterationsModel = new SpinnerNumberModel(settingInt("autofit.iters", 500, 1, 2000),1,2000,1);
         final SpinnerNumberModel pModel = new SpinnerNumberModel(settingInt("autofit.pNorm", 2, 1, 10),1,10,1);
+        final SpinnerNumberModel autostopModel = new SpinnerNumberModel(settingInt("autofit.autostopFigures", 6, 2, 10),2,10,1);
         final SpinnerNumberModel firstAngleModel = new SpinnerNumberModel(settingDouble("autofit.firstAngle", 0.07, 0, 10),0,10,0.01);
         final SpinnerNumberModel lastAngleModel = new SpinnerNumberModel(settingDouble("autofit.lastAngle", 10, 0, 10),0,10,0.01);
         final SpinnerNumberModel thresholdModel = new SpinnerNumberModel(settingDouble("autofit.thresRelF", -30, -500, 500),-500,500,0.1);
         final JComboBox<Algorithm> algoBox = new JComboBox<Algorithm>(Algorithm.values());
+        final JCheckBox autostop = new JCheckBox("automatic fit stop with figures");
         algoBox.setSelectedItem(Algorithm.values()[settingInt("autofit.algorithm", 0, 0, Algorithm.values().length)]);
         final JComboBox<FitnessFunction> funcBox = new JComboBox<FitnessFunction>(FitnessFunction.values());
         funcBox.setSelectedItem(FitnessFunction.values()[settingInt("autofit.fitnessFunc", 0, 0, FitnessFunction.values().length)]);
@@ -1379,7 +1397,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         f = new JavaFitter(fitLight, data, endTask, plotTask, errTask2, fitLayers,
                                            (Integer)popSizeModel.getNumber(), (Integer)iterationsModel.getNumber(),
                                            (Double)firstAngleModel.getNumber(), (Double)lastAngleModel.getNumber(),
-                                           green, yellow, (Algorithm)algoBox.getSelectedItem(), (FitnessFunction)funcBox.getSelectedItem(), (Double)thresholdModel.getNumber(), (Integer)pModel.getNumber(), opts);//, nonlinBox.isSelected());
+                                           green, yellow, (Algorithm)algoBox.getSelectedItem(), (FitnessFunction)funcBox.getSelectedItem(), (Double)thresholdModel.getNumber(), (Integer)pModel.getNumber(), autostop.isSelected(), (Integer)autostopModel.getNumber(), opts);//, nonlinBox.isSelected());
                     }
                     catch (FittingNotStartedException ex)
                     {
@@ -1424,7 +1442,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         c.ipadx = c.ipady = 1;
         c.anchor = GridBagConstraints.NORTH;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.insets = new Insets(3,3,3,3);
+        c.insets = new Insets(1,1,1,1);
         c.gridwidth = 1;
         buttonPanel.add(importButton);
         //c.gridwidth = GridBagConstraints.REMAINDER;
@@ -1489,6 +1507,12 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         plotControls.add(new JLabel("p-norm"),c);
         c.gridwidth = GridBagConstraints.REMAINDER;
         plotControls.add(new JSpinner(pModel),c);
+
+        c.gridwidth = 3;
+        autostop.setSelected(settingBool("autofit.autostop", true));
+        plotControls.add(autostop, c);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        plotControls.add(new JSpinner(autostopModel),c);
 
         c.weighty = 1;
         plotControls.add(new JPanel(),c);

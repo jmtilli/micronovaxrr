@@ -30,6 +30,8 @@ public class JavaFitter implements FitterInterface {
     private volatile boolean closing = false;
     private int iterations;
     private XRRFittingCtx ctx;
+    private boolean autostop;
+    private int autostopFigures;
 
 
     /** Constructor.
@@ -71,6 +73,7 @@ public class JavaFitter implements FitterInterface {
 
     public JavaFitter(JPlotArea light, GraphData data, LayerTask endTask, LayerTask plotTask, Runnable errTask, LayerStack stack, int popsize, int iterations, double firstAngle, double lastAngle, Image green, Image yellow,
             Algorithm algo, FitnessFunction func, double dBthreshold, int pNorm,
+            boolean autostop, int autostopFigures,
             AdvancedFitOptions opts) throws FittingNotStartedException {
         FittingErrorFunc func2;
         stack = stack.deepCopy();
@@ -87,6 +90,8 @@ public class JavaFitter implements FitterInterface {
         this.plotTask = plotTask;
         this.errTask = errTask;
         this.iterations = iterations;
+        this.autostop = autostop;
+        this.autostopFigures = autostopFigures;
         this.stack = stack;
         this.start = System.nanoTime();
         closing = false;
@@ -160,13 +165,15 @@ public class JavaFitter implements FitterInterface {
     private void runThread() {
         light.newImage(yellow);
         try {
-            for(int round = 0; round < iterations && !closing; round++) {
+            int round = 0;
+            while (!closing) {
                 double[] results;
-                double bestfit, medianfit;
+                double bestfit, medianfit, worstfit;
                 String msg;
                 ctx.iteration();
                 bestfit = ctx.bestFittingError();
                 medianfit = ctx.medianFittingError();
+                worstfit = ctx.worstFittingError();
                 results = ctx.bestIndividual();
                 stack.setFitValues(results);
                 msg = "iteration = "+(round+1) + ", bestfit = " + String.format(Locale.US,"%.4g",bestfit) + ", medianfit = "+String.format(Locale.US,"%.4g",medianfit);
@@ -179,6 +186,15 @@ public class JavaFitter implements FitterInterface {
                             plotTask.run(stackToPlot,msg2);
                     }
                 });
+                round++;
+                if (!autostop && round >= iterations)
+                {
+                    break;
+                }
+                if (autostop && worstfit/bestfit - 1 < Math.pow(0.1,autostopFigures))
+                {
+                    break;
+                }
             }
         }
         catch(Throwable t) {
