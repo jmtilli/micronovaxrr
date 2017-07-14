@@ -894,13 +894,16 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         JButton btn = new JButton("Move up");
         btn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int i = layeredList.getSelectedIndex();
                 int[] i2 = layeredList.getSelectedIndices();
-                if(i <= 0 || i >= layers.getSize() || i2.length != 1)
-                    JOptionPane.showMessageDialog(null, "Can't move layer up", "Error", JOptionPane.ERROR_MESSAGE);
+                if(i2 == null || i2.length == 0)
+                    return;
+                Arrays.sort(i2);
+                if(i2[i2.length-1]+1 - i2[0] != i2.length || i2[0] <= 0)
+                    JOptionPane.showMessageDialog(null, "Can't move layers up", "Error", JOptionPane.ERROR_MESSAGE);
                 else {
-                    layers.moveUp(i);
-                    layeredList.setSelectedIndex(i-1);
+                    layers.moveUp(i2[0], i2[i2.length-1]+1);
+                    layeredList.clearSelection();
+                    layeredList.setSelectionInterval(i2[0]-1, i2[i2.length-1]-1);
                 }
             };
         });
@@ -1141,13 +1144,16 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         btn = new JButton("Move down");
         btn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int i = layeredList.getSelectedIndex();
                 int[] i2 = layeredList.getSelectedIndices();
-                if(i < 0 || i >= layers.getSize() - 1 || i2.length != 1)
-                    JOptionPane.showMessageDialog(null, "Can't move layer down", "Error", JOptionPane.ERROR_MESSAGE);
+                if(i2 == null || i2.length == 0)
+                    return;
+                Arrays.sort(i2);
+                if(i2[i2.length-1]+1 - i2[0] != i2.length || i2[i2.length-1]+1 >= layers.getSize())
+                    JOptionPane.showMessageDialog(null, "Can't move layers down", "Error", JOptionPane.ERROR_MESSAGE);
                 else {
-                    layers.moveDown(i);
-                    layeredList.setSelectedIndex(i+1);
+                    layers.moveDown(i2[0], i2[i2.length-1]+1);
+                    layeredList.clearSelection();
+                    layeredList.setSelectionInterval(i2[0]+1, i2[i2.length-1]+1);
                 }
             };
         });

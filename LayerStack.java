@@ -647,6 +647,15 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         layers.add(i-1,layers.remove(i));
         signalStackChange(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, i-1, i));
     }
+    public void moveUp(int low, int high) {
+        if(low <= 0 || low >= high || high > getSize())
+            throw new IndexOutOfBoundsException();
+        for(int i = low; i < high; i++)
+        {
+            layers.add(i-1,layers.remove(i));
+        }
+        signalStackChange(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, low-1, high-1));
+    }
     /** Moves a layer down.
      *
      * @param i the index of the layer to move
@@ -658,6 +667,15 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
             throw new IndexOutOfBoundsException();
         layers.add(i+1,layers.remove(i));
         signalStackChange(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, i, i+1));
+    }
+    public void moveDown(int low, int high) {
+        if(low < 0 || low >= high || high >= getSize())
+            throw new IndexOutOfBoundsException();
+        for(int i=high-1; i>=low; i--)
+        {
+            layers.add(i+1,layers.remove(i));
+        }
+        signalStackChange(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, low, high));
     }
     /** Signals a change of the layer stack to all listeners.
      *
