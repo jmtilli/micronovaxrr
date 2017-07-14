@@ -2237,7 +2237,6 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 "default.x00.zip",
                 "default.x00",
                 "default.brml",
-                "default.brml",
                 "default.udf.gz",
                 "default.udf.zip",
                 "default.udf",
