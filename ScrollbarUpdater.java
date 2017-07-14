@@ -87,7 +87,7 @@ public class ScrollbarUpdater implements ListDataListener {
             GridBagConstraints c = new GridBagConstraints();
             sliders.setLayout(new GridBagLayout());
 
-            c.insets = new Insets(3,3,3,3);
+            c.insets = new Insets(1,1,1,1);
             c.ipadx = c.ipady = 1;
             c.anchor = GridBagConstraints.WEST;
 
