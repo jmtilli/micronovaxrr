@@ -1354,6 +1354,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             f = null;
                             startFitButton.setEnabled(true);
                             stopFitButton.setEnabled(false);
+                            tabs.setTitleAt(2, "Automatic fit");
                             importButton.setEnabled(true);
                             //exportButton.setEnabled(true);
                             fileLoadMeas.setEnabled(true);
@@ -1375,6 +1376,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             f = null;
                             startFitButton.setEnabled(true);
                             stopFitButton.setEnabled(false);
+                            tabs.setTitleAt(2, "Automatic fit");
                             importButton.setEnabled(true);
                             //exportButton.setEnabled(true);
                             fileLoadMeas.setEnabled(true);
@@ -1408,6 +1410,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     }
                     startFitButton.setEnabled(false);
                     stopFitButton.setEnabled(true);
+                    tabs.setTitleAt(2, "Automatic fit (*)");
                     stopFitButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ev) {
                             f.closeWithoutWaiting();
