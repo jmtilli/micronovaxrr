@@ -55,6 +55,10 @@ public class XRRFittingCtx {
   {
     return this.de_ctx.medianFittingError();
   }
+  public double worstFittingError()
+  {
+    return this.de_ctx.worstFittingError();
+  }
 
   static class TestLookup implements LookupTable {
     private static final Map<String,Element> table;
