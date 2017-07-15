@@ -139,6 +139,45 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
       return true;
     }
 
+    public int getFittedValueCount() {
+        Map<FitValue,Integer> counts = new HashMap<FitValue,Integer>();
+        int id = 0;
+        FitValue[] vals = {getBeam(), getProd(), getSum()};
+        for (FitValue val: vals)
+        {
+            if (val.getEnabled() && val.getMin() < val.getMax())
+            {
+                if (counts.containsKey(val))
+                {
+                    counts.put(val, counts.get(val)+1);
+                }
+                else
+                {
+                    counts.put(val, 1);
+                }
+            }
+        }
+        for (Layer l: layers)
+        {
+            vals = new FitValue[]{l.getThickness(), l.getDensity(), l.getRoughness()};
+            for (FitValue val: vals)
+            {
+                if (val.getEnabled() && val.getMin() < val.getMax())
+                {
+                    if (counts.containsKey(val))
+                    {
+                        counts.put(val, counts.get(val)+1);
+                    }
+                    else
+                    {
+                        counts.put(val, 1);
+                    }
+                }
+            }
+        }
+        return counts.size();
+    }
+
     /**
        Return link numbers for FitValues that are linked.
 
