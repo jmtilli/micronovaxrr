@@ -96,10 +96,13 @@ noise, so the last angle with this fitting error function can be set to the
 maximum angle of the measurement. Iterations and population size are options of
 the genetic algorithm. Higher values are slower but may help find better fits.
 It is usually recommended that population size is about ten times the number of
-fitting parameters. The default 60 is good for 6 fitting parameters. Iteration
+fitting parameters. Negative values mean the absolute value is multiplied by
+fitting parameter count, so the default -10 is good for most cases. Iteration
 count should be preferably higher rather than lower, as the fit can be
 interrupted early but the fit cannot be continued once the iteration count is
-reached. For this reason, the default iteration count is as high as 500. 
+reached. For this reason, the default iteration count is as high as 500.
+However, it is possible to enable automatic convergence detection which means
+iteration count is dynamic, and that is enabled by default.
 
 The parameters p-norm and threshold rel.f (dB) are parameters of the fitting
 error functions. p-norm is used by p-norm in logarithmic space and p-norm in
