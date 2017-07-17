@@ -75,6 +75,7 @@ public class ChartFrame extends JFrame {
             }
             org.knowm.xchart.XYSeries ser = xychart.addSeries(name, xar, yar);
             ser.setLineColor(colors[j]);
+            ser.setLineWidth(1);
             ser.setMarker(new None());
         }
 

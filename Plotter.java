@@ -179,9 +179,11 @@ abstract public class Plotter {
         assert(data.alpha_0.length == data.simul.length);
         org.knowm.xchart.XYSeries ser2 = xychart.addSeries("Measurement", data.alpha_0, data.meas);
         ser2.setLineColor(Color.BLUE);
+        ser2.setLineWidth(1);
         ser2.setMarker(new None());
         org.knowm.xchart.XYSeries ser1 = xychart.addSeries("Simulation", data.alpha_0, data.simul);
         ser1.setLineColor(Color.RED);
+        ser1.setLineWidth(1);
         ser1.setMarker(new None());
 
         xychart.getStyler().setYAxisMin(dbMin);
