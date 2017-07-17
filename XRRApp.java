@@ -224,6 +224,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
     private LookupTable table;
     private static final double Cu_K_alpha = 1.5405600e-10; /* This is the default wavelength */
     private Image green, yellow;
+    private Image icon16, icon32, icon48, icon64, icon128;
     private LayerStack layers;
     private JList<String> layeredList;
     private double dbMin = -70, dbMax = 0;
@@ -680,6 +681,16 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         {
             props.setProperty(key, value);
         }
+    }
+
+    private void maybeSetIconImages(java.util.List<? extends Image> icons)
+    {
+        try {
+            java.lang.reflect.Method m;
+            m = this.getClass().getMethod("setIconImages", java.util.List.class);
+            m.invoke(this, icons);
+        }
+        catch(Throwable t) {}
     }
 
 
@@ -1264,6 +1275,11 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         try {
             green = ImageIO.read(fitLight.getClass().getClassLoader().getResourceAsStream("green.png"));
             yellow = ImageIO.read(fitLight.getClass().getClassLoader().getResourceAsStream("yellow.png"));
+            icon16 = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("micronovaxrr16.png"));
+            icon32 = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("micronovaxrr32.png"));
+            icon48 = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("micronovaxrr48.png"));
+            icon64 = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("micronovaxrr64.png"));
+            icon128 = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("micronovaxrr128.png"));
         }
         catch(IOException ex) {
             JOptionPane.showMessageDialog(null, "can't read png files", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1273,6 +1289,8 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         northWlPanel.add(wlPanel,BorderLayout.CENTER);
         northWlPanel.add(lightPanel,BorderLayout.EAST);
         fit.add(northWlPanel,BorderLayout.NORTH);
+
+        maybeSetIconImages(Arrays.asList(new Image[]{icon16, icon32, icon48, icon64, icon128}));
 
 
 
