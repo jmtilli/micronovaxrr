@@ -1,12 +1,8 @@
 @echo off
 call make.bat
 mkdir xrr-bin
-mkdir xrr-bin\lib
-mkdir xrr-bin\librarysrc
 mkdir xrr-bin\sf
 mkdir xrr-bin\examples
-copy librarysrc\* xrr-bin\librarysrc
-copy deploy\lib\* xrr-bin\lib   
 copy deploy\sf\* xrr-bin\sf
 copy deploy\examples\* xrr-bin\examples
 copy deploy\README* xrr-bin

@@ -1,12 +1,8 @@
 @echo off
 mkdir xrr-src
-mkdir xrr-src\lib
 mkdir xrr-src\sf
 mkdir xrr-src\deploy
 mkdir xrr-src\deploy\examples
-mkdir xrr-src\librarysrc
-
-copy lib\* xrr-src\lib
 
 copy sf\* xrr-src\sf
 
@@ -16,7 +12,7 @@ copy deploy\LICENSE.txt xrr-src\deploy
 copy deploy\README* xrr-src\deploy
 copy deploy\resolution.txt xrr-src\deploy
 
-copy jfreechart-1.0.1.jar xrr-src
+copy xchart-3.4.0.jar xrr-src
 copy Jama-1.0.3.jar xrr-src
 copy javafastcomplex.jar xrr-src
 copy javaxmlfrag.jar xrr-src
@@ -37,5 +33,4 @@ copy *.sh xrr-src
 copy *.bat xrr-src
 copy manifest.txt xrr-src
 
-copy librarysrc\* xrr-src\librarysrc
 copy build.xml xrr-src

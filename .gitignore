@@ -7,8 +7,7 @@
 /deploy/default.properties
 /deploy/javafastcomplex.jar
 /deploy/javaxmlfrag.jar
-/deploy/jfreechart-1.0.1.jar
-/deploy/lib/
+/deploy/xchart-3.4.0.jar
 /deploy/sf/
 /.tstamp
 /xrr-bin.zip

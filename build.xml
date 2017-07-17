@@ -18,7 +18,7 @@
 
   <path id="classpath">
     <!--<pathelement path="${classpath}"/>-->
-    <pathelement location="jfreechart-1.0.1.jar"/>
+    <pathelement location="xchart-3.4.0.jar"/>
     <pathelement location="javafastcomplex.jar"/>
     <pathelement location="javaxmlfrag.jar"/>
     <pathelement location="xchart-3.4.0.jar"/>
@@ -26,7 +26,7 @@
   </path>
   <path id="classpathreg">
     <pathelement path="."/>
-    <pathelement location="jfreechart-1.0.1.jar"/>
+    <pathelement location="xchart-3.4.0.jar"/>
     <pathelement location="javafastcomplex.jar"/>
     <pathelement location="javaxmlfrag.jar"/>
     <pathelement location="xchart-3.4.0.jar"/>
@@ -43,15 +43,10 @@
   </patternset>
 
   <patternset id="libdeps">
-      <include name="jfreechart-1.0.1.jar"/>
+      <include name="xhart-3.4.0.jar"/>
       <include name="javafastcomplex.jar"/>
       <include name="javaxmlfrag.jar"/>
       <include name="Jama-1.0.3.jar"/>
-      <include name="lib/jcommon-1.0.0.jar"/>
-  </patternset>
-  <patternset id="libsrcdeps">
-      <include name="librarysrc/jcommon-1.0.0.zip"/>
-      <include name="librarysrc/jfreechart-1.0.1.zip"/>
   </patternset>
 
   <patternset id="srcdoc">
@@ -110,11 +105,9 @@
         <fileset file="xrr.jar"/>
         <fileset file="javafastcomplex.jar"/>
         <fileset file="javaxmlfrag.jar"/>
-        <fileset file="jfreechart-1.0.1.jar"/>
+        <fileset file="xchart-3.4.0.jar"/>
         <fileset file="Jama-1.0.3.jar"/>
       </copy>
-      <copy file="lib/jcommon-1.0.0.jar" todir="deploy/lib" overwrite="true"
-            preservelastmodified="true"/>
       <copy todir="deploy/sf" overwrite="true" preservelastmodified="true">
         <fileset dir="sf"/>
       </copy>
@@ -142,7 +135,7 @@
           </fileset>
           <manifest>
               <!--<attribute name="Built-By" value="${user.name}"/>-->
-              <attribute name="Class-Path" value="jfreechart-1.0.1.jar javafastcomplex.jar javaxmlfrag.jar Jama-1.0.3.jar xchart-3.4.0.jar"/>
+              <attribute name="Class-Path" value="xchart-3.4.0.jar javafastcomplex.jar javaxmlfrag.jar Jama-1.0.3.jar xchart-3.4.0.jar"/>
               <attribute name="Main-Class" value="XRRApp"/>
           </manifest>
       </jar>
@@ -161,9 +154,6 @@
                   <include name="xrr.jar" />
               </patternset>
           </zipfileset>
-          <zipfileset dir="." prefix="xrr-bin">
-              <patternset refid="libsrcdeps" />
-          </zipfileset>
       </zip>
   </target>
 
@@ -175,7 +165,6 @@
               <patternset refid="shellscripts" />
           </zipfileset>
           <zipfileset dir="." prefix="xrr-src">
-              <patternset refid="libsrcdeps" />
               <patternset refid="shellscripts" />
               <patternset refid="javadb" />
               <patternset refid="javaaux" />
