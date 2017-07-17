@@ -55,6 +55,7 @@
       <include name="README-export.txt"/>
       <include name="README.txt"/>
       <include name="LICENSE.txt"/>
+      <include name="APACHE-LICENSE-2.0.txt"/>
       <include name="resolution.txt"/>
   </patternset>
 

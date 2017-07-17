@@ -9,6 +9,7 @@ copy sf\* xrr-src\sf
 copy deploy\examples\* xrr-src\deploy\examples
 
 copy deploy\LICENSE.txt xrr-src\deploy
+copy deploy\APACHE-LICENSE-2.0.txt xrr-src\deploy
 copy deploy\README* xrr-src\deploy
 copy deploy\resolution.txt xrr-src\deploy
 

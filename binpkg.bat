@@ -7,6 +7,7 @@ copy deploy\sf\* xrr-bin\sf
 copy deploy\examples\* xrr-bin\examples
 copy deploy\README* xrr-bin
 copy deploy\LICENSE.txt xrr-bin
+copy deploy\APACHE-LICENSE-2.0.txt xrr-bin
 copy deploy\resolution.txt xrr-bin
 copy deploy\*.jar xrr-bin
 copy deploy\atomic_masses.txt xrr-bin
