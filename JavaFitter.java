@@ -163,12 +163,13 @@ public class JavaFitter implements FitterInterface {
      * - oct, when octave is called
      */
     private void runThread() {
+        int round = 0;
+        double bestfit = 1e6;
         light.newImage(yellow);
         try {
-            int round = 0;
             while (!closing) {
                 double[] results;
-                double bestfit, medianfit, worstfit;
+                double medianfit, worstfit;
                 String msg;
                 ctx.iteration();
                 bestfit = ctx.bestFittingError();
@@ -204,6 +205,8 @@ public class JavaFitter implements FitterInterface {
             return;
         }
         this.exec.shutdown();
+        final int finalRound = round;
+        final double finalBestfit = bestfit;
         final LayerStack stackToReturn = stack.deepCopy();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -213,7 +216,9 @@ public class JavaFitter implements FitterInterface {
                     long end = System.nanoTime();
                     msg = "Fitting took " +
                         String.format("%.2f", (end - start) / 1e9) +
-                        " seconds.";
+                        " seconds and " + finalRound + " iterations" +
+                        " to obtain fitting error value " +
+                        String.format(Locale.US,"%.4g",finalBestfit);
                 }
                 if(plotTask != null)
                     plotTask.run(stackToReturn,"");
