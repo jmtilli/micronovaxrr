@@ -2460,6 +2460,10 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         ymax = meas[i];
                     if(simul[i] > ymax && !Double.isInfinite(simul[i]))
                         ymax = simul[i];
+                    if(Double.isInfinite(meas[i]))
+                        meas[i] = -100;
+                    if(Double.isInfinite(simul[i]))
+                        simul[i] = -100;
                 }
                 ytitle = "dB";
                 break;
@@ -2607,6 +2611,10 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         ymax = splitR[i];
                     if(NCR[i] > ymax && !Double.isInfinite(NCR[i]))
                         ymax = NCR[i];
+                    if(Double.isInfinite(splitR[i]))
+                        splitR[i] = -100;
+                    if(Double.isInfinite(NCR[i]))
+                        NCR[i] = -100;
                 }
                 ytitle = "dB";
                 break;
