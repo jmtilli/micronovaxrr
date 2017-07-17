@@ -28,7 +28,7 @@ public class LayerPlotter extends Plotter implements ListDataListener {
      * @param yellow An image of a yellow light.
      *
      */
-    public LayerPlotter(JChartArea area, JPlotArea light, LayerStack stack, GraphData data, Image green, Image yellow, double dbMin, double dbMax) {
+    public LayerPlotter(XChartArea area, JPlotArea light, LayerStack stack, GraphData data, Image green, Image yellow, double dbMin, double dbMax) {
         super(area, light, green, yellow, dbMin, dbMax);
         this.stack = stack;
         this.data = data; /* we must be careful with thread safety */

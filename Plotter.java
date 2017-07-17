@@ -8,6 +8,10 @@ import javax.swing.event.*;
 import org.jfree.data.xy.*;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
+import org.knowm.xchart.*;
+import org.knowm.xchart.style.*;
+import org.knowm.xchart.style.markers.*;
+
 
 
 
@@ -32,6 +36,7 @@ import org.jfree.chart.plot.*;
 abstract public class Plotter {
     private Thread t;
     private JChartArea area;
+    private XChartArea xarea;
     private JPlotArea light;
     private Image green, yellow;
     private boolean cont,closing;
@@ -47,13 +52,13 @@ abstract public class Plotter {
      * it waits for new requests. After getting a request, it draws a chart
      * and waits for new requests when the drawing is completed.
      *
-     * @param area The area to draw the chart to.
+     * @param xarea The area to draw the chart to.
      * @param light A light, which changes from green to yellow when plotting and back to green again when the thread is idle. May be null if the functionality is not needed.
      * @param green An image of a green light.
      * @param yellow An image of a yellow light.
      */
-    public Plotter(JChartArea area, JPlotArea light, Image green, Image yellow, double dbMin, double dbMax) {
-        this.area = area;
+    public Plotter(XChartArea xarea, JPlotArea light, Image green, Image yellow, double dbMin, double dbMax) {
+        this.xarea = xarea;
         this.light = light;
         this.green = green;
         this.yellow = yellow;
@@ -165,11 +170,18 @@ abstract public class Plotter {
             return;
         }
 
-        XYSeries series1 = new XYSeries("Simulated data");
-        XYSeries series2 = new XYSeries("Measured data");
+        org.jfree.data.xy.XYSeries series1 = new org.jfree.data.xy.XYSeries("Simulated data");
+        org.jfree.data.xy.XYSeries series2 = new org.jfree.data.xy.XYSeries("Measured data");
         XYSeriesCollection dataset;
         XYPlot xyplot;
         JFreeChart chart;
+        XYChart xychart = new XYChartBuilder().width(800).height(600).title("XRR "+additionalTitle).xAxisTitle("degrees").yAxisTitle("dB").build();
+        //xychart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
+        xychart.getStyler().setDefaultSeriesRenderStyle(org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Line);
+        xychart.getStyler().setYAxisLabelAlignment(Styler.TextAlignment.Right);
+        xychart.getStyler().setPlotMargin(0);
+        xychart.getStyler().setPlotContentSize(.99);
+        xychart.getStyler().setLegendVisible(false);
 
         assert(data.alpha_0.length == data.meas.length);
         assert(data.alpha_0.length == data.simul.length);
@@ -177,6 +189,12 @@ abstract public class Plotter {
             series1.add(data.alpha_0[i],data.simul[i]);
             series2.add(data.alpha_0[i],data.meas[i]);
         }
+        org.knowm.xchart.XYSeries ser2 = xychart.addSeries("Measurement", data.alpha_0, data.meas);
+        ser2.setLineColor(Color.BLUE);
+        ser2.setMarker(new None());
+        org.knowm.xchart.XYSeries ser1 = xychart.addSeries("Simulation", data.alpha_0, data.simul);
+        ser1.setLineColor(Color.RED);
+        ser1.setMarker(new None());
         dataset = new XYSeriesCollection(series1);
         dataset.addSeries(series2);
 
@@ -186,8 +204,11 @@ abstract public class Plotter {
         xyplot.getDomainAxis().setRange(0,5);*/
         xyplot.getRangeAxis().setAutoRange(false);
         xyplot.getRangeAxis().setRange(dbMin,dbMax);
+        xychart.getStyler().setYAxisMin(dbMin);
+        xychart.getStyler().setYAxisMax(dbMax);
         chart.setAntiAlias(false); /* this is faster */
-        area.newChart(chart);
+        //area.newChart(chart);
+        xarea.newChart(xychart);
         if(light != null)
             light.newImage(green);
     }

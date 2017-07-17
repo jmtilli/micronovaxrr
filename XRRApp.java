@@ -1307,7 +1307,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
         /* ------------------- automatic fit -------------------- */
         //final JPlotArea fitPlotArea = new JPlotArea();
-        final JChartArea fitPlotArea = new JChartArea();
+        final XChartArea fitPlotArea = new XChartArea();
         fitLayers = new LayerStack(layers.getLambda(), layers.getTable());
 
         pfit = new LayerPlotter(fitPlotArea, fitPlotLight, fitLayers, data, green, yellow, dbMin, dbMax);
@@ -1333,7 +1333,12 @@ public class XRRApp extends JFrame implements ChooserWrapper {
 
         fitPlotArea.setPreferredSize(new Dimension(600,400));
         fitPlotArea.setPreferredSize(new Dimension(600,400));
-        fit.add(fitPlotArea,BorderLayout.CENTER);
+        JPanel fitPlotWrapper = new JPanel();
+        fitPlotWrapper.setLayout(new BorderLayout());
+        fitPlotWrapper.add(fitPlotArea, BorderLayout.CENTER);
+        fitPlotWrapper.add(new JCenterImageArea("meassimullegend.png", 2),
+                           BorderLayout.SOUTH);
+        fit.add(fitPlotWrapper,BorderLayout.CENTER);
         JPanel plotControls = new JPanel();
         plotControls.setLayout(new GridBagLayout());
         final JButton exportButton = new JButton("Export");
@@ -1548,7 +1553,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         /* ------------------ manual fit -------------- */
 
         //final JPlotArea plotarea = new JPlotArea();
-        final JChartArea plotarea = new JChartArea();
+        final XChartArea plotarea = new XChartArea();
 
         p = new LayerPlotter(plotarea, light, layers, data, green, yellow, dbMin, dbMax);
 
@@ -1556,7 +1561,13 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         pfit.setDbRange(dbMin, dbMax);
 
         plotarea.setPreferredSize(new Dimension(600,400));
-        graph.add(plotarea,BorderLayout.CENTER);
+        //graph.add(plotarea,BorderLayout.CENTER);
+        JPanel plotWrapper = new JPanel();
+        plotWrapper.setLayout(new BorderLayout());
+        plotWrapper.add(plotarea, BorderLayout.CENTER);
+        plotWrapper.add(new JCenterImageArea("meassimullegend.png", 2),
+                           BorderLayout.SOUTH);
+        graph.add(plotWrapper,BorderLayout.CENTER);
         graph.add(sliderPanel,BorderLayout.SOUTH);
 
         //layers.invalidate(this);
