@@ -119,11 +119,15 @@ public class ChartFrame extends JFrame {
         JChartArea a = new JChartArea();
         a.newChart(chart);
         a.setPreferredSize(new Dimension(w, h));
-        //cp.add(a,c);
-        //cp.add(new SwingWrapper<XYChart>(xychart).getXChartPanel(), c);
-        XChartPanel<XYChart> chartPanel = new XChartPanel<XYChart>(xychart);
-        //new SwingWrapper<XYChart>(xychart).displayChart();
-        cp.add(chartPanel, c);
+        XChartArea b = new XChartArea();
+        b.newChart(xychart);
+        b.setPreferredSize(new Dimension(w, h));
+        cp.add(b,c);
+        ////cp.add(a,c);
+        ////cp.add(new SwingWrapper<XYChart>(xychart).getXChartPanel(), c);
+        //XChartPanel<XYChart> chartPanel = new XChartPanel<XYChart>(xychart);
+        ////new SwingWrapper<XYChart>(xychart).displayChart();
+        //cp.add(chartPanel, c);
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
