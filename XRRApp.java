@@ -671,7 +671,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         xyplot.getRangeAxis().setRange(-70,0);*/
         //chart.setAntiAlias(false); /* this is faster */
         new ChartFrame(this,"Discrete Fourier transform", 600, 400, false,
-                new DataArray(1e9, xarray), "nm", yarrays, "spectral density", 0, 0).setVisible(true);
+                new DataArray(1e9, xarray), "nm", yarrays, "spectral density", 0, 0, null).setVisible(true);
 
     }
 
@@ -2496,7 +2496,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         xyplot.getRangeAxis().setRange(-70,0);*/
         //chart.setAntiAlias(false); /* this is faster */
         new ChartFrame(this,"Reflectivity plot", 600, 400, true,
-                new DataArray(1, d.alpha_0), "degrees", yarrays, ytitle, ymin, ymax).setVisible(true);
+                new DataArray(1, d.alpha_0), "degrees", yarrays, ytitle, ymin, ymax, "meassimullegend.png").setVisible(true);
 
     }
 
@@ -2536,7 +2536,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         xyplot.getRangeAxis().setRange(-70,0);*/
         //chart.setAntiAlias(false); /* this is faster */
         new ChartFrame(this,"Depth profile", 600, 400, true,
-                new DataArray(1e9, ds), "nm", yarrays, property.title, 0, 0).setVisible(true);
+                new DataArray(1e9, ds), "nm", yarrays, property.title, 0, 0, "smoothsharplegend.png").setVisible(true);
 
     }
 
@@ -2637,7 +2637,8 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         yarrays.add(new NamedArray(1, splitR, "Split roughness"));
 
         new ChartFrame(this,"Reflectivity", 600, 400, true,
-                new DataArray(1, data.alpha_0), "degrees", yarrays, ytitle, 0, 0).setVisible(true);
+                new DataArray(1, data.alpha_0), "degrees", yarrays, ytitle,
+                0, 0, "splitnevotlegend.png").setVisible(true);
 
     }
 

@@ -40,7 +40,7 @@ public class ChartFrame extends JFrame {
      * @param ymin minimum value of y-axis. this is ignored if ymin == ymax
      * @param ymax maximum value of y-axis. this is ignored if ymin == ymax
      */
-    public ChartFrame(final ChooserWrapper wrapper, String title, int w, int h, boolean legend, final DataArray xdata, String xtitle, final java.util.List<NamedArray> ydata, String ytitle, double ymin, double ymax)
+    public ChartFrame(final ChooserWrapper wrapper, String title, int w, int h, boolean legend, final DataArray xdata, String xtitle, final java.util.List<NamedArray> ydata, String ytitle, double ymin, double ymax, String legendFile)
     {
         super(title);
         Color[] colors = new Color[]{Color.RED, Color.BLUE};
@@ -50,13 +50,14 @@ public class ChartFrame extends JFrame {
         XYChart xychart = new XYChartBuilder().width(w).height(h).title(title).xAxisTitle(xtitle).yAxisTitle(ytitle).build();
 
         xychart.getStyler().setChartBackgroundColor(UIManager.getColor("Panel.background"));
-        xychart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
+        //xychart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
         xychart.getStyler().setDefaultSeriesRenderStyle(org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Line);
         xychart.getStyler().setYAxisLabelAlignment(Styler.TextAlignment.Right);
         //xychart.getStyler().setYAxisDecimalPattern("$ #,###.##");
         xychart.getStyler().setPlotMargin(0);
         xychart.getStyler().setPlotContentSize(.99);
-        xychart.getStyler().setLegendVisible(legend);
+        //xychart.getStyler().setLegendVisible(legend);
+        xychart.getStyler().setLegendVisible(false);
 
         int n = xdata.array.length;
 
@@ -97,10 +98,17 @@ public class ChartFrame extends JFrame {
         c.ipadx = c.ipady = 2;
         c.insets = new Insets(2, 2, 2, 2);
 
+        JPanel bpanel = new JPanel();
+        bpanel.setLayout(new BorderLayout());
         XChartArea b = new XChartArea();
         b.newChart(xychart);
         b.setPreferredSize(new Dimension(w, h));
-        cp.add(b,c);
+        bpanel.add(b, BorderLayout.CENTER);
+        if (legendFile != null && legend)
+        {
+            bpanel.add(new JCenterImageArea(legendFile, 2), BorderLayout.SOUTH);
+        }
+        cp.add(bpanel,c);
         ////cp.add(a,c);
         ////cp.add(new SwingWrapper<XYChart>(xychart).getXChartPanel(), c);
         //XChartPanel<XYChart> chartPanel = new XChartPanel<XYChart>(xychart);
