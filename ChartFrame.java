@@ -57,7 +57,7 @@ public class ChartFrame extends JFrame {
         xychart.getStyler().setYAxisLabelAlignment(Styler.TextAlignment.Right);
         //xychart.getStyler().setYAxisDecimalPattern("$ #,###.##");
         xychart.getStyler().setPlotMargin(0);
-        xychart.getStyler().setPlotContentSize(.95);
+        xychart.getStyler().setPlotContentSize(.99);
         xychart.getStyler().setLegendVisible(legend);
 
         org.jfree.data.xy.XYSeries series;
@@ -99,7 +99,6 @@ public class ChartFrame extends JFrame {
         if(ymin != ymax) {
             xyplot.getRangeAxis().setAutoRange(false);
             xyplot.getRangeAxis().setRange(ymin,ymax);
-            System.out.println("min " + ymin + " max " + ymax);
             xychart.getStyler().setYAxisMin(ymin);
             xychart.getStyler().setYAxisMax(ymax);
         }
