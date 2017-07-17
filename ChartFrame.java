@@ -70,6 +70,9 @@ public class ChartFrame extends JFrame {
             NamedArray y = ydata.get(j);
             double[] yar = new double[y.array.length];
             String name = y.name;
+            for(int i=0; i<n; i++) {
+                yar[i] = y.array[i]*y.scale;
+            }
             if (name == null || name.equals(""))
             {
                 name = "data";
