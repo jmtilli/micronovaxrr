@@ -28,6 +28,7 @@ all scientific papers that make use of this software:
      Tiilikainen J, Tilli J-M, Bosund V, Mattila M, Hakkarainen T,
      Airaksinen V-M and Lipsanen H 2007 J. Phys D: Appl. Phys. 40 215-8
 
-This program uses JFreeChart, Copyright 2000-2006, by Object Refinery
-Limited and Contributors. It is distributed under the GNU Lesser General
-Public License: http://www.gnu.org/licenses/lgpl.html
+This program uses XChart, Copyright 2011-2015 Xeiam LLC (http://xeiam.com)
+and contributors, and Copyright 2015-2017 Knowm Inc. (http://knowm.org) and
+contributors. It is licensed under the Apache License, Version 2.0:
+http://www.apache.org/licenses/LICENSE-2.0
