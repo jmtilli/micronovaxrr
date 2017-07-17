@@ -5,9 +5,6 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import org.jfree.data.xy.*;
-import org.jfree.chart.*;
-import org.jfree.chart.plot.*;
 import org.knowm.xchart.*;
 import org.knowm.xchart.style.*;
 import org.knowm.xchart.style.markers.*;
@@ -35,7 +32,6 @@ import org.knowm.xchart.style.markers.*;
 
 abstract public class Plotter {
     private Thread t;
-    private JChartArea area;
     private XChartArea xarea;
     private JPlotArea light;
     private Image green, yellow;
@@ -170,11 +166,6 @@ abstract public class Plotter {
             return;
         }
 
-        org.jfree.data.xy.XYSeries series1 = new org.jfree.data.xy.XYSeries("Simulated data");
-        org.jfree.data.xy.XYSeries series2 = new org.jfree.data.xy.XYSeries("Measured data");
-        XYSeriesCollection dataset;
-        XYPlot xyplot;
-        JFreeChart chart;
         XYChart xychart = new XYChartBuilder().width(800).height(600).title("XRR "+additionalTitle).xAxisTitle("degrees").yAxisTitle("dB").build();
         xychart.getStyler().setChartBackgroundColor(UIManager.getColor("Panel.background"));
         //xychart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
@@ -186,28 +177,15 @@ abstract public class Plotter {
 
         assert(data.alpha_0.length == data.meas.length);
         assert(data.alpha_0.length == data.simul.length);
-        for(int i=0; i<data.alpha_0.length; i++) {
-            series1.add(data.alpha_0[i],data.simul[i]);
-            series2.add(data.alpha_0[i],data.meas[i]);
-        }
         org.knowm.xchart.XYSeries ser2 = xychart.addSeries("Measurement", data.alpha_0, data.meas);
         ser2.setLineColor(Color.BLUE);
         ser2.setMarker(new None());
         org.knowm.xchart.XYSeries ser1 = xychart.addSeries("Simulation", data.alpha_0, data.simul);
         ser1.setLineColor(Color.RED);
         ser1.setMarker(new None());
-        dataset = new XYSeriesCollection(series1);
-        dataset.addSeries(series2);
 
-        chart = ChartFactory.createXYLineChart("XRR "+additionalTitle,"degrees","dB",dataset,PlotOrientation.VERTICAL,true,true,false);
-        xyplot = chart.getXYPlot();
-        /*xyplot.getDomainAxis().setAutoRange(false);
-        xyplot.getDomainAxis().setRange(0,5);*/
-        xyplot.getRangeAxis().setAutoRange(false);
-        xyplot.getRangeAxis().setRange(dbMin,dbMax);
         xychart.getStyler().setYAxisMin(dbMin);
         xychart.getStyler().setYAxisMax(dbMax);
-        chart.setAntiAlias(false); /* this is faster */
         //area.newChart(chart);
         xarea.newChart(xychart);
         if(light != null)

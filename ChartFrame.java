@@ -4,9 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.io.*;
-import org.jfree.data.xy.*;
-import org.jfree.chart.*;
-import org.jfree.chart.plot.*;
 import org.knowm.xchart.*;
 import org.knowm.xchart.style.*;
 import org.knowm.xchart.style.markers.*;
@@ -61,10 +58,6 @@ public class ChartFrame extends JFrame {
         xychart.getStyler().setPlotContentSize(.99);
         xychart.getStyler().setLegendVisible(legend);
 
-        org.jfree.data.xy.XYSeries series;
-        XYSeriesCollection dataset;
-        XYPlot xyplot;
-        JFreeChart chart;
         int n = xdata.array.length;
 
         for (int i = 0; i < n; i++)
@@ -72,17 +65,10 @@ public class ChartFrame extends JFrame {
             xar[i] = xdata.array[i]*xdata.scale;
         }
 
-        dataset = new XYSeriesCollection();
         for(int j=ydata.size()-1; j>=0; j--) {
             NamedArray y = ydata.get(j);
             double[] yar = new double[y.array.length];
             String name = y.name;
-            series = new org.jfree.data.xy.XYSeries(y.name);
-            for(int i=0; i<n; i++) {
-                yar[i] = y.array[i]*y.scale;
-                series.add(xdata.scale*xdata.array[i], y.scale*y.array[i]);
-            }
-            dataset.addSeries(series);
             if (name == null || name.equals(""))
             {
                 name = "data";
@@ -93,13 +79,7 @@ public class ChartFrame extends JFrame {
         }
 
 
-        chart = ChartFactory.createXYLineChart(title,xtitle,ytitle,dataset,PlotOrientation.VERTICAL,legend,true,false);
-        chart.setAntiAlias(false); 
-
-        xyplot = chart.getXYPlot();
         if(ymin != ymax) {
-            xyplot.getRangeAxis().setAutoRange(false);
-            xyplot.getRangeAxis().setRange(ymin,ymax);
             xychart.getStyler().setYAxisMin(ymin);
             xychart.getStyler().setYAxisMax(ymax);
         }
@@ -116,9 +96,6 @@ public class ChartFrame extends JFrame {
         c.ipadx = c.ipady = 2;
         c.insets = new Insets(2, 2, 2, 2);
 
-        JChartArea a = new JChartArea();
-        a.newChart(chart);
-        a.setPreferredSize(new Dimension(w, h));
         XChartArea b = new XChartArea();
         b.newChart(xychart);
         b.setPreferredSize(new Dimension(w, h));
