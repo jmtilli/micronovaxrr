@@ -52,6 +52,7 @@ public class ChartFrame extends JFrame {
 
         XYChart xychart = new XYChartBuilder().width(w).height(h).title(title).xAxisTitle(xtitle).yAxisTitle(ytitle).build();
 
+        xychart.getStyler().setChartBackgroundColor(UIManager.getColor("Panel.background"));
         xychart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
         xychart.getStyler().setDefaultSeriesRenderStyle(org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Line);
         xychart.getStyler().setYAxisLabelAlignment(Styler.TextAlignment.Right);

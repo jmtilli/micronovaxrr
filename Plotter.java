@@ -176,6 +176,7 @@ abstract public class Plotter {
         XYPlot xyplot;
         JFreeChart chart;
         XYChart xychart = new XYChartBuilder().width(800).height(600).title("XRR "+additionalTitle).xAxisTitle("degrees").yAxisTitle("dB").build();
+        xychart.getStyler().setChartBackgroundColor(UIManager.getColor("Panel.background"));
         //xychart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
         xychart.getStyler().setDefaultSeriesRenderStyle(org.knowm.xchart.XYSeries.XYSeriesRenderStyle.Line);
         xychart.getStyler().setYAxisLabelAlignment(Styler.TextAlignment.Right);
