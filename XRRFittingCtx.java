@@ -114,7 +114,7 @@ public class XRRFittingCtx {
     ThreadPoolExecutor exec =
             new ThreadPoolExecutor(cpus, cpus,
                                    1, TimeUnit.SECONDS,
-                                   new LinkedBlockingDeque<Runnable>());
+                                   new LinkedBlockingQueue<Runnable>());
     XRRFittingCtx init = new XRRFittingCtx(layers, gd, true, true, 40,
                                            new LogFittingErrorFunc(2),
                                            exec, new AdvancedFitOptions());

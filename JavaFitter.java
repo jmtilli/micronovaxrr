@@ -104,7 +104,7 @@ public class JavaFitter implements FitterInterface {
         boolean ok = false;
         this.exec = new ThreadPoolExecutor(cpus, cpus,
                                            1, TimeUnit.SECONDS,
-                                           new LinkedBlockingDeque<Runnable>());
+                                           new LinkedBlockingQueue<Runnable>());
         switch (func)
         {
           case relchi2:

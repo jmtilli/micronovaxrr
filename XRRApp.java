@@ -1362,7 +1362,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                             fileLoadEmpty.setEnabled(true);
                             fileSwap.setEnabled(true);
                             pfit.setAdditionalTitle("");
-                            if (msg != null && !msg.isEmpty())
+                            if (msg != null && !msg.equals(""))
                             {
                                 JOptionPane.showMessageDialog(null,
                                     msg,
@@ -1776,7 +1776,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         OutputStream str = fstr;
                         if (fs.endsWith(".gz"))
                         {
-                            str = new GZIPOutputStream(fstr, true);
+                            str = new GZIPOutputStream(fstr);
                         }
                         else if (fs.endsWith(".zip"))
                         {
