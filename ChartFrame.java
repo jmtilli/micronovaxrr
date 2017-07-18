@@ -58,6 +58,7 @@ public class ChartFrame extends JFrame {
         xychart.getStyler().setPlotContentSize(.99);
         //xychart.getStyler().setLegendVisible(legend);
         xychart.getStyler().setLegendVisible(false);
+        xychart.getStyler().setAntiAlias(false);
 
         int n = xdata.array.length;
 

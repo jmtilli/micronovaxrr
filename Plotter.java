@@ -174,6 +174,7 @@ abstract public class Plotter {
         xychart.getStyler().setPlotMargin(0);
         xychart.getStyler().setPlotContentSize(.99);
         xychart.getStyler().setLegendVisible(false);
+        xychart.getStyler().setAntiAlias(false);
 
         assert(data.alpha_0.length == data.meas.length);
         assert(data.alpha_0.length == data.simul.length);

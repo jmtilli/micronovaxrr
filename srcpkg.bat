@@ -13,7 +13,7 @@ copy deploy\APACHE-LICENSE-2.0.txt xrr-src\deploy
 copy deploy\README* xrr-src\deploy
 copy deploy\resolution.txt xrr-src\deploy
 
-copy xchart-3.4.0.jar xrr-src
+copy xchart-3.4.1-CUSTOM.jar xrr-src
 copy Jama-1.0.3.jar xrr-src
 copy javafastcomplex.jar xrr-src
 copy javaxmlfrag.jar xrr-src
