@@ -349,7 +349,7 @@ public class GraphData {
             alpha0rad[i] = alpha_0[i]*Math.PI/180;
         }
 
-        simul = XRRSimul.simulateComplexBuffer(alpha0rad, tempStack);
+        simul = XRRSimul.simulateComplexBufferArray(alpha0rad, tempStack);
 
         return new GraphData(alpha_0, meas, simul);
     }

@@ -500,6 +500,142 @@ public class XRRSimul {
             return R2;
     }
 
+    /** The real simulation code that uses real complex numbers.
+     *
+     * <p>
+     *
+     * This function implements the real simulation.  Layers are passed as four
+     * arrays of doubles that contain the numerical properties of the layers.
+     * The lengths of all these arrays must equal the number of layers.
+     *
+     * <p>
+     *
+     * Convolution is silently ignored if alpha0rad is not uniformly spaced. If
+     * it's necessary to know whether convolution is used, the caller must
+     * check whether alpha0rad is uniformly spaced by the function
+     * isUniformlySpaced
+     *
+     * <p>
+     *
+     * Unlike in simulate, the uppermost layer must be the ambient layer (air),
+     * that is, delta[0] = beta[0] = 0. d[0] and r[0] have no meaning and are
+     * therefore ignored. The thickness of the substrate, d[n-1], where
+     * n is the number of layers, must be finite and not NaN but is
+     * otherwise ignored.
+     * 
+     * @param alpha0rad angles of incidence in radians
+     * @param delta an array containing delta for all the layers
+     * @param beta an array containing beta for all the layers
+     * @param d an array containing the thicknesses of all the layers
+     * @param r an array containing the roughnesses of the upper interfaces of all the layers
+     * @param lambda wavelength in meters
+     * @param stddevrad standard deviation of angle (instrument resolution) in
+     * radians.
+     *
+     * @return an array containing the absolute values of reflectivity for intensity
+     *
+     */
+
+    public static double[] rawSimulateComplexBufferArray(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad, double beam) {
+        ComplexBufferArray R;
+        double[] R2;
+        ComplexBufferArray[] kz;
+        double k0 = 2*Math.PI/lambda;
+        final double stddevs = 4;
+        double[] filter = null;
+        double dalpha0rad = alpha0rad.length > 1 ? (alpha0rad[alpha0rad.length-1] - alpha0rad[0])/(alpha0rad.length-1) : 1;
+
+
+        filter = gaussianFilter(dalpha0rad, stddevrad, stddevs);
+
+        if(filter != null) {
+            if(!isUniformlySpaced(alpha0rad)) {
+                //throw new RuntimeException("Measurement points not uniformly spaced");
+                filter = null;
+            }
+        }
+
+        R = new ComplexBufferArray(alpha0rad.length);
+        R2 = new double[alpha0rad.length];
+        kz = new ComplexBufferArray[2];
+        for (int i = 0; i<kz.length; i++)
+        {
+            kz[i] = new ComplexBufferArray(alpha0rad.length);
+        }
+
+        //ComplexBuffer kz0, kz1;
+        ComplexBuffer num = new ComplexBuffer(), den = new ComplexBuffer();
+        ComplexBuffer ri = new ComplexBuffer();
+        ComplexBuffer roughri = new ComplexBuffer();
+        ComplexBuffer b = new ComplexBuffer(); // ri*ph
+        ComplexBuffer d_times_minus_two_i = new ComplexBuffer();
+
+        /* we only calculate wavevector for i==d.length,
+         * other calculations are done starting from i==d.length-1 */
+        for(int i=d.length; i>=1; i--) {
+
+            ComplexBufferArray kz0_ar = kz[(i-1)%2];
+            ComplexBufferArray kz1_ar = kz[i%2];
+
+            double two_times_delta = 2*delta[i-1];
+            double minus_two_times_beta = -2*beta[i-1];
+
+            /* a bit tricky optimization */
+            for(int j=0; j<alpha0rad.length; j++) {
+                double alpha0 = alpha0rad[j];
+
+                // Calculate z component of wavevector
+                kz0_ar.set(j, alpha0*alpha0-two_times_delta, minus_two_times_beta)
+                         .sqrtInPlace(j).multiplyInPlace(j, k0);
+            }
+            if(i == d.length)
+                continue;
+
+            double roughness = r[i];
+            double roughness_factor = -2*roughness*roughness;
+            d_times_minus_two_i.set(MINUS_TWO_I).multiplyInPlace(d[i]);
+
+            for(int j=0; j<alpha0rad.length; j++) {
+                //kz0 = kz0_ar[j];
+                //kz1 = kz1_ar[j];
+
+                // Fresnel reflection coefficient
+                num.set(kz0_ar, j).subtractInPlace(kz1_ar, j);
+                den.set(kz0_ar, j).addInPlace(kz1_ar, j);
+                ri.set(num).divideInPlace(den);
+                // this can actually occur at small angles when there's no reflection.
+                if (ri.isNaN())
+                {
+                  ri.set(0, 0);
+                }
+                roughri.set(kz0_ar, j).multiplyInPlace(kz1_ar, j).multiplyInPlace(roughness_factor)
+                       .expInPlace().multiplyInPlace(ri);
+
+                // phase factor times reflectivity coefficient
+                b.set(kz1_ar, j).multiplyInPlace(d_times_minus_two_i).expInPlace()
+                 .multiplyInPlace(R, j);
+
+                // recursive formula
+                num.set(b).addInPlace(roughri);
+                den.set(b).multiplyInPlace(roughri).addInPlace(1);
+                R.set(j, num).divideInPlace(j, den);
+            }
+        }
+        for(int i=0; i<R2.length; i++) {
+            double re = R.getReal(i), im = R.getImag(i);
+            double F = beam*Math.sin(alpha0rad[i]);
+            if (F > 1.0)
+                F = 1.0;
+            R2[i] = re*re + im*im;
+            R2[i] *= F;
+        }
+
+        if(filter != null)
+            return applyOddFilter(filter, R2);
+        else
+            return R2;
+    }
+
 
     /** The real simulation code.
      *
@@ -754,6 +890,48 @@ public class XRRSimul {
         }
 
         return rawSimulateComplexBuffer(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
+    }
+
+    /** Call simulation with layers from a LayerStack.
+     *
+     * <p>
+     *
+     * The ambient layer (air) is included automatically in the simulation.
+     *
+     * @param alpha0rad angles of incidence in radians
+     * @param layers the layer stack to simulate
+     *
+     */
+
+    public static double[] simulateComplexBufferArray(double[] alpha0rad, LayerStack layers) {
+        double[] delta;
+        double[] beta;
+        double[] d; // layer thickness
+        double[] r; // top interface roughness
+        double lambda = layers.getLambda();
+        double stddevrad = layers.getStdDev().getExpected();
+        double beam = layers.getBeam().getExpected();
+
+        /* convert the layer stack to delta, beta, thickness and roughness arrays */
+
+        delta = new double[layers.getSize()+1];
+        beta = new double[layers.getSize()+1];
+        d = new double[layers.getSize()+1];
+        r = new double[layers.getSize()+1];
+
+        delta[0] = beta[0] = d[0] = r[0] = 0; /* ambient (air) */
+
+        for(int i=0; i<d.length-1; i++) {
+            Layer layer = layers.getElementAt(i);
+            Compound compound = layer.getXRRCompound();
+
+            d[i+1] = layers.getElementAt(i).getThickness().getExpected();
+            r[i+1] = layers.getElementAt(i).getRoughness().getExpected();
+            delta[i+1] = layer.getDensity().getExpected() * compound.getDeltaPerRho();
+            beta[i+1] = delta[i+1] * compound.getBetaPerDelta();
+        }
+
+        return rawSimulateComplexBufferArray(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
     }
 
     /** Call simulation with layers from a LayerStack.
