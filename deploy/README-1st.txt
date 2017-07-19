@@ -3,7 +3,7 @@ INSTALLATION
 
 This programs needs Java version at least 1.6 to run. This program has been
 tested on Windows and Linux, but it should work on any platform for which Java
-is available.
+is available. However, newest version of Java, 1.8, is recommended.
 
 
 
@@ -17,15 +17,6 @@ start after double-clicking xrr.jar, try reinstalling Java.
 
 
 IMPORTANT NOTE:
-
-If you are running on a really old computer with a gigabyte of memory or less,
-you should use run.bat (for Windows) or run.sh (for Unix-like operating
-systems) to start the program. Starting the program by double-clicking xrr.jar
-limits the maximum memory allocation to a value too small. Hitting the memory
-limit will result in unpredictable behavior. This note does not apply to modern
-computers with 2 gigabytes of memory or more. With modern computers, you may
-start the program by double-clicking xrr.jar.
-
 
 If you need more materials than included or support for different wavelengths,
 you have to download the atomic scattering factor files from
