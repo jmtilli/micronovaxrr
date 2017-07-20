@@ -133,6 +133,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
 
             JButton minx2Button = new JButton("2");
+            minx2Button.setMargin(new Insets(3, 3, 3, 3));
             minx2Button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getThickness();
@@ -162,6 +163,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
 	    /* This button changes the minimum value of the parameter range to the current value */
             JButton minButton = new JButton("<");
+            minButton.setMargin(new Insets(3, 3, 3, 3));
             minButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getThickness();
@@ -196,6 +198,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
 	    /* This button changes the maximum value of the parameter range to the current value */
             JButton maxButton = new JButton(">");
+            maxButton.setMargin(new Insets(3, 3, 3, 3));
             maxButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getThickness();
@@ -214,6 +217,7 @@ public class ScrollbarUpdater implements ListDataListener {
             sliders.add(maxButton,c);
 
             JButton maxx2Button = new JButton("2");
+            maxx2Button.setMargin(new Insets(3, 3, 3, 3));
             maxx2Button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getThickness();
@@ -238,7 +242,8 @@ public class ScrollbarUpdater implements ListDataListener {
             maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
             sliders.add(maxx2Button,c);
 
-            JButton errButton = new JButton("E");
+            JButton errButton = new JButton("Err");
+            errButton.setMargin(new Insets(3, 3, 3, 3));
             errButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     LayerStack.Pair pair = ls.deepCopy(l.getThickness());
@@ -264,6 +269,7 @@ public class ScrollbarUpdater implements ListDataListener {
             });
             sliders.add(errButton,c);
             JButton rangeButton = new JButton("Edit");
+            rangeButton.setMargin(new Insets(3, 3, 3, 3));
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getThickness();
@@ -334,6 +340,7 @@ public class ScrollbarUpdater implements ListDataListener {
             final JLabel rMaxLabel = new JLabel(/*"max = " + */String.format(Locale.US,"%.6g",r.getMax()*1e9));
 
             minx2Button = new JButton("2");
+            minx2Button.setMargin(new Insets(3, 3, 3, 3));
             minx2Button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getRoughness();
@@ -363,6 +370,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
 	    /* This button changes the minimum value of the parameter range to the current value */
             minButton = new JButton("<");
+            minButton.setMargin(new Insets(3, 3, 3, 3));
             minButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getRoughness();
@@ -395,6 +403,7 @@ public class ScrollbarUpdater implements ListDataListener {
             sliders.add(rMaxLabel,c);
 
             maxButton = new JButton(">");
+            maxButton.setMargin(new Insets(3, 3, 3, 3));
             maxButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getRoughness();
@@ -413,6 +422,7 @@ public class ScrollbarUpdater implements ListDataListener {
             sliders.add(maxButton,c);
 
             maxx2Button = new JButton("2");
+            maxx2Button.setMargin(new Insets(3, 3, 3, 3));
             maxx2Button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getRoughness();
@@ -437,7 +447,8 @@ public class ScrollbarUpdater implements ListDataListener {
             maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
             sliders.add(maxx2Button,c);
 
-            errButton = new JButton("E");
+            errButton = new JButton("Err");
+            errButton.setMargin(new Insets(3, 3, 3, 3));
             errButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     LayerStack.Pair pair = ls.deepCopy(l.getRoughness());
@@ -463,6 +474,7 @@ public class ScrollbarUpdater implements ListDataListener {
             });
             sliders.add(errButton,c);
             rangeButton = new JButton("Edit");
+            rangeButton.setMargin(new Insets(3, 3, 3, 3));
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getRoughness();
@@ -533,6 +545,7 @@ public class ScrollbarUpdater implements ListDataListener {
             final JLabel rhoMaxLabel = new JLabel(/*"max = " + */String.format(Locale.US,"%.6g",rho.getMax()/1e3));
 
             minx2Button = new JButton("2");
+            minx2Button.setMargin(new Insets(3, 3, 3, 3));
             minx2Button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getDensity();
@@ -562,6 +575,7 @@ public class ScrollbarUpdater implements ListDataListener {
 
 	    /* This button changes the minimum value of the parameter range to the current value */
             minButton = new JButton("<");
+            minButton.setMargin(new Insets(3, 3, 3, 3));
             minButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getDensity();
@@ -594,6 +608,7 @@ public class ScrollbarUpdater implements ListDataListener {
             sliders.add(rhoMaxLabel,c);
 
             maxButton = new JButton(">");
+            maxButton.setMargin(new Insets(3, 3, 3, 3));
             maxButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getDensity();
@@ -612,6 +627,7 @@ public class ScrollbarUpdater implements ListDataListener {
             sliders.add(maxButton,c);
 
             maxx2Button = new JButton("2");
+            maxx2Button.setMargin(new Insets(3, 3, 3, 3));
             maxx2Button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getDensity();
@@ -636,7 +652,8 @@ public class ScrollbarUpdater implements ListDataListener {
             maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
             sliders.add(maxx2Button,c);
 
-            errButton = new JButton("E");
+            errButton = new JButton("Err");
+            errButton.setMargin(new Insets(3, 3, 3, 3));
             errButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     LayerStack.Pair pair = ls.deepCopy(l.getDensity());
@@ -662,6 +679,7 @@ public class ScrollbarUpdater implements ListDataListener {
             });
             sliders.add(errButton,c);
             rangeButton = new JButton("Edit");
+            rangeButton.setMargin(new Insets(3, 3, 3, 3));
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     FitValue val = l.getDensity();

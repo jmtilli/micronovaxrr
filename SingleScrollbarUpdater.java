@@ -57,12 +57,14 @@ public class SingleScrollbarUpdater implements ValueListener {
         this.enableCheck = new JCheckBox("fit");
         this.enableCheck.setEnabled(val.isSupported());
         this.minButton = new JButton("<");
+        this.minButton.setMargin(new Insets(3, 3, 3, 3));
         this.minButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 val.setValues(val.getExpected(),val.getExpected(),val.getMax(),val.getEnabled());
             }
         });
         this.minx2Button = new JButton("2");
+        this.minx2Button.setMargin(new Insets(3, 3, 3, 3));
         this.minx2Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 double newMin = val.getMin()-(val.getMax()-val.getMin());
@@ -78,12 +80,14 @@ public class SingleScrollbarUpdater implements ValueListener {
             }
         });
         this.maxButton = new JButton(">");
+        this.maxButton.setMargin(new Insets(3, 3, 3, 3));
         this.maxButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 val.setValues(val.getMin(),val.getExpected(),val.getExpected(),val.getEnabled());
             }
         });
         this.maxx2Button = new JButton("2");
+        this.maxx2Button.setMargin(new Insets(3, 3, 3, 3));
         this.maxx2Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 double newMax = val.getMax()+(val.getMax()-val.getMin());
@@ -94,7 +98,8 @@ public class SingleScrollbarUpdater implements ValueListener {
                 val.setValues(val.getMin(),val.getExpected(),newMax,val.getEnabled());
             }
         });
-        this.errButton = new JButton("E");
+        this.errButton = new JButton("Err");
+        this.errButton.setMargin(new Insets(3, 3, 3, 3));
         this.errButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 LayerStack.Pair pair = ls.deepCopy(val);
@@ -119,6 +124,7 @@ public class SingleScrollbarUpdater implements ValueListener {
             }
         });
         this.rangeButton = new JButton("Edit");
+        this.rangeButton.setMargin(new Insets(3, 3, 3, 3));
         this.rangeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 Dialog ownerDialog = DialogUtil.getOwnerDialog(rangeButton);
@@ -133,7 +139,7 @@ public class SingleScrollbarUpdater implements ValueListener {
         });
 
         this.slider = new JSlider(0,SLIDER_STEPS);
-        this.slider.setPreferredSize(new Dimension(310, this.slider.getPreferredSize().height));
+        this.slider.setPreferredSize(new Dimension(380, this.slider.getPreferredSize().height));
 
 
         this.slider.addChangeListener(new ChangeListener() {
