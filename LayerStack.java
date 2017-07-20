@@ -388,6 +388,71 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         this.sum.deepCopyFrom(sum);
     }
 
+    public class Pair {
+        public final LayerStack stack;
+        public final FitValue value;
+        public Pair(LayerStack stack, FitValue value)
+        {
+            this.stack = stack;
+            this.value = value;
+        }
+    };
+
+    /** Deep copy.
+     *
+     * <p>
+     *
+     * The method makes a deep copy of this object. Listeners are not copied.
+     *
+     * @return a deep copy of this layer stack
+     */
+    public Pair deepCopy(FitValue val) {
+        LayerStack result = new LayerStack(this.lambda, this.table);
+        FitValue val2 = null;
+        Map<FitValue, Integer> fitValueNumbering = getFitValueNumbering();
+        Map<Integer, FitValue> newFitValues = new HashMap<Integer, FitValue>();
+        int size = layers.size();
+        for(int i=0; i<size; i++)
+        {
+            Layer l = layers.get(i);
+            Layer l2 = l.deepCopy(fitValueNumbering, newFitValues);
+            if (l.getThickness() == val)
+            {
+                val2 = l2.getThickness();
+            }
+            if (l.getDensity() == val)
+            {
+                val2 = l2.getDensity();
+            }
+            if (l.getRoughness() == val)
+            {
+                val2 = l2.getRoughness();
+            }
+            result.layers.add(l2);
+        }
+        result.stddev.deepCopyFrom(this.stddev.deepCopy());
+        result.prod.deepCopyFrom(this.prod.deepCopy());
+        result.beam.deepCopyFrom(this.beam.deepCopy());
+        result.sum.deepCopyFrom(this.sum.deepCopy());
+        if (this.stddev == val)
+        {
+            val2 = result.stddev; 
+        }
+        if (this.prod == val)
+        {
+            val2 = result.prod; 
+        }
+        if (this.beam == val)
+        {
+            val2 = result.beam; 
+        }
+        if (this.sum == val)
+        {
+            val2 = result.sum; 
+        }
+        return new Pair(result, val2);
+    }
+
     /** Deep copy.
      *
      * <p>

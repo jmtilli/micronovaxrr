@@ -39,6 +39,7 @@ public class ScrollbarUpdater implements ListDataListener {
     /* XXX: this is a part of a particularly ugly hack */
     /* If lock is set, we must ignore all change events */
     private boolean lock = false;
+    private XRRApp xrr;
 
     /** Constructor.
      *
@@ -50,14 +51,15 @@ public class ScrollbarUpdater implements ListDataListener {
      * @param sliderPanel a user interface component to create the slider interface in
      * 
      */
-    public ScrollbarUpdater(LayerStack ls, JComponent sliderPanel) {
+    public ScrollbarUpdater(XRRApp xrr, LayerStack ls, JComponent sliderPanel) {
         sliderPanel.setLayout(new BorderLayout(5,5));
         final ScrollbarUpdater thisUpdater = this;
 
+        this.xrr = xrr;
         this.ls = ls;
         this.sliderPane = new JTabbedPane();
 
-        JPanel global = new StackSliderPanel(ls);
+        JPanel global = new StackSliderPanel(xrr, ls);
         sliderPane.insertTab("Global",null,global,"Global settings",0);
 
         sliderPanel.add(sliderPane, BorderLayout.CENTER);
@@ -236,6 +238,31 @@ public class ScrollbarUpdater implements ListDataListener {
             maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
             sliders.add(maxx2Button,c);
 
+            JButton errButton = new JButton("E");
+            errButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    LayerStack.Pair pair = ls.deepCopy(l.getThickness());
+                    LayerStack ls = pair.stack;
+                    FitValue val = pair.value;
+                    double min = val.getMin(), max = val.getMax();
+                    double[] mids = new double[1001];
+                    double[] errs = new double[1001];
+                    for (int i = 0; i <= 1000; i++)
+                    {
+                        double mid = min + (max-min)/1000.0 * i;
+                        val.setExpected(mid);
+                        GraphData gd2 = xrr.croppedGd().simulate(ls).normalize(ls);
+                        double err = xrr.func().getError(gd2.meas, gd2.simul);
+                        mids[i] = mid;
+                        errs[i] = err;
+                    }
+                    ArrayList<NamedArray> yarrays = new ArrayList<NamedArray>();
+                    yarrays.add(new NamedArray(1, errs, ""));
+                    new ChartFrame(xrr,"Error scan", 600, 400, false,
+                        new DataArray(1e9, mids), "d (nm)", yarrays, "error", 0, 0, null).setVisible(true);
+                }
+            });
+            sliders.add(errButton,c);
             JButton rangeButton = new JButton("Edit");
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -410,6 +437,31 @@ public class ScrollbarUpdater implements ListDataListener {
             maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
             sliders.add(maxx2Button,c);
 
+            errButton = new JButton("E");
+            errButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    LayerStack.Pair pair = ls.deepCopy(l.getRoughness());
+                    LayerStack ls = pair.stack;
+                    FitValue val = pair.value;
+                    double min = val.getMin(), max = val.getMax();
+                    double[] mids = new double[1001];
+                    double[] errs = new double[1001];
+                    for (int i = 0; i <= 1000; i++)
+                    {
+                        double mid = min + (max-min)/1000.0 * i;
+                        val.setExpected(mid);
+                        GraphData gd2 = xrr.croppedGd().simulate(ls).normalize(ls);
+                        double err = xrr.func().getError(gd2.meas, gd2.simul);
+                        mids[i] = mid;
+                        errs[i] = err;
+                    }
+                    ArrayList<NamedArray> yarrays = new ArrayList<NamedArray>();
+                    yarrays.add(new NamedArray(1, errs, ""));
+                    new ChartFrame(xrr,"Error scan", 600, 400, false,
+                        new DataArray(1e9, mids), "r (nm)", yarrays, "error", 0, 0, null).setVisible(true);
+                }
+            });
+            sliders.add(errButton,c);
             rangeButton = new JButton("Edit");
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -584,6 +636,31 @@ public class ScrollbarUpdater implements ListDataListener {
             maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
             sliders.add(maxx2Button,c);
 
+            errButton = new JButton("E");
+            errButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    LayerStack.Pair pair = ls.deepCopy(l.getDensity());
+                    LayerStack ls = pair.stack;
+                    FitValue val = pair.value;
+                    double min = val.getMin(), max = val.getMax();
+                    double[] mids = new double[1001];
+                    double[] errs = new double[1001];
+                    for (int i = 0; i <= 1000; i++)
+                    {
+                        double mid = min + (max-min)/1000.0 * i;
+                        val.setExpected(mid);
+                        GraphData gd2 = xrr.croppedGd().simulate(ls).normalize(ls);
+                        double err = xrr.func().getError(gd2.meas, gd2.simul);
+                        mids[i] = mid;
+                        errs[i] = err;
+                    }
+                    ArrayList<NamedArray> yarrays = new ArrayList<NamedArray>();
+                    yarrays.add(new NamedArray(1, errs, ""));
+                    new ChartFrame(xrr,"Error scan", 600, 400, false,
+                        new DataArray(1e-3, mids), "rho (g/cm^3)", yarrays, "error", 0, 0, null).setVisible(true);
+                }
+            });
+            sliders.add(errButton,c);
             rangeButton = new JButton("Edit");
             rangeButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {

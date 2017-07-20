@@ -71,8 +71,8 @@ public class JavaFitter implements FitterInterface {
      *
      */
 
-    public JavaFitter(JPlotArea light, GraphData data, LayerTask endTask, LayerTask plotTask, Runnable errTask, LayerStack stack, int popsize, int iterations, double firstAngle, double lastAngle, Image green, Image yellow,
-            Algorithm algo, FitnessFunction func, double dBthreshold, int pNorm,
+    public JavaFitter(XRRApp xrr, JPlotArea light, GraphData data, LayerTask endTask, LayerTask plotTask, Runnable errTask, LayerStack stack, int popsize, int iterations, double firstAngle, double lastAngle, Image green, Image yellow,
+            Algorithm algo,
             boolean autostop, int autostopFigures,
             AdvancedFitOptions opts) throws FittingNotStartedException {
         FittingErrorFunc func2;
@@ -105,23 +105,7 @@ public class JavaFitter implements FitterInterface {
         this.exec = new ThreadPoolExecutor(cpus, cpus,
                                            1, TimeUnit.SECONDS,
                                            new LinkedBlockingQueue<Runnable>());
-        switch (func)
-        {
-          case relchi2:
-            func2 = new RelChi2FittingErrorFunc(Math.exp(Math.log(10)*dBthreshold/10));
-            break;
-          case logfitness:
-            func2 = new LogFittingErrorFunc(pNorm);
-            break;
-          case sqrtfitness:
-            func2 = new SqrtFittingErrorFunc(pNorm);
-            break;
-          case chi2:
-            func2 = new Chi2FittingErrorFunc();
-            break;
-          default:
-            throw new IllegalArgumentException();
-        }
+        func2 = xrr.func();
         try {
             this.ctx = new XRRFittingCtx(stack, data,
                                          algo == Algorithm.JavaCovDE,
