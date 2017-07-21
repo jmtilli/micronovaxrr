@@ -229,7 +229,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
     private JList<String> layeredList;
     private double dbMin = -70, dbMax = 0;
 
-    private enum PlotStyle {LIN, LOG, ALPHA4, SQRT};
+    private enum PlotStyle {LIN, LOG, ALPHA4, SQRT, MRCHI2};
 
     private Properties props = new Properties();
 
@@ -2193,6 +2193,32 @@ public class XRRApp extends JFrame implements ChooserWrapper {
             }
         });
         dataMenu.add(dataPlot);
+        dataPlot = new JMenuItem("MRchi2-plot");
+        dataPlot.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                if (    tabs.getSelectedComponent() == fit
+                    &&  fitLayers != null
+                    && !fitLayers.equals(layers))
+                {
+                    if (JOptionPane.showConfirmDialog(
+                            null,
+                            "The model that's going to be plotted is the one " +
+                            "on the manual fit tab and that's different " +
+                            "from the model on the automatic fit tab.\n\n" +
+                            "You're on the automatic fit tab. To export " +
+                            "the model to the manual fit tab, press " +
+                            "\"Export\".\n\nDo you still want to plot?",
+                            "Question", JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE)
+                      != JOptionPane.YES_OPTION)
+                    {
+                      return;
+                    }
+                }
+                thisFrame.plot(PlotStyle.MRCHI2);
+            }
+        });
+        dataMenu.add(dataPlot);
 
         dataMenu.addSeparator();
 
@@ -2297,6 +2323,32 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     }
                 }
                 thisFrame.accuratePlot(PlotStyle.SQRT);
+            }
+        });
+        dataMenu.add(dataPlot);
+        dataPlot = new JMenuItem("MRchi2-plot (split roughness)");
+        dataPlot.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                if (    tabs.getSelectedComponent() == fit
+                    &&  fitLayers != null
+                    && !fitLayers.equals(layers))
+                {
+                    if (JOptionPane.showConfirmDialog(
+                            null,
+                            "The model that's going to be plotted is the one " +
+                            "on the manual fit tab and that's different " +
+                            "from the model on the automatic fit tab.\n\n" +
+                            "You're on the automatic fit tab. To export " +
+                            "the model to the manual fit tab, press " +
+                            "\"Export\".\n\nDo you still want to plot?",
+                            "Question", JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE)
+                      != JOptionPane.YES_OPTION)
+                    {
+                      return;
+                    }
+                }
+                thisFrame.accuratePlot(PlotStyle.MRCHI2);
             }
         });
         dataMenu.add(dataPlot);
@@ -2489,6 +2541,8 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         System.arraycopy(d.meas, 0, meas, 0, meas.length);
         System.arraycopy(d.simul, 0, simul, 0, simul.length);
 
+        double dBthreshold = (Double)thresholdModel.getNumber();
+        RelChi2TransformFittingErrorFunc func = new RelChi2TransformFittingErrorFunc(Math.exp(Math.log(10)*dBthreshold/10), (Integer)pModel.getNumber());
         switch(style) {
             case LOG:
                 for(int i=0; i<meas.length; i++) {
@@ -2526,6 +2580,12 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 }
                 ytitle = "reflectivity*alpha0^4 (degrees^4)";
                 break;
+            case MRCHI2:
+                for(int i=0; i<meas.length; i++) {
+                    meas[i] = func.transform(meas[i]);
+                    simul[i] = func.transform(simul[i]);
+                }
+                ytitle = "MRchi2(reflectivity)";
             default:
                 ytitle = "reflectivity";
                 break;
@@ -2639,6 +2699,8 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         assert(splitR.length == alpha0rad.length);
 
         double ymin = 0, ymax = 0;
+        double dBthreshold = (Double)thresholdModel.getNumber();
+        RelChi2TransformFittingErrorFunc func = new RelChi2TransformFittingErrorFunc(Math.exp(Math.log(10)*dBthreshold/10), (Integer)pModel.getNumber());
 
         switch(style) {
             case LOG:
@@ -2677,6 +2739,12 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 }
                 ytitle = "reflectivity*alpha0^4 (degrees^4)";
                 break;
+            case MRCHI2:
+                for(int i=0; i<splitR.length; i++) {
+                    splitR[i] = func.transform(splitR[i]);
+                    NCR[i] = func.transform(NCR[i]);
+                }
+                ytitle = "MRchi2(reflectivity)";
             default:
                 ytitle = "reflectivity";
                 break;
