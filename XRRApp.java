@@ -2586,6 +2586,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     simul[i] = func.transform(simul[i]);
                 }
                 ytitle = "MRchi2(reflectivity)";
+                break;
             default:
                 ytitle = "reflectivity";
                 break;
@@ -2745,6 +2746,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     NCR[i] = func.transform(NCR[i]);
                 }
                 ytitle = "MRchi2(reflectivity)";
+                break;
             default:
                 ytitle = "reflectivity";
                 break;
