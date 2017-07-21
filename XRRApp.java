@@ -263,6 +263,9 @@ public class XRRApp extends JFrame implements ChooserWrapper {
           case chi2:
             func2 = new Chi2FittingErrorFunc();
             break;
+          case relchi2transform:
+            func2 = new RelChi2TransformFittingErrorFunc(Math.exp(Math.log(10)*dBthreshold/10), (Integer)pModel.getNumber());
+            break;
           default:
             throw new IllegalArgumentException();
         }
