@@ -6,6 +6,7 @@ public enum FitnessFunction {
     relchi2transform("p-norm in MR/chi^2 space"),
     relchi2("Mixed relative / chi-squared"),
     logfitness("p-norm in logarithmic space"),
+    rel("Relative"),
     sqrtfitness("p-norm in sqrt-space"),
     chi2("chi-squared");
 

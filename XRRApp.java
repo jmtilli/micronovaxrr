@@ -257,6 +257,9 @@ public class XRRApp extends JFrame implements ChooserWrapper {
           case logfitness:
             func2 = new LogFittingErrorFunc((Integer)pModel.getNumber());
             break;
+          case rel:
+            func2 = new RelFittingErrorFunc();
+            break;
           case sqrtfitness:
             func2 = new SqrtFittingErrorFunc((Integer)pModel.getNumber());
             break;
