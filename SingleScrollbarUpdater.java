@@ -102,12 +102,17 @@ public class SingleScrollbarUpdater implements ValueListener {
         this.errButton.setMargin(new Insets(3, 3, 3, 3));
         this.errButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
+                /*
                 LayerStack.Pair pair = ls.deepCopy(val);
                 LayerStack ls = pair.stack;
                 FitValue val = pair.value;
                 double min = val.getMin(), max = val.getMax();
+                */
                 double[] mids = new double[1001];
                 double[] errs = new double[1001];
+                ls.fittingErrorScan(xrr.func(), val, xrr.croppedGd(),
+                                    mids, errs);
+                /*
                 for (int i = 0; i <= 1000; i++)
                 {
                     double mid = min + (max-min)/1000.0 * i;
@@ -117,6 +122,7 @@ public class SingleScrollbarUpdater implements ValueListener {
                     mids[i] = mid;
                     errs[i] = err;
                 }
+                */
                 ArrayList<NamedArray> yarrays = new ArrayList<NamedArray>();
                 yarrays.add(new NamedArray(1, errs, ""));
                 new ChartFrame(xrr,"Error scan", 600, 400, false,

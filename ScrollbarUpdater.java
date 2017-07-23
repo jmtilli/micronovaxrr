@@ -246,12 +246,17 @@ public class ScrollbarUpdater implements ListDataListener {
             errButton.setMargin(new Insets(3, 3, 3, 3));
             errButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    /*
                     LayerStack.Pair pair = ls.deepCopy(l.getThickness());
                     LayerStack ls = pair.stack;
                     FitValue val = pair.value;
                     double min = val.getMin(), max = val.getMax();
+                    */
                     double[] mids = new double[1001];
                     double[] errs = new double[1001];
+                    ls.fittingErrorScan(xrr.func(), l.getThickness(),
+                                        xrr.croppedGd(), mids, errs);
+                    /*
                     for (int i = 0; i <= 1000; i++)
                     {
                         double mid = min + (max-min)/1000.0 * i;
@@ -261,6 +266,7 @@ public class ScrollbarUpdater implements ListDataListener {
                         mids[i] = mid;
                         errs[i] = err;
                     }
+                    */
                     ArrayList<NamedArray> yarrays = new ArrayList<NamedArray>();
                     yarrays.add(new NamedArray(1, errs, ""));
                     new ChartFrame(xrr,"Error scan", 600, 400, false,
@@ -451,12 +457,17 @@ public class ScrollbarUpdater implements ListDataListener {
             errButton.setMargin(new Insets(3, 3, 3, 3));
             errButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    /*
                     LayerStack.Pair pair = ls.deepCopy(l.getRoughness());
                     LayerStack ls = pair.stack;
                     FitValue val = pair.value;
                     double min = val.getMin(), max = val.getMax();
+                    */
                     double[] mids = new double[1001];
                     double[] errs = new double[1001];
+                    ls.fittingErrorScan(xrr.func(), l.getRoughness(),
+                                        xrr.croppedGd(), mids, errs);
+                    /*
                     for (int i = 0; i <= 1000; i++)
                     {
                         double mid = min + (max-min)/1000.0 * i;
@@ -466,6 +477,7 @@ public class ScrollbarUpdater implements ListDataListener {
                         mids[i] = mid;
                         errs[i] = err;
                     }
+                    */
                     ArrayList<NamedArray> yarrays = new ArrayList<NamedArray>();
                     yarrays.add(new NamedArray(1, errs, ""));
                     new ChartFrame(xrr,"Error scan", 600, 400, false,
@@ -656,12 +668,17 @@ public class ScrollbarUpdater implements ListDataListener {
             errButton.setMargin(new Insets(3, 3, 3, 3));
             errButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    /*
                     LayerStack.Pair pair = ls.deepCopy(l.getDensity());
                     LayerStack ls = pair.stack;
                     FitValue val = pair.value;
                     double min = val.getMin(), max = val.getMax();
+                    */
                     double[] mids = new double[1001];
                     double[] errs = new double[1001];
+                    ls.fittingErrorScan(xrr.func(), l.getDensity(),
+                                        xrr.croppedGd(), mids, errs);
+                    /*
                     for (int i = 0; i <= 1000; i++)
                     {
                         double mid = min + (max-min)/1000.0 * i;
@@ -671,6 +688,7 @@ public class ScrollbarUpdater implements ListDataListener {
                         mids[i] = mid;
                         errs[i] = err;
                     }
+                    */
                     ArrayList<NamedArray> yarrays = new ArrayList<NamedArray>();
                     yarrays.add(new NamedArray(1, errs, ""));
                     new ChartFrame(xrr,"Error scan", 600, 400, false,
