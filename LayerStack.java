@@ -459,7 +459,6 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
                                  final double[] mids,
                                  final double[] errs)
     {
-        long start = System.nanoTime();
         final LayerStack ls = this;
         double min = val.getMin(), max = val.getMax();
         int cpus = Runtime.getRuntime().availableProcessors();
@@ -523,8 +522,6 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         finally
         {
             exec.shutdown();
-            long end = System.nanoTime();
-            System.out.println((end-start)/1e9 + " s");
         }
     }
 
