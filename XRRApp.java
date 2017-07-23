@@ -426,6 +426,9 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         catch(InvalidStructException ex) {
             throw new LayerLoadException("Invalid high-level file format");
         }
+        catch(XMLException ex) {
+            throw new LayerLoadException("Invalid high-level file format");
+        }
     }
 
     private void splitRoughness(int i, double stddevs, int n, boolean includeRoughness) throws SplitRoughnessException {
