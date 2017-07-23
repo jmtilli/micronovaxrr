@@ -162,7 +162,7 @@ public class JavaFitter implements FitterInterface {
                 worstfit = ctx.worstFittingError();
                 results = ctx.bestIndividual();
                 stack.setFitValues(results);
-                msg = "iteration = "+(round+1) + ", bestfit = " + String.format(Locale.US,"%.4g",bestfit) + ", medianfit = "+String.format(Locale.US,"%.4g",medianfit);
+                msg = "iteration = "+(round+1) + ", bestfit = " + String.format(Locale.US,"%.6g",bestfit) + ", medianfit = "+String.format(Locale.US,"%.6g",medianfit);
                 final String msg2 = msg;
 
                 if (System.nanoTime() > curTime + 500*1000*1000)
@@ -207,7 +207,7 @@ public class JavaFitter implements FitterInterface {
                         String.format("%.2f", (end - start) / 1e9) +
                         " seconds and " + finalRound + " iterations" +
                         " to obtain fitting error value " +
-                        String.format(Locale.US,"%.4g",finalBestfit);
+                        String.format(Locale.US,"%.6g",finalBestfit);
                 }
                 if(plotTask != null)
                     plotTask.run(stackToReturn,"");
