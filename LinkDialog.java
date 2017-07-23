@@ -14,6 +14,7 @@ public class LinkDialog extends JDialog {
     private final JCheckBox dBox = new JCheckBox("Thickness");
     private final JCheckBox rhoBox = new JCheckBox("Density");
     private final JCheckBox rBox = new JCheckBox("Roughness");
+    private final JCheckBox betaFBox = new JCheckBox("BetaF");
 
     public boolean ok()
     {
@@ -30,6 +31,10 @@ public class LinkDialog extends JDialog {
     public boolean r()
     {
         return rBox.isSelected();
+    }
+    public boolean betaF()
+    {
+        return betaFBox.isSelected();
     }
 
     public LinkDialog(Dialog d, String title)
@@ -54,6 +59,7 @@ public class LinkDialog extends JDialog {
         checkboxPanel.add(dBox);
         checkboxPanel.add(rhoBox);
         checkboxPanel.add(rBox);
+        checkboxPanel.add(betaFBox);
         dialog.add(checkboxPanel, BorderLayout.CENTER);
 
         JPanel btnPanel = new JPanel();

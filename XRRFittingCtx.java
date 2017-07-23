@@ -99,13 +99,13 @@ public class XRRFittingCtx {
     }
     LayerStack layers = new LayerStack(lambda,table);
     layers.add(new Layer("Substrate", new FitValue(0,0,0),
-               new FitValue(2.26e3,2.33e3,2.4e3), new FitValue(0,3e-9,3e-9),
+               new FitValue(2.26e3,2.33e3,2.4e3), new FitValue(0,3e-9,3e-9), new FitValue(0,10,10),
                new ChemicalFormula("Si"),new ChemicalFormula("Si"),0,table,lambda));
     layers.add(new Layer("Native oxide", new FitValue(0e-9,7e-9,8e-9),
-               new FitValue(1e3,2.1e3,3e3), new FitValue(0,2e-9,2e-9),
+               new FitValue(1e3,2.1e3,3e3), new FitValue(0,2e-9,2e-9), new FitValue(0,10,10),
                new ChemicalFormula("Si"),new ChemicalFormula("O"),2.0/3,table,lambda));
     layers.add(new Layer("Thin film", new FitValue(40e-9,55e-9,70e-9),
-               new FitValue(1e3,3.4e3,4e3), new FitValue(0,1e-9,1e-9),
+               new FitValue(1e3,3.4e3,4e3), new FitValue(0,1e-9,1e-9), new FitValue(0,10,10),
                new ChemicalFormula("Al"),new ChemicalFormula("O"),3/5.0,table,lambda));
     GraphData gd = new GraphData(alpha_0, new double[2000], new double[2000]);
     double[] simul = gd.simulate(layers).simul;

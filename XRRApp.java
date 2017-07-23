@@ -441,7 +441,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 top = layers.getElementAt(i-1);
             } else {
                 top = new Layer("Air", new FitValue(0,0,0),
-                              new FitValue(0,0,0), new FitValue(0,0,0),
+                              new FitValue(0,0,0), new FitValue(0,0,0), new FitValue(0,0,0),
                               new ChemicalFormula("O"),new ChemicalFormula("O"),0,
                               layers.getTable(), layers.getLambda());
             }
@@ -516,6 +516,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     r = new FitValue(dd/2, dd/2, dd/2);
                 else
                     r = new FitValue(0, 0, 0);
+                FitValue betaF = new FitValue(0, 10, 10);
                 FitValue rho = new FitValue(
                         top.getDensity().getMin() +
                         (bottom.getDensity().getMin() - top.getDensity().getMin()) * p,
@@ -524,7 +525,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                         top.getDensity().getMax() +
                         (bottom.getDensity().getMax() - top.getDensity().getMax()) * p);
 
-                Layer interf = new Layer(name, d, rho, r, topCompound,
+                Layer interf = new Layer(name, d, rho, r, betaF, topCompound,
                         bottomCompound, p, layers.getTable(), layers.getLambda());
 
                 layers.add(interf, i+j);
@@ -936,15 +937,15 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         /*
         try {
             layers.add(new Layer("Substrate", new FitValue(0,0,0),
-                       new FitValue(2.26e3,2.33e3,2.4e3), new FitValue(0,0,1e-9),
+                       new FitValue(2.26e3,2.33e3,2.4e3), new FitValue(0,0,1e-9), new FitValue(0,10,10),
                        new ChemicalFormula("Si"),new ChemicalFormula("Si"),0,
                        layers.getTable(), layers.getLambda()));
             layers.add(new Layer("Native oxide", new FitValue(0e-9,0e-9,2.5e-9),
-                       new FitValue(1e3,2.1e3,3e3), new FitValue(0,0,1e-9),
+                       new FitValue(1e3,2.1e3,3e3), new FitValue(0,0,1e-9), new FitValue(0,10,10),
                        new ChemicalFormula("Si"),new ChemicalFormula("O"),2.0/3,
                        layers.getTable(),layers.getLambda()));
             layers.add(new Layer("Thin film", new FitValue(40e-9,55e-9,70e-9),
-                       new FitValue(1e3,3.4e3,4e3), new FitValue(0,0,1e-9),
+                       new FitValue(1e3,3.4e3,4e3), new FitValue(0,0,1e-9), new FitValue(0,10,10),
                        new ChemicalFormula("Al"),new ChemicalFormula("O"),3/5.0,
                        layers.getTable(),layers.getLambda()));
         }
@@ -988,7 +989,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 try {
                     l = new Layer("New layer", new FitValue(0,100e-9,500e-9),
                                 new FitValue(0,5e3,10e3),
-                                new FitValue(0,0,0),
+                                new FitValue(0,0,0), new FitValue(0,10,10, false),
                                 new ChemicalFormula("Al"),new ChemicalFormula("O"),3/5.0,
                                 layers.getTable(),layers.getLambda());
                     LayerDialog d = new LayerDialog(thisFrame);
@@ -1101,6 +1102,14 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     {
                         newLayer.setRoughnessObject(oldLayer.getRoughness());
                     }
+                    if (d.betaF())
+                    {
+                        newLayer.setBetaFObject(firstLayer.getBetaF());
+                    }
+                    else
+                    {
+                        newLayer.setBetaFObject(oldLayer.getBetaF());
+                    }
                     try {
                         layers.add(newLayer,i);
                     }
@@ -1140,6 +1149,10 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                     {
                         newLayer.setRoughnessObject(oldLayer.getRoughness());
                     }
+                    if (!d.betaF())
+                    {
+                        newLayer.setBetaFObject(oldLayer.getBetaF());
+                    }
                     layers.remove(i);
                     try {
                         layers.add(newLayer,i);
@@ -1176,6 +1189,21 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 if(i < 0 || i >= layers.getSize() || i2.length != 1)
                     JOptionPane.showMessageDialog(null, "You must select exactly one layer to use this tool", "Error", JOptionPane.ERROR_MESSAGE);
                 else {
+                    if (layers.getElementAt(i).getBetaF().getExpected() < 3)
+                    {
+                        if (JOptionPane.showConfirmDialog(
+                                null,
+                                "The layer has betaF < 3 and it will not be " +
+                                "taken into account by the split roughness " +
+                                "tool.\n\n" +
+                                "Do you still want to continue?",
+                                "Question", JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE)
+                          != JOptionPane.YES_OPTION)
+                        {
+                          return;
+                        }
+                    }
                     try {
                         SplitRoughnessDialog dialog = new SplitRoughnessDialog(thisFrame);
                         SplitRoughnessOpts opts = dialog.call();
@@ -1307,6 +1335,9 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         wlPanel.add(new JLabel(" sum"));
         final JLabel fitSumLabel = new JLabel("");
         wlPanel.add(fitSumLabel);
+        wlPanel.add(new JLabel(" offset"));
+        final JLabel fitOffsetLabel = new JLabel("");
+        wlPanel.add(fitOffsetLabel);
 
         final JPlotArea fitPlotLight = new JPlotArea();
         final JPlotArea fitLight = new JPlotArea();
@@ -1366,6 +1397,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
                 fitNormLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getProd().getExpected())+" dB "+(fitLayers.getProd().getEnabled()?"(fit)":"(no)"));
                 fitBeamLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getBeam().getExpected())+" "+(fitLayers.getBeam().getEnabled()?"(fit)":"(no)"));
                 fitSumLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getSum().getExpected())+" dB " +(fitLayers.getSum().getEnabled()?"(fit)":"(no)"));
+                fitOffsetLabel.setText(String.format(Locale.US,"%.3f",fitLayers.getOffset().getExpected())+"\u00B0 "+(fitLayers.getOffset().getEnabled()?"(fit)":"(no)"));
             }
         });
         //fitLayers.invalidate(this);
@@ -2614,6 +2646,31 @@ public class XRRApp extends JFrame implements ChooserWrapper {
     private void profile(XRRSimul.XRRProperty property) {
         double[] range;
         DataOptions opts;
+        boolean small_beta = false;
+        for (int i = 0; i < layers.getSize(); i++)
+        {
+            Layer l = layers.getElementAt(i);
+            if (l.getBetaF().getExpected() < 3)
+            {
+                small_beta = true;
+                break;
+            }
+        }
+
+        if (small_beta)
+        {
+            if (JOptionPane.showConfirmDialog(
+                    null,
+                    "On of the layers has betaF < 3 and it has not been " +
+                    "well-tested with depth profile.\n\n" +
+                    "Do you still want to plot depth profile?",
+                    "Question", JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE)
+              != JOptionPane.YES_OPTION)
+            {
+              return;
+            }
+        }
 
         range = XRRSimul.depths(2, layers);
 
@@ -2656,6 +2713,32 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         double[] range;
         DataOptions opts;
         String ytitle;
+        boolean small_beta = false;
+        for (int i = 0; i < layers.getSize(); i++)
+        {
+            Layer l = layers.getElementAt(i);
+            if (l.getBetaF().getExpected() < 3)
+            {
+                small_beta = true;
+                break;
+            }
+        }
+
+        if (small_beta)
+        {
+            if (JOptionPane.showConfirmDialog(
+                    null,
+                    "On of the layers has betaF < 3 and it will not be " +
+                    "taken into account by the split roughness plot.\n\n" +
+                    "Do you still want to plot?",
+                    "Question", JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE)
+              != JOptionPane.YES_OPTION)
+            {
+              return;
+            }
+        }
+
 
         range = XRRSimul.depths(2, layers);
 
@@ -2666,7 +2749,7 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         if(opts == null)
             return;
 
-        double[] ds, delta1, beta1, delta, beta, alpha0rad, r, d;
+        double[] ds, delta1, beta1, delta, beta, betaFeranchuk, alpha0rad, r, d;
         double lambda, stddevrad, beam;
 
         ds = XRRSimul.depths2(opts.ndata, opts.min/1e9, opts.max/1e9);
@@ -2674,13 +2757,16 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         beta1 = XRRSimul.depthProfile(ds, layers, false, XRRSimul.XRRProperty.BETA);
         delta = new double[delta1.length+1];
         beta = new double[delta1.length+1];
+        betaFeranchuk = new double[delta1.length+1];
         r = new double[delta1.length+1];
         d = new double[delta1.length+1];
         d[0] = r[0] = delta[0] = beta[0] = 0; /* air */
+        betaFeranchuk[0] = 10;
         for(int i=1; i<r.length; i++) {
             delta[i] = delta1[i-1];
             beta[i] = beta1[i-1];
             r[i] = 0;
+            betaFeranchuk[i] = 10;
             d[i] = (opts.max/1e9 - opts.min/1e9)/(opts.ndata - 1);
         }
         alpha0rad = new double[data.alpha_0.length];
@@ -2689,10 +2775,11 @@ public class XRRApp extends JFrame implements ChooserWrapper {
         lambda = layers.getLambda();
         stddevrad = layers.getStdDev().getExpected();
         beam = layers.getBeam().getExpected();
+        double offset = layers.getOffset().getExpected()*Math.PI/180;
 
         double[] splitR, NCR;
         GraphData simulData;
-        splitR = XRRSimul.rawSimulate(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
+        splitR = XRRSimul.rawSimulateComplexBufferArray(alpha0rad, delta, beta, betaFeranchuk, d, r, lambda, stddevrad, beam, offset);
 
         simulData = data.simulate(layers).normalize(layers);
         NCR = new double[simulData.simul.length];

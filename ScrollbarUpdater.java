@@ -729,6 +729,217 @@ public class ScrollbarUpdater implements ListDataListener {
             });
             sliders.add(rhoEnableCheck,c);
 
+            /* betaF */
+            final JSlider betaFSlider = new JSlider(0,1000);
+            final FitValue betaF = l.getBetaF();
+
+            final JLabel betaFValLabel = new JLabel("betaF = 0.00000000e-1",SwingConstants.LEFT);
+            betaFValLabel.setPreferredSize(new Dimension(betaFValLabel.getPreferredSize().width,betaFValLabel.getPreferredSize().height));
+            betaFValLabel.setMinimumSize(betaFValLabel.getPreferredSize());
+            betaFValLabel.setMaximumSize(betaFValLabel.getPreferredSize());
+            betaFValLabel.setText("betaF = " + String.format(Locale.US,"%.6g",betaF.getExpected()));
+
+            betaFSlider.setValue((int)(1000*(betaF.getExpected()-betaF.getMin())/(betaF.getMax()-betaF.getMin()) + 0.5));
+            final ChangeListener betaFChangeListener = new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    /* If lock is set, we must ignore all change events */
+                    if(!lock) {
+                        FitValue betaF2 = l.getBetaF(); /* we can't use beta: it might be a reference to an old object */
+                        double newval = betaFSlider.getValue()*(betaF2.getMax()-betaF2.getMin())/1000+betaF2.getMin();
+                        betaFValLabel.setText("betaF = "+String.format(Locale.US,"%.6g",newval));
+                        if(!betaFSlider.getValueIsAdjusting() || REAL_TIME) {
+                            betaF2.setExpected(newval);
+                            ls.invalidate(thisUpdater); /* it is critical to send this from thisUpdater */
+                        }
+                    }
+                }
+            };
+            betaFSlider.addChangeListener(betaFChangeListener);
+            betaF.addValueListener(new ValueListener() {
+              public void valueChanged(ValueEvent ev) {
+                lock = true;
+                betaFSlider.setValue((int)(1000*(betaF.getExpected()-betaF.getMin())/(betaF.getMax()-betaF.getMin()) + 0.5));
+                betaFValLabel.setText("betaF = " + String.format(Locale.US,"%.6g",betaF.getExpected()));
+                lock = false;
+              }
+            });
+
+            final JLabel betaFMinLabel = new JLabel(/*"min = " + */String.format(Locale.US,"%.6g",betaF.getMin()));
+            final JLabel betaFMaxLabel = new JLabel(/*"max = " + */String.format(Locale.US,"%.6g",betaF.getMax()));
+
+            minx2Button = new JButton("2");
+            minx2Button.setMargin(new Insets(3, 3, 3, 3));
+            minx2Button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getBetaF();
+                    double newMin = val.getMin()-(val.getMax()-val.getMin());
+                    if (val.getMax() == val.getMin())
+                    {
+                        newMin = val.getMin() - 1;
+                    }
+                    if (newMin < 0)
+                    {
+                        newMin = 0;
+                    }
+                    val.setValues(newMin,val.getExpected(),val.getMax());
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    betaFSlider.setValue(newValue);
+                    lock = false;
+                    betaFChangeListener.stateChanged(null);
+                    betaFMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()));
+                    betaFMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()));
+                }
+            });
+            minx2Button.setPreferredSize(new Dimension((int)(minx2Button.getMinimumSize().width),minx2Button.getMinimumSize().height));
+            minx2Button.setMinimumSize(minx2Button.getPreferredSize());
+            minx2Button.setMaximumSize(minx2Button.getPreferredSize());
+
+	    /* This button changes the minimum value of the parameter range to the current value */
+            minButton = new JButton("<");
+            minButton.setMargin(new Insets(3, 3, 3, 3));
+            minButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getBetaF();
+                    val.setValues(val.getExpected(),val.getExpected(),val.getMax());
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    betaFSlider.setValue(newValue);
+                    lock = false;
+                    betaFChangeListener.stateChanged(null);
+                    betaFMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()));
+                    betaFMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()));
+                }
+            });
+            minButton.setMinimumSize(minButton.getPreferredSize());
+
+            c.gridwidth = 1;
+            sliders.add(betaFValLabel,c);
+            sliders.add(minx2Button,c);
+            sliders.add(minButton,c);
+            sliders.add(betaFMinLabel,c);
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.weightx = 2;
+            //c.gridwidth = GridBagConstraints.RELATIVE;
+            c.gridwidth = 1;
+            sliders.add(betaFSlider,c);
+            c.fill = GridBagConstraints.NONE;
+            //c.gridwidth = GridBagConstraints.REMAINDER;
+            c.weightx = 0;
+            sliders.add(betaFMaxLabel,c);
+
+            maxButton = new JButton(">");
+            maxButton.setMargin(new Insets(3, 3, 3, 3));
+            maxButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getBetaF();
+                    val.setValues(val.getMin(),val.getExpected(),val.getExpected());
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    betaFSlider.setValue(newValue);
+                    lock = false;
+                    betaFChangeListener.stateChanged(null);
+                    betaFMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()));
+                    betaFMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()));
+                }
+            });
+            maxButton.setMinimumSize(maxButton.getPreferredSize());
+            sliders.add(maxButton,c);
+
+            maxx2Button = new JButton("2");
+            maxx2Button.setMargin(new Insets(3, 3, 3, 3));
+            maxx2Button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getBetaF();
+                    double newMax = val.getMax()+(val.getMax()-val.getMin());
+                    if (val.getMax() == val.getMin())
+                    {
+                        newMax = val.getMax() + 1;
+                    }
+                    val.setValues(val.getMin(),val.getExpected(),newMax);
+
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    betaFSlider.setValue(newValue);
+                    lock = false;
+                    betaFChangeListener.stateChanged(null);
+                    betaFMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()));
+                    betaFMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()));
+                }
+            });
+            maxx2Button.setPreferredSize(new Dimension((int)(maxx2Button.getMinimumSize().width),maxx2Button.getMinimumSize().height));
+            maxx2Button.setMinimumSize(maxx2Button.getPreferredSize());
+            maxx2Button.setMaximumSize(maxx2Button.getPreferredSize());
+            sliders.add(maxx2Button,c);
+
+            errButton = new JButton("Err");
+            errButton.setMargin(new Insets(3, 3, 3, 3));
+            errButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    /*
+                    LayerStack.Pair pair = ls.deepCopy(l.getBetaF());
+                    LayerStack ls = pair.stack;
+                    FitValue val = pair.value;
+                    double min = val.getMin(), max = val.getMax();
+                    */
+                    double[] mids = new double[1001];
+                    double[] errs = new double[1001];
+                    ls.fittingErrorScan(xrr.func(), l.getBetaF(),
+                                        xrr.croppedGd(), mids, errs);
+                    /*
+                    for (int i = 0; i <= 1000; i++)
+                    {
+                        double mid = min + (max-min)/1000.0 * i;
+                        val.setExpected(mid);
+                        GraphData gd2 = xrr.croppedGd().simulate(ls).normalize(ls);
+                        double err = xrr.func().getError(gd2.meas, gd2.simul);
+                        mids[i] = mid;
+                        errs[i] = err;
+                    }
+                    */
+                    ArrayList<NamedArray> yarrays = new ArrayList<NamedArray>();
+                    yarrays.add(new NamedArray(1, errs, ""));
+                    new ChartFrame(xrr,"Error scan", 600, 400, false,
+                        new DataArray(1, mids), "betaF", yarrays, "error", 0, 0, null).setVisible(true);
+                }
+            });
+            sliders.add(errButton,c);
+            rangeButton = new JButton("Edit");
+            rangeButton.setMargin(new Insets(3, 3, 3, 3));
+            rangeButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    FitValue val = l.getBetaF();
+                    FitRangeDialog dialog = new FitRangeDialog((JFrame)null,"betaF","");
+                    dialog.call(val,1);
+
+                    /* We must send ONE change event every time, even if the physical position of the slider
+                     * didn't change
+                     * XXX: this is an ugly hack, Java really should offer an API to control change events */
+                    int newValue = (int)(((val.getExpected()-val.getMin())/(val.getMax()-val.getMin()))*1000+0.5);
+                    lock = true;
+                    betaFSlider.setValue(newValue);
+                    lock = false;
+                    betaFChangeListener.stateChanged(null);
+                    betaFMinLabel.setText(/*"min = " + */String.format(Locale.US,"%.6g",val.getMin()));
+                    betaFMaxLabel.setText(/*"max = " + */String.format(Locale.US,"%.6g",val.getMax()));
+                    dialog.dispose();
+                }
+            });
+            rangeButton.setMinimumSize(rangeButton.getPreferredSize());
+            sliders.add(rangeButton,c);
+            c.gridwidth = GridBagConstraints.REMAINDER;
+            final JCheckBox betaFEnableCheck = new JCheckBox("fit");
+            betaFEnableCheck.setSelected(l.getBetaF().getEnabled());
+            betaFEnableCheck.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    l.getBetaF().setEnabled(betaFEnableCheck.isSelected());
+                }
+            });
+            sliders.add(betaFEnableCheck,c);
+
             /* composition */
             final JSlider fSlider = new JSlider(0,1000);
 

@@ -50,45 +50,51 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
     private FitValue prod;
     private FitValue sum;
     private FitValue beam;
+    private FitValue offset;
 
     private LookupTable table;
 
     public double[] getFitValuesForFitting(FitValue.FitValueType type)
     {
-      double[] result = new double[3+3*layers.size()];
+      double[] result = new double[4+4*layers.size()];
       result[0] = prod.getValueForFitting(type);
       result[1] = sum.getValueForFitting(type);
       result[2] = beam.getValueForFitting(type);
+      result[3] = offset.getValueForFitting(type);
       for (int i = 0; i < layers.size(); i++)
       {
         Layer l = layers.get(i);
-        result[3+0*layers.size()+i] =
+        result[4+0*layers.size()+i] =
           l.getThickness().getValueForFitting(type);
-        result[3+1*layers.size()+i] =
+        result[4+1*layers.size()+i] =
           l.getDensity().getValueForFitting(type);
-        result[3+2*layers.size()+i] =
+        result[4+2*layers.size()+i] =
           l.getRoughness().getValueForFitting(type);
+        result[4+3*layers.size()+i] =
+          l.getBetaF().getValueForFitting(type);
       }
       return result;
     }
     public void setFitValues(double[] values)
     {
-      if (values.length != 3+3*layers.size())
+      if (values.length != 4+4*layers.size())
       {
         throw new IllegalArgumentException();
       }
       this.prod.setExpected(values[0]);
       this.sum.setExpected(values[1]);
       this.beam.setExpected(values[2]);
+      this.offset.setExpected(values[3]);
       /*
          If there are duplicate layers, the last value takes precedence.
        */
       for (int i = 0; i < layers.size(); i++)
       {
         Layer l = layers.get(i);
-        l.getThickness().setExpected(values[3+0*layers.size()+i]);
-        l.getDensity().setExpected(values[3+1*layers.size()+i]);
-        l.getRoughness().setExpected(values[3+2*layers.size()+i]);
+        l.getThickness().setExpected(values[4+0*layers.size()+i]);
+        l.getDensity().setExpected(values[4+1*layers.size()+i]);
+        l.getRoughness().setExpected(values[4+2*layers.size()+i]);
+        l.getBetaF().setExpected(values[4+3*layers.size()+i]);
       }
     }
 
@@ -115,7 +121,8 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
       if (   !this.stddev.equals(that.stddev)
           || !this.prod.equals(that.prod)
           || !this.sum.equals(that.sum)
-          || !this.beam.equals(that.beam))
+          || !this.beam.equals(that.beam)
+          || !this.offset.equals(that.offset))
       {
         return false;
       }
@@ -143,7 +150,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
     public int getFittedValueCount() {
         Map<FitValue,Integer> counts = new HashMap<FitValue,Integer>();
         int id = 0;
-        FitValue[] vals = {getBeam(), getProd(), getSum()};
+        FitValue[] vals = {getBeam(), getOffset(), getProd(), getSum()};
         for (FitValue val: vals)
         {
             if (val.getEnabled() && val.getMin() < val.getMax())
@@ -160,7 +167,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         }
         for (Layer l: layers)
         {
-            vals = new FitValue[]{l.getThickness(), l.getDensity(), l.getRoughness()};
+            vals = new FitValue[]{l.getThickness(), l.getDensity(), l.getRoughness(), l.getBetaF()};
             for (FitValue val: vals)
             {
                 if (val.getEnabled() && val.getMin() < val.getMax())
@@ -191,7 +198,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         for (Layer l: layers)
         {
             FitValue[] vals = {l.getThickness(), l.getDensity(),
-                               l.getRoughness()};
+                               l.getRoughness(), l.getBetaF()};
             for (FitValue val: vals)
             {
                 if (counts.containsKey(val))
@@ -207,7 +214,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         for (Layer l: layers)
         {
             FitValue[] vals = {l.getThickness(), l.getDensity(),
-                               l.getRoughness()};
+                               l.getRoughness(), l.getBetaF()};
             for (FitValue val: vals)
             {
                 if (counts.get(val) > 1 && !links.containsKey(val))
@@ -261,9 +268,11 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         this.stddev = new FitValue(0,0,0.01*Math.PI/180,false,false);
         this.prod = new FitValue(-100,0,100,false);
         this.beam = new FitValue(0,250,1000,false);
+        this.offset = new FitValue(-0.05,0,0.05,false);
         this.sum = new FitValue(-200,-200,100,false);
         this.prod.addValueListener(this);
         this.beam.addValueListener(this);
+        this.offset.addValueListener(this);
         this.sum.addValueListener(this);
         this.stddev.addValueListener(this);
     }
@@ -376,6 +385,9 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
     public FitValue getBeam() {
         return beam;
     }
+    public FitValue getOffset() {
+        return offset;
+    }
     public FitValue getSum() {
         return sum;
     }
@@ -384,6 +396,9 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
     }
     public void setBeam(FitValue beam) {
         this.beam.deepCopyFrom(beam);
+    }
+    public void setOffset(FitValue offset) {
+        this.offset.deepCopyFrom(offset);
     }
     public void setSum(FitValue sum) {
         this.sum.deepCopyFrom(sum);
@@ -425,6 +440,10 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
             {
                 val2 = l2.getDensity();
             }
+            if (l.getBetaF() == val)
+            {
+                val2 = l2.getBetaF();
+            }
             if (l.getRoughness() == val)
             {
                 val2 = l2.getRoughness();
@@ -434,6 +453,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         result.stddev.deepCopyFrom(this.stddev.deepCopy());
         result.prod.deepCopyFrom(this.prod.deepCopy());
         result.beam.deepCopyFrom(this.beam.deepCopy());
+        result.offset.deepCopyFrom(this.offset.deepCopy());
         result.sum.deepCopyFrom(this.sum.deepCopy());
         if (this.stddev == val)
         {
@@ -446,6 +466,10 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         if (this.beam == val)
         {
             val2 = result.beam; 
+        }
+        if (this.offset == val)
+        {
+            val2 = result.offset; 
         }
         if (this.sum == val)
         {
@@ -544,6 +568,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         result.stddev.deepCopyFrom(this.stddev.deepCopy());
         result.prod.deepCopyFrom(this.prod.deepCopy());
         result.beam.deepCopyFrom(this.beam.deepCopy());
+        result.offset.deepCopyFrom(this.offset.deepCopy());
         result.sum.deepCopyFrom(this.sum.deepCopy());
         return result;
     }
@@ -575,6 +600,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         m.put("stddevObj", stddev.structExport());
         m.put("prod", prod.structExport());
         m.put("beam", beam.structExport());
+        m.put("offset", offset.structExport());
         m.put("sum", sum.structExport());
         m.put("measSum",0.0);
         if(additional_data != null)
@@ -591,6 +617,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         f.set("sum").setRow("fitvalue", sum);
         f.set("prod").setRow("fitvalue", prod);
         f.set("beam").setRow("fitvalue", beam);
+        f.set("offset").setRow("fitvalue", offset);
         f.set("stddev").setRow("fitvalue", stddev);
         fl = f.set("layers");
         for (Layer l: this.layers)
@@ -606,6 +633,14 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         this.sum = new FitValue(f.getNotNull("sum").getNotNull("fitvalue"));
         this.prod = new FitValue(f.getNotNull("prod").getNotNull("fitvalue"));
         this.beam = new FitValue(f.getNotNull("beam").getNotNull("fitvalue"));
+        if (f.get("offset") != null)
+        {
+            this.offset = new FitValue(f.getNotNull("offset").getNotNull("fitvalue"));
+        }
+        else
+        {
+            this.offset = new FitValue(-0.05, 0, 0.05, false);
+        }
         this.stddev = new FitValue(f.getNotNull("stddev").getNotNull("fitvalue"));
         this.lambda = f.getAttrDoubleNotNull("lambda");
         this.layers = new ArrayList<Layer>();
@@ -679,6 +714,10 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         if (obj != null) {
             temp.beam.deepCopyFrom(FitValue.structImport(obj));
         }
+        obj = m.get("offset");
+        if (obj != null) {
+            temp.offset.deepCopyFrom(FitValue.structImport(obj));
+        }
         obj = m.get("sum");
         if (obj != null) {
             temp.sum.deepCopyFrom(FitValue.structImport(obj));
@@ -735,6 +774,7 @@ public class LayerStack implements LayerListener, ValueListener, XMLRowable {
         this.stddev.deepCopyFrom(temp.stddev);
         this.prod.deepCopyFrom(temp.prod);
         this.beam.deepCopyFrom(temp.beam);
+        this.offset.deepCopyFrom(temp.offset);
         this.sum.deepCopyFrom(temp.sum);
         this.table = temp.table;
         if(getSize() > 0)

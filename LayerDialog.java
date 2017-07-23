@@ -12,9 +12,10 @@ import java.util.*;
 public class LayerDialog extends JDialog {
     private boolean succesful;
     private JTextField rhomin, rhoval, rhomax, dmin, dval, dmax,
+            betaFmin, betaFval, betaFmax,
             rmin, rval, rmax, betaField, deltaField, nameField,
             c1, c2, fract;
-    private JCheckBox rhofit, dfit, rfit; /* fit enable checkboxes */
+    private JCheckBox rhofit, dfit, rfit, betafit; /* fit enable checkboxes */
     private Layer layer;
     public LayerDialog(JFrame f)
     {
@@ -99,6 +100,26 @@ public class LayerDialog extends JDialog {
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridPanel.add(new JPanel(),c);
 
+        c.gridwidth = 1;
+        gridPanel.add(new JLabel("betaF"),c);
+        gridPanel.add(new JLabel("min"),c);
+        betaFmin = new JTextField("1",7);
+        betaFmin.setMinimumSize(betaFmin.getPreferredSize());
+        gridPanel.add(betaFmin,c);
+        gridPanel.add(new JLabel("value"),c);
+        betaFval = new JTextField("2",7);
+        betaFval.setMinimumSize(betaFval.getPreferredSize());
+        gridPanel.add(betaFval,c);
+        gridPanel.add(new JLabel("max"),c);
+        betaFmax = new JTextField("2",7);
+        betaFmax.setMinimumSize(betaFmax.getPreferredSize());
+        gridPanel.add(betaFmax,c);
+	betafit = new JCheckBox("fit");
+	betafit.setSelected(true);
+        gridPanel.add(betafit,c);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridPanel.add(new JPanel(),c);
+
 
         c.gridwidth = 1;
         gridPanel.add(new JLabel("composition"),c);
@@ -135,7 +156,7 @@ public class LayerDialog extends JDialog {
         btn = new JButton("OK");
         btn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent ev) {
-                FitValue rho, d, r;
+                FitValue rho, d, r, betaF;
                 double f;
                 try {
                     f = Double.parseDouble(fract.getText());
@@ -151,12 +172,17 @@ public class LayerDialog extends JDialog {
                                      Double.parseDouble(rval.getText())/1e9,
                                      Double.parseDouble(rmax.getText())/1e9,
 				     rfit.isSelected());
+                    betaF = new FitValue(Double.parseDouble(betaFmin.getText()),
+                                     Double.parseDouble(betaFval.getText()),
+                                     Double.parseDouble(betaFmax.getText()),
+				     betafit.isSelected());
                     /* This must be first, otherwise cancel can return invalid data */
                     layer.setCompounds(new ChemicalFormula(c1.getText()),new ChemicalFormula(c2.getText()));
                     layer.setName(nameField.getText());
                     layer.setThickness(d);
                     layer.setDensity(rho);
                     layer.setRoughness(r);
+                    layer.setBetaF(betaF);
                     layer.setF(f);
                     succesful = true;
                     setVisible(false);
@@ -203,6 +229,10 @@ public class LayerDialog extends JDialog {
         rval.setText(String.format(Locale.US,"%.6g",l.getRoughness().getExpected()*1e9));
         rmax.setText(String.format(Locale.US,"%.6g",l.getRoughness().getMax()*1e9));
 	rfit.setSelected(l.getRoughness().getEnabled());
+        betaFmin.setText(String.format(Locale.US,"%.6g",l.getBetaF().getMin()));
+        betaFval.setText(String.format(Locale.US,"%.6g",l.getBetaF().getExpected()));
+        betaFmax.setText(String.format(Locale.US,"%.6g",l.getBetaF().getMax()));
+	betafit.setSelected(l.getBetaF().getEnabled());
         c1.setText(""+l.getCompound1());
         c2.setText(""+l.getCompound2());
         fract.setText(String.format(Locale.US,"%.6g",l.getF()));

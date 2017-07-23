@@ -196,6 +196,7 @@ public class XRRSimul {
         int factor = stair?0:1;
         double[] mu;
         double[] stddev;
+        double[] betaF;
         double[] x;
         double[] result;
         int n;
@@ -204,6 +205,7 @@ public class XRRSimul {
         n = layers.getSize();
         mu = new double[n];
         stddev = new double[n];
+        betaF = new double[n];
         x = new double[n+1];
         x[0] = 0;
         result = new double[ds.length];
@@ -212,6 +214,7 @@ public class XRRSimul {
             Layer l = layers.getElementAt(i);
             mu[i] = d;
             stddev[i] = factor*l.getRoughness().getExpected();
+            betaF[i] = stair?10:l.getBetaF().getExpected();
             x[i+1] = prop.get(l);
             d += l.getThickness().getExpected();
         }
@@ -219,7 +222,22 @@ public class XRRSimul {
         for(int i=0; i<ds.length; i++) {
             result[i] = 0;
             for(int j=0; j<n; j++)
-                result[i] += (x[j+1]-x[j])*SMath.normCdf(ds[i], mu[j], stddev[j]);
+            {
+                double B = stddev[j] * betaF[j];
+                if (ds[i] <= mu[j] - B)
+                {
+                  result[i] += 0;
+                }
+                else if (ds[i] >= mu[j] + B)
+                {
+                  result[i] += x[j+1] - x[j];
+                }
+                else
+                {
+                  result[i] += (x[j+1]-x[j]) * (SMath.normCdf(ds[i], mu[j], stddev[j]) - SMath.normCdf(mu[j] - B, mu[j], stddev[j])) / (SMath.normCdf(mu[j] + B, mu[j], stddev[j]) - SMath.normCdf(mu[j] - B, mu[j], stddev[j]));
+                }
+                //result[i] += (x[j+1]-x[j])*SMath.normCdf(ds[i], mu[j], stddev[j]);
+            }
         }
 
         return result;
@@ -261,7 +279,7 @@ public class XRRSimul {
      *
      */
 
-    public static double[] rawSimulateComplex(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad, double beam) {
+    public static double[] rawSimulateComplex(double[] alpha0rad, double[] delta, double[] beta, double[] betaFeranchuk, double[] d, double[] r, double lambda, double stddevrad, double beam, double offset) {
         Complex[] R;
         double[] R2;
         Complex[][] kz;
@@ -305,7 +323,7 @@ public class XRRSimul {
 
             /* a bit tricky optimization */
             for(int j=0; j<alpha0rad.length; j++) {
-                double alpha0 = alpha0rad[j];
+                double alpha0 = alpha0rad[j]-offset;
 
                 // Calculate z component of wavevector
                 kz[(i-1)%2][j] = new Complex(alpha0*alpha0-2*delta[i-1], -2*beta[i-1])
@@ -314,10 +332,16 @@ public class XRRSimul {
             if(i == d.length)
                 continue;
 
-            double roughness_factor = -2*r[i]*r[i];
+            double roughness = r[i];
+            double beta_feranchuk = betaFeranchuk[i];
+            double beta_feranchuk_squared = beta_feranchuk * beta_feranchuk;
+            double roughness_squared = roughness*roughness;
+            double roughness_factor = -2*roughness_squared;
             d_times_minus_two_i = MINUS_TWO_I.multiply(d[i]);
 
             for(int j=0; j<alpha0rad.length; j++) {
+                double q = 2*k0*(alpha0rad[j]-offset);
+                double q_squared = q*q;
                 kz0 = kz[(i-1)%2][j];
                 kz1 = kz[i%2][j];
 
@@ -330,7 +354,12 @@ public class XRRSimul {
                 {
                   ri = Complex.ZERO;
                 }
-                roughri = kz0.multiply(kz1).multiply(roughness_factor).exp().multiply(ri);
+                double secondTermDivisor = q_squared*roughness_squared+beta_feranchuk_squared;
+                double secondTermFactor = Math.exp(beta_feranchuk_squared/(-2))/secondTermDivisor;
+                double secondTerm = roughness_squared*q_squared/Math.sqrt(Math.PI)*secondTermFactor;
+                roughri = kz0.multiply(kz1).multiply(roughness_factor).exp()
+                          .add(secondTerm)
+                          .multiply(ri);
 
                 // phase factor times reflectivity coefficient
                 b = kz1.multiply(d_times_minus_two_i).exp().multiply(R[j]);
@@ -343,7 +372,7 @@ public class XRRSimul {
         }
         for(int i=0; i<R2.length; i++) {
             Complex Ri = R[i];
-            double F = beam*Math.sin(alpha0rad[i]);
+            double F = beam*Math.sin(alpha0rad[i]-offset);
             if (F > 1.0)
                 F = 1.0;
             R2[i] = Ri.getReal()*Ri.getReal() + Ri.getImag()*Ri.getImag();
@@ -391,7 +420,7 @@ public class XRRSimul {
      *
      */
 
-    public static double[] rawSimulateComplexBuffer(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad, double beam) {
+    public static double[] rawSimulateComplexBuffer(double[] alpha0rad, double[] delta, double[] beta, double[] betaFeranchuk, double[] d, double[] r, double lambda, double stddevrad, double beam, double offset) {
         ComplexBuffer[] R;
         double[] R2;
         ComplexBuffer[][] kz;
@@ -445,7 +474,7 @@ public class XRRSimul {
 
             /* a bit tricky optimization */
             for(int j=0; j<alpha0rad.length; j++) {
-                double alpha0 = alpha0rad[j];
+                double alpha0 = alpha0rad[j]-offset;
 
                 // Calculate z component of wavevector
                 kz0_ar[j].set(alpha0*alpha0-two_times_delta, minus_two_times_beta)
@@ -455,10 +484,15 @@ public class XRRSimul {
                 continue;
 
             double roughness = r[i];
-            double roughness_factor = -2*roughness*roughness;
+            double beta_feranchuk = betaFeranchuk[i];
+            double beta_feranchuk_squared = beta_feranchuk * beta_feranchuk;
+            double roughness_squared = roughness*roughness;
+            double roughness_factor = -2*roughness_squared;
             d_times_minus_two_i.set(MINUS_TWO_I).multiplyInPlace(d[i]);
 
             for(int j=0; j<alpha0rad.length; j++) {
+                double q = 2*k0*(alpha0rad[j]-offset);
+                double q_squared = q*q;
                 kz0 = kz0_ar[j];
                 kz1 = kz1_ar[j];
 
@@ -471,8 +505,14 @@ public class XRRSimul {
                 {
                   ri.set(0, 0);
                 }
+                /*
                 roughri.set(kz0).multiplyInPlace(kz1).multiplyInPlace(roughness_factor)
-                       .expInPlace().multiplyInPlace(ri);
+                       .expInPlace().multiplyInPlace(ri); */
+                double secondTermDivisor = q_squared*roughness_squared+beta_feranchuk_squared;
+                double secondTermFactor = Math.exp(beta_feranchuk_squared/(-2))/secondTermDivisor;
+                double secondTerm = roughness_squared*q_squared/Math.sqrt(Math.PI)*secondTermFactor;
+                roughri.set(kz0).multiplyInPlace(kz1).multiplyInPlace(roughness_factor)
+                       .expInPlace().addInPlace(secondTerm).multiplyInPlace(ri);
 
                 // phase factor times reflectivity coefficient
                 b.set(kz1).multiplyInPlace(d_times_minus_two_i).expInPlace()
@@ -487,7 +527,7 @@ public class XRRSimul {
         for(int i=0; i<R2.length; i++) {
             ComplexBuffer Ri = R[i];
             double re = Ri.getReal(), im = Ri.getImag();
-            double F = beam*Math.sin(alpha0rad[i]);
+            double F = beam*Math.sin(alpha0rad[i]-offset);
             if (F > 1.0)
                 F = 1.0;
             R2[i] = re*re + im*im;
@@ -536,7 +576,7 @@ public class XRRSimul {
      *
      */
 
-    public static double[] rawSimulateComplexBufferArray(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad, double beam) {
+    public static double[] rawSimulateComplexBufferArray(double[] alpha0rad, double[] delta, double[] beta, double[] betaFeranchuk, double[] d, double[] r, double lambda, double stddevrad, double beam, double offset) {
         ComplexBufferArray R;
         double[] R2;
         ComplexBufferArray[] kz;
@@ -582,7 +622,7 @@ public class XRRSimul {
 
             /* a bit tricky optimization */
             for(int j=0; j<alpha0rad.length; j++) {
-                double alpha0 = alpha0rad[j];
+                double alpha0 = alpha0rad[j]-offset;
 
                 // Calculate z component of wavevector
                 kz0_ar.set(j, alpha0*alpha0-two_times_delta, minus_two_times_beta)
@@ -592,10 +632,15 @@ public class XRRSimul {
                 continue;
 
             double roughness = r[i];
-            double roughness_factor = -2*roughness*roughness;
+            double beta_feranchuk = betaFeranchuk[i];
+            double beta_feranchuk_squared = beta_feranchuk * beta_feranchuk;
+            double roughness_squared = roughness*roughness;
+            double roughness_factor = -2*roughness_squared;
             d_times_minus_two_i.set(MINUS_TWO_I).multiplyInPlace(d[i]);
 
             for(int j=0; j<alpha0rad.length; j++) {
+                double q = 2*k0*(alpha0rad[j]-offset);
+                double q_squared = q*q;
                 //kz0 = kz0_ar[j];
                 //kz1 = kz1_ar[j];
 
@@ -608,8 +653,15 @@ public class XRRSimul {
                 {
                   ri.set(0, 0);
                 }
+                // roughri = exp(-kz0*kz1*2*r^2)*ri
+                /*
                 roughri.set(kz0_ar, j).multiplyInPlace(kz1_ar, j).multiplyInPlace(roughness_factor)
-                       .expInPlace().multiplyInPlace(ri);
+                       .expInPlace().multiplyInPlace(ri); */
+                double secondTermDivisor = q_squared*roughness_squared+beta_feranchuk_squared;
+                double secondTermFactor = Math.exp(beta_feranchuk_squared/(-2))/secondTermDivisor;
+                double secondTerm = roughness_squared*q_squared/Math.sqrt(Math.PI)*secondTermFactor;
+                roughri.set(kz0_ar, j).multiplyInPlace(kz1_ar, j).multiplyInPlace(roughness_factor)
+                       .expInPlace().addInPlace(secondTerm).multiplyInPlace(ri);
 
                 // phase factor times reflectivity coefficient
                 b.set(kz1_ar, j).multiplyInPlace(d_times_minus_two_i).expInPlace()
@@ -623,7 +675,7 @@ public class XRRSimul {
         }
         for(int i=0; i<R2.length; i++) {
             double re = R.getReal(i), im = R.getImag(i);
-            double F = beam*Math.sin(alpha0rad[i]);
+            double F = beam*Math.sin(alpha0rad[i]-offset);
             if (F > 1.0)
                 F = 1.0;
             R2[i] = re*re + im*im;
@@ -673,7 +725,7 @@ public class XRRSimul {
      *
      */
 
-    public static double[] rawSimulate(double[] alpha0rad, double[] delta, double[] beta, double[] d, double[] r, double lambda, double stddevrad, double beam) {
+    public static double[] rawSimulate(double[] alpha0rad, double[] delta, double[] beta, double[] betaFeranchuk, double[] d, double[] r, double lambda, double stddevrad, double beam, double offset) {
         double[] R_real;
         double[] R_imag;
         double[] R2;
@@ -712,7 +764,7 @@ public class XRRSimul {
 
             /* a bit tricky optimization */
             for(int j=0; j<alpha0rad.length; j++) {
-                double alpha0 = alpha0rad[j];
+                double alpha0 = alpha0rad[j]-offset;
 
                 // Calculate z component of wavevector
                 double sq_real = alpha0*alpha0 - 2*delta[i-1];
@@ -724,7 +776,15 @@ public class XRRSimul {
             if(i == d.length)
                 continue;
 
+            double roughness = r[i];
+            double beta_feranchuk = betaFeranchuk[i];
+            double beta_feranchuk_squared = beta_feranchuk * beta_feranchuk;
+            double roughness_squared = roughness*roughness;
+            double roughness_factor = -2*roughness_squared;
+
             for(int j=0; j<alpha0rad.length; j++) {
+                double q = 2*k0*(alpha0rad[j]-offset);
+                double q_squared = q*q;
                 double kz_real = kz_reals[(i-1)%2][j];
                 double kz_imag = kz_imags[(i-1)%2][j];
                 double kz1_real = kz_reals[i%2][j];
@@ -766,6 +826,10 @@ public class XRRSimul {
                 double roughexp_imag = -2*r[i]*r[i]*kzkz1_imag;
                 double rough_real = Math.exp(roughexp_real)*Math.cos(roughexp_imag);
                 double rough_imag = Math.exp(roughexp_real)*Math.sin(roughexp_imag);
+                double secondTermDivisor = q_squared*roughness_squared+beta_feranchuk_squared;
+                double secondTermFactor = Math.exp(beta_feranchuk_squared/(-2))/secondTermDivisor;
+                double secondTerm = roughness_squared*q_squared/Math.sqrt(Math.PI)*secondTermFactor;
+                rough_real += secondTerm;
 
                 roughri_real = ri_real*rough_real - ri_imag*rough_imag;
                 roughri_imag = ri_real*rough_imag + ri_imag*rough_real;
@@ -796,7 +860,7 @@ public class XRRSimul {
             }
         }
         for(int i=0; i<R2.length; i++) {
-            double F = beam*Math.sin(alpha0rad[i]);
+            double F = beam*Math.sin(alpha0rad[i]-offset);
             if (F > 1.0)
                 F = 1.0;
             R2[i] = R_real[i]*R_real[i] + R_imag[i]*R_imag[i];
@@ -822,21 +886,23 @@ public class XRRSimul {
 
     public static double[] simulateComplex(double[] alpha0rad, LayerStack layers) {
         double[] delta;
-        double[] beta;
+        double[] beta, betaFeranchuk;
         double[] d; // layer thickness
         double[] r; // top interface roughness
         double lambda = layers.getLambda();
         double stddevrad = layers.getStdDev().getExpected();
         double beam = layers.getBeam().getExpected();
+        double offset = layers.getOffset().getExpected()*Math.PI/180;
 
         /* convert the layer stack to delta, beta, thickness and roughness arrays */
 
         delta = new double[layers.getSize()+1];
         beta = new double[layers.getSize()+1];
+        betaFeranchuk = new double[layers.getSize()+1];
         d = new double[layers.getSize()+1];
         r = new double[layers.getSize()+1];
 
-        delta[0] = beta[0] = d[0] = r[0] = 0; /* ambient (air) */
+        delta[0] = beta[0] = betaFeranchuk[0] = d[0] = r[0] = 0; /* ambient (air) */
 
         for(int i=0; i<d.length-1; i++) {
             Layer layer = layers.getElementAt(i);
@@ -845,10 +911,11 @@ public class XRRSimul {
             d[i+1] = layers.getElementAt(i).getThickness().getExpected();
             r[i+1] = layers.getElementAt(i).getRoughness().getExpected();
             delta[i+1] = layer.getDensity().getExpected() * compound.getDeltaPerRho();
+            betaFeranchuk[i+1] = layer.getBetaF().getExpected();
             beta[i+1] = delta[i+1] * compound.getBetaPerDelta();
         }
 
-        return rawSimulateComplex(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
+        return rawSimulateComplex(alpha0rad, delta, beta, betaFeranchuk, d, r, lambda, stddevrad, beam, offset);
     }
     /** Call simulation with layers from a LayerStack.
      *
@@ -863,21 +930,23 @@ public class XRRSimul {
 
     public static double[] simulateComplexBuffer(double[] alpha0rad, LayerStack layers) {
         double[] delta;
-        double[] beta;
+        double[] beta, betaFeranchuk;
         double[] d; // layer thickness
         double[] r; // top interface roughness
         double lambda = layers.getLambda();
         double stddevrad = layers.getStdDev().getExpected();
         double beam = layers.getBeam().getExpected();
+        double offset = layers.getOffset().getExpected()*Math.PI/180;
 
         /* convert the layer stack to delta, beta, thickness and roughness arrays */
 
         delta = new double[layers.getSize()+1];
         beta = new double[layers.getSize()+1];
+        betaFeranchuk = new double[layers.getSize()+1];
         d = new double[layers.getSize()+1];
         r = new double[layers.getSize()+1];
 
-        delta[0] = beta[0] = d[0] = r[0] = 0; /* ambient (air) */
+        delta[0] = beta[0] = betaFeranchuk[0] = d[0] = r[0] = 0; /* ambient (air) */
 
         for(int i=0; i<d.length-1; i++) {
             Layer layer = layers.getElementAt(i);
@@ -887,9 +956,10 @@ public class XRRSimul {
             r[i+1] = layers.getElementAt(i).getRoughness().getExpected();
             delta[i+1] = layer.getDensity().getExpected() * compound.getDeltaPerRho();
             beta[i+1] = delta[i+1] * compound.getBetaPerDelta();
+            betaFeranchuk[i+1] = layers.getElementAt(i).getBetaF().getExpected();
         }
 
-        return rawSimulateComplexBuffer(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
+        return rawSimulateComplexBuffer(alpha0rad, delta, beta, betaFeranchuk, d, r, lambda, stddevrad, beam, offset);
     }
 
     /** Call simulation with layers from a LayerStack.
@@ -906,20 +976,23 @@ public class XRRSimul {
     public static double[] simulateComplexBufferArray(double[] alpha0rad, LayerStack layers) {
         double[] delta;
         double[] beta;
+        double[] betaFeranchuk;
         double[] d; // layer thickness
         double[] r; // top interface roughness
         double lambda = layers.getLambda();
         double stddevrad = layers.getStdDev().getExpected();
         double beam = layers.getBeam().getExpected();
+        double offset = layers.getOffset().getExpected()*Math.PI/180;
 
         /* convert the layer stack to delta, beta, thickness and roughness arrays */
 
         delta = new double[layers.getSize()+1];
         beta = new double[layers.getSize()+1];
+        betaFeranchuk = new double[layers.getSize()+1];
         d = new double[layers.getSize()+1];
         r = new double[layers.getSize()+1];
 
-        delta[0] = beta[0] = d[0] = r[0] = 0; /* ambient (air) */
+        delta[0] = beta[0] = betaFeranchuk[0] = d[0] = r[0] = 0; /* ambient (air) */
 
         for(int i=0; i<d.length-1; i++) {
             Layer layer = layers.getElementAt(i);
@@ -927,11 +1000,12 @@ public class XRRSimul {
 
             d[i+1] = layers.getElementAt(i).getThickness().getExpected();
             r[i+1] = layers.getElementAt(i).getRoughness().getExpected();
+            betaFeranchuk[i+1] = layers.getElementAt(i).getBetaF().getExpected();
             delta[i+1] = layer.getDensity().getExpected() * compound.getDeltaPerRho();
             beta[i+1] = delta[i+1] * compound.getBetaPerDelta();
         }
 
-        return rawSimulateComplexBufferArray(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
+        return rawSimulateComplexBufferArray(alpha0rad, delta, beta, betaFeranchuk, d, r, lambda, stddevrad, beam, offset);
     }
 
     /** Call simulation with layers from a LayerStack.
@@ -947,21 +1021,23 @@ public class XRRSimul {
 
     public static double[] simulate(double[] alpha0rad, LayerStack layers) {
         double[] delta;
-        double[] beta;
+        double[] beta, betaFeranchuk;
         double[] d; // layer thickness
         double[] r; // top interface roughness
         double lambda = layers.getLambda();
         double stddevrad = layers.getStdDev().getExpected();
         double beam = layers.getBeam().getExpected();
+        double offset = layers.getOffset().getExpected()*Math.PI/180;
 
         /* convert the layer stack to delta, beta, thickness and roughness arrays */
 
         delta = new double[layers.getSize()+1];
         beta = new double[layers.getSize()+1];
+        betaFeranchuk = new double[layers.getSize()+1];
         d = new double[layers.getSize()+1];
         r = new double[layers.getSize()+1];
 
-        delta[0] = beta[0] = d[0] = r[0] = 0; /* ambient (air) */
+        delta[0] = beta[0] = betaFeranchuk[0] = d[0] = r[0] = 0; /* ambient (air) */
 
         for(int i=0; i<d.length-1; i++) {
             Layer layer = layers.getElementAt(i);
@@ -971,8 +1047,9 @@ public class XRRSimul {
             r[i+1] = layers.getElementAt(i).getRoughness().getExpected();
             delta[i+1] = layer.getDensity().getExpected() * compound.getDeltaPerRho();
             beta[i+1] = delta[i+1] * compound.getBetaPerDelta();
+            betaFeranchuk[i+1] = layers.getElementAt(i).getBetaF().getExpected();
         }
 
-        return rawSimulate(alpha0rad, delta, beta, d, r, lambda, stddevrad, beam);
+        return rawSimulate(alpha0rad, delta, beta, betaFeranchuk, d, r, lambda, stddevrad, beam, offset);
     }
 }

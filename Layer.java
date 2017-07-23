@@ -42,7 +42,7 @@ import fi.iki.jmtilli.javaxmlfrag.*;
 
 public class Layer implements ValueListener {
     private String name;
-    private FitValue d, rho, r; /* thickness, density, roughness (in SI units) */
+    private FitValue d, rho, r, betaF; /* thickness, density, roughness (in SI units), roughness max amplitude factor */
 
     private double f; /* 0 = only compound1, 1 = only compound2 */
     private ChemicalFormula compound1, compound2;
@@ -78,6 +78,7 @@ public class Layer implements ValueListener {
     {
       if (   l1_numbering.get(l1.d) != l2_numbering.get(l2.d)
           || l1_numbering.get(l1.rho) != l2_numbering.get(l2.rho)
+          || l1_numbering.get(l1.betaF) != l2_numbering.get(l2.betaF)
           || l1_numbering.get(l1.r) != l2_numbering.get(l2.r))
       {
           return false;
@@ -85,6 +86,7 @@ public class Layer implements ValueListener {
       if (   !utilEquals(l1.name, l2.name)
           || !utilEquals(l1.d, l2.d)
           || !utilEquals(l1.rho, l2.rho)
+          || !utilEquals(l1.betaF, l2.betaF)
           || !utilEquals(l1.r, l2.r)
           || (l1.f != l2.f)
           || (l1.lambda != l2.lambda)
@@ -112,6 +114,8 @@ public class Layer implements ValueListener {
     public FitValue getDensity() { return this.rho; };
     /** Returns roughness */
     public FitValue getRoughness() { return this.r; };
+    /** Returns beta */
+    public FitValue getBetaF() { return this.betaF; };
 
     public void addLayerListener(LayerListener listener) {
         listeners.add(listener);
@@ -217,6 +221,13 @@ public class Layer implements ValueListener {
             throw new InvalidStructException("invalid density");
         l.setDensityObject(getFitValue(o2, fitValueById));
 
+        o2 = m.get("betaF");
+        if(o2 == null) {
+            l.setBetaFObject(new FitValue(0, 10, 10, false));
+        } else {
+            l.setBetaFObject(getFitValue(o2, fitValueById));
+        }
+
         try {
             o2 = m.get("compound1");
             if(o2 == null || !(o2 instanceof String))
@@ -278,6 +289,7 @@ public class Layer implements ValueListener {
         structure.put("name",name);
         structure.put("d",setFitValue(fitValueNumbering, alreadyAdded, d));
         structure.put("rho",setFitValue(fitValueNumbering, alreadyAdded, rho));
+        structure.put("betaF",setFitValue(fitValueNumbering, alreadyAdded, betaF));
         structure.put("r",setFitValue(fitValueNumbering, alreadyAdded, r));
         structure.put("f",f);
         structure.put("compound1",compound1.toString());
@@ -320,6 +332,7 @@ public class Layer implements ValueListener {
                 frag.setDouble("f", f);
                 setFitValue(frag, "d", d);
                 setFitValue(frag, "rho", rho);
+                setFitValue(frag, "betaF", betaF);
                 setFitValue(frag, "r", r);
             }
         };
@@ -368,12 +381,14 @@ public class Layer implements ValueListener {
                           Map<Integer, FitValue> newFitValues) {
         FitValue d2 = newFitValue(fitValueNumbering, newFitValues, d);
         FitValue rho2 = newFitValue(fitValueNumbering, newFitValues, rho);
+        FitValue betaF2 = newFitValue(fitValueNumbering, newFitValues, betaF);
         FitValue r2 = newFitValue(fitValueNumbering, newFitValues, r);
 
         Layer result = new Layer();
         result.name = this.name;
         result.setThicknessObject(d2);
         result.setDensityObject(rho2);
+        result.setBetaFObject(betaF2);
         result.setRoughnessObject(r2);
         result.f = this.f;
         result.compound1 = this.compound1;
@@ -404,7 +419,7 @@ public class Layer implements ValueListener {
      *
      * @throws ElementNotFound an element was not found in the lookup table for the given wavelength
      */
-    public Layer(String name, FitValue d, FitValue rho, FitValue r,
+    public Layer(String name, FitValue d, FitValue rho, FitValue r, FitValue betaF,
             ChemicalFormula compound1, ChemicalFormula compound2, double f,
             LookupTable table, double lambda) throws ElementNotFound
     {
@@ -414,6 +429,7 @@ public class Layer implements ValueListener {
         setThickness(d);
         setDensity(rho);
         setRoughness(r);
+        setBetaF(betaF);
         setCompounds(compound1, compound2);
         setF(f);
     }
@@ -449,6 +465,14 @@ public class Layer implements ValueListener {
         setName(frag.getAttrStringNotNull("name"));
         setThicknessObject(getFitValue(frag.getNotNull("d"), fitValueById));
         setDensityObject(getFitValue(frag.getNotNull("rho"), fitValueById));
+        if (frag.get("betaF") != null)
+        {
+            setBetaFObject(getFitValue(frag.getNotNull("betaF"), fitValueById));
+        }
+        else
+        {
+            setBetaFObject(new FitValue(0, 10, 10, false));
+        }
         setRoughnessObject(getFitValue(frag.getNotNull("r"), fitValueById));
         setCompounds(new ChemicalFormula(frag.getStringNotNull("compound1")),
                      new ChemicalFormula(frag.getStringNotNull("compound2")));
@@ -609,6 +633,19 @@ public class Layer implements ValueListener {
           this.rho.deepCopyFrom(rho);
         }
     };
+    public void setBetaF(FitValue betaF) {
+        if(betaF == null)
+            throw new NullPointerException();
+        if (this.betaF == null)
+        {
+          this.betaF = betaF.deepCopy();
+          this.betaF.addValueListener(this);
+        }
+        else
+        {
+          this.betaF.deepCopyFrom(betaF);
+        }
+    };
     /*
        You may only call this for layers not owned by a layer stack
      */
@@ -620,6 +657,15 @@ public class Layer implements ValueListener {
             this.rho.removeValueListener(this);
         this.rho = rho;
         this.rho.addValueListener(this);
+    }
+    public void setBetaFObject(FitValue betaF)
+    {
+        if(betaF == null)
+            throw new NullPointerException();
+        if (this.betaF != null)
+            this.betaF.removeValueListener(this);
+        this.betaF = betaF;
+        this.betaF.addValueListener(this);
     }
     /** Changes the FitValue object of roughness.
      *
@@ -689,7 +735,10 @@ public class Layer implements ValueListener {
           (this.rho.getEnabled() ? "(fit)" : "(no)") +
         ", r = " + String.format(Locale.US,"%.6g",this.r.getExpected()*1e9) + " nm " +
           (n.containsKey(this.r) ? "[L" + n.get(this.r) + "] " : "") +
-          (this.r.getEnabled() ? "(fit)" : "(no)");
+          (this.r.getEnabled() ? "(fit)" : "(no)") +
+        ", beta = " + String.format(Locale.US,"%.6g",this.betaF.getExpected()) + " " +
+          (n.containsKey(this.betaF) ? "[L" + n.get(this.betaF) + "] " : "") +
+          (this.betaF.getEnabled() ? "(fit)" : "(no)");
     }
 
 };

@@ -1,18 +1,20 @@
 USAGE
 
 
-You can add, edit and remove layers on the layer editor tab. The properties
-of a layer are its name, density, thickness, roughness and chemical
-composition. The roughness of a layer is the roughness of its top surface.
-For example, if you want to specify the roughness of the interface between
-substrate and thin film the correct property is the roughness of substrate,
-NOT the roughness of thin film.
+You can add, edit and remove layers on the layer editor tab. The properties of
+a layer are its name, density, thickness, roughness, Feranchuk et al beta
+parameter and chemical composition. The roughness of a layer is the roughness
+of its top surface, and the same is true for Feranchuk et al beta parameter as
+well. For example, if you want to specify the roughness of the interface
+between substrate and thin film the correct property is the roughness of
+substrate, NOT the roughness of thin film.
 
-Density, thickness and roughness are specified by three values, the minimum
-value, the actual value and the maximum value. The minimum and maximum values
-are used by the fitting algorithm, which will search for the best fit between
-these values. If you do not want to fit a parameter, uncheck the "fit" check box
-or set the minimum, actual and maximum values of the parameter equal.
+Density, thickness, roughness and Feranchuk et al beta parameter are specified
+by three values, the minimum value, the actual value and the maximum value. The
+minimum and maximum values are used by the fitting algorithm, which will search
+for the best fit between these values. If you do not want to fit a parameter,
+uncheck the "fit" check box or set the minimum, actual and maximum values of
+the parameter equal.
 
 The chemical composition is specified by two compounds the layer consists of.
 You can adjust the ratio of these compounds. If the composition of the layer
@@ -24,15 +26,16 @@ parameter since XRR measures electron density, which can be determined from
 chemical composition and mass density. Both chemical composition and mass
 density can't be determined simultaneously by XRR.
 
-The effects of rough interfaces are calculated with Nevot-Croce model, which
-assumes that rough interfaces are normally distributed. The specified
-roughness value is RMS roughness. If arbitrary depth profiles are required,
-the rough region can be split to multiple equally thick layers, the density of
-which can be adjusted and fitted independently. To split rough interfaces,
-specify the interfacial roughness and use the split roughness tool on the
-layer editor tab. The initial densities and compositions of intermediate
-layers are calculated by normal distribution, but they may be adjusted and
-fitted independently.
+The effects of rough interfaces are calculated with Nevot-Croce model enhanced
+by modifications proposed by Feranchuk et al. The Nevot-Croce model assumes
+that rough interfaces are normally distributed. The Feranchuk et al
+modification adds maximum roughness amplitude. The specified roughness value is
+RMS roughness. If arbitrary depth profiles are required, the rough region can
+be split to multiple equally thick layers, the density of which can be adjusted
+and fitted independently. To split rough interfaces, specify the interfacial
+roughness and use the split roughness tool on the layer editor tab.  The
+initial densities and compositions of intermediate layers are calculated by
+normal distribution, but they may be adjusted and fitted independently.
 
 Measurements can be imported from File -> Load measurement. The number of data
 points is divided by the modulo parameter. Usually 500 - 1000 is a good number
