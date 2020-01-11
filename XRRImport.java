@@ -1184,7 +1184,7 @@ outer:
             }
             return asciiImportReader(r);
         }
-        if (ch == '<')
+        if (ch == '<' || ch == 0xef)
         {
             data = XRDMLImport(bs);
             if (data == null)
