@@ -101,7 +101,7 @@ forloop:
         catch(CharacterCodingException ex) {
             throw new FdecException("Invalid UTF-8 encoding");
         }
-        out.rewind();
+        ((Buffer)out).rewind();
         return out.toString();
         /* These are already defaults:
         decoder.onMalformedInput(CodingErrorAction.REPORT);
@@ -232,7 +232,7 @@ forloop:
         ByteBuffer out;
         byte[] b;
         out = Charset.forName("UTF-8").newEncoder().encode(CharBuffer.wrap(s.toCharArray()));
-        out.rewind();
+        ((Buffer)out).rewind();
         b = new byte[out.remaining()];
         out.get(b);
         assert(!out.hasRemaining());
