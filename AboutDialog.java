@@ -14,7 +14,7 @@ public class AboutDialog extends JDialog {
 
     private final String str =
 
-"Micronova XRR fitting software, version 2.3\n"+
+"Micronova XRR fitting software, version 2.4\n"+
 "\n"+
 "Copyright 2006-2014 Aalto University\n"+
 "Copyright 2006-2020 Juha-Matti Tilli\n"+
