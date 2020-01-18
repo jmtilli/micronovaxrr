@@ -47,7 +47,7 @@ file format and the XRDML file format. PANalytical's software may support other
 file formats as well, but this software doesn't.
 
 The wavelength of the measurement must be entered manually on the layer editor
-tab. The default wavelength is 1.54 nm (Cu K-alpha line). Scattering factors
+tab. The default wavelength is 0.154 nm (Cu K-alpha line). Scattering factors
 for other wavelengths are not included in this distribution. Instructions for
 installing complete scattering factor databases are in the file README-1st.txt.
 The following elements are supported by this software: Al, As, Au, C, Ga, Ge,
